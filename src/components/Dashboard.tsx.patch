@@ -1,0 +1,101 @@
+--- src/components/Dashboard.tsx
++++ src/components/Dashboard.tsx
+@@ -2,2 +2,4 @@
+ import { Monitor, Play, Settings, Server, Plus, Loader2, AppWindow, PlayCircle, Cpu, HardDrive, MoreVertical, LayoutGrid, Clock, ChevronRight } from 'lucide-react';
+ import { motion, AnimatePresence } from 'motion/react';
+ import { VmInstance, WorkspaceState, Workspace } from '../types';
+ import { workspaceApi } from '../lib/apiClient';
++import { ProvisioningScreen } from './launch/ProvisioningScreen';
++import { ConnectionScreen } from './launch/ConnectionScreen';
+ 
+@@ -10,2 +12,3 @@
+   const [selectedVm, setSelectedVm] = useState<VmInstance | null>(null);
++  const [connectionPhase, setConnectionPhase] = useState<'idle' | 'provisioning' | 'connecting' | 'ready'>('idle');
+   const [loading, setLoading] = useState(true);
+@@ -107,2 +110,18 @@
+ 
++  useEffect(() => {
++    if (connectionPhase === 'provisioning') {
++      const timer = setTimeout(() => {
++        setConnectionPhase('connecting');
++      }, 6500);
++      return () => clearTimeout(timer);
++    } else if (connectionPhase === 'connecting') {
++      const timer = setTimeout(() => {
++        setConnectionPhase('ready');
++      }, 1500);
++      return () => clearTimeout(timer);
++    }
++  }, [connectionPhase]);
++
++  const handleConnect = (vm: VmInstance) => {
++    setSelectedVm(vm);
++    setConnectionPhase('provisioning');
++  };
++
+   return (
+@@ -232,3 +251,3 @@
+                         <button 
+-                          onClick={() => setSelectedVm(vm)}
++                          onClick={() => handleConnect(vm)}
+                           className="flex-1 py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-neutral-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+@@ -259,3 +278,3 @@
+       {/* Connection Mode Modal */}
+       <AnimatePresence>
+-        {selectedVm && (
++        {selectedVm && connectionPhase === 'ready' && (
+           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+             <motion.div 
+@@ -264,3 +283,6 @@
+               exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-black/60 backdrop-blur-xl"
+-              onClick={() => setSelectedVm(null)}
++              onClick={() => {
++                setSelectedVm(null);
++                setConnectionPhase('idle');
++              }}
+             />
+@@ -293,2 +315,3 @@
+                       onLaunchDesktop(selectedVm);
+                       setSelectedVm(null);
++                      setConnectionPhase('idle');
+                     }}
+@@ -309,2 +332,3 @@
+                       onLaunchAppLibrary(selectedVm);
+                       setSelectedVm(null);
++                      setConnectionPhase('idle');
+                     }}
+@@ -328,2 +352,3 @@
+                         onLaunchDesktop(selectedVm);
+                         setSelectedVm(null);
++                        setConnectionPhase('idle');
+                       }}
+@@ -341,2 +366,24 @@
+       </AnimatePresence>
++
++      {/* Connection Progress Overlays */}
++      <AnimatePresence>
++        {connectionPhase === 'provisioning' && (
++          <motion.div
++            key="provisioning"
++            initial={{ opacity: 0 }}
++            animate={{ opacity: 1 }}
++            exit={{ opacity: 0 }}
++            className="fixed inset-0 z-[60] bg-[#0A0A0A]"
++          >
++            <ProvisioningScreen />
++          </motion.div>
++        )}
++        {connectionPhase === 'connecting' && (
++          <motion.div
++            key="connecting"
++            initial={{ opacity: 0 }}
++            animate={{ opacity: 1 }}
++            exit={{ opacity: 0 }}
++            className="fixed inset-0 z-[60] bg-[#0A0A0A]"
++          >
++            <ConnectionScreen />
++          </motion.div>
++        )}
++      </AnimatePresence>
+     </div>

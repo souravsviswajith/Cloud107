@@ -1,0 +1,14 @@
+{
+  "id": "chk-1789827558040-1.0.7-to-1.0.8",
+  "currentVersion": "1.0.7",
+  "targetVersion": "1.0.8",
+  "timestamp": 1789827558040,
+  "backupPath": "/app/applet/.c107/checkpoints/chk-1789827558040-1.0.7-to-1.0.8/backup",
+  "stagedPath": "/app/applet/.c107/staged/1.0.8",
+  "status": "committed",
+  "metadata": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.23.2"
+  }
+}

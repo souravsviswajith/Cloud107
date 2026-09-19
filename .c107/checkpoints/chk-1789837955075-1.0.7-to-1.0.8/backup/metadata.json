@@ -1,0 +1,6 @@
+{
+  "name": "Cloud107 Workspace",
+  "description": "Self-hosted, source-first sovereign cloud workspace and control plane.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
