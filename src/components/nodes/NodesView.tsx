@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, RefreshCw, Server } from 'lucide-react';
+import { ChevronLeft, RefreshCw } from 'lucide-react';
 import type { ComputeNode, ComputeProviderCapabilities, ProviderHealthCheck } from '../../types';
 import { capabilityApi } from '../../lib/capabilityApi';
 import { ApiClientError } from '../../lib/apiClient';
 import { useShell } from '../../contexts/ShellContext';
 import { DetailRow, GlassButton, PanelMessage, SectionCard, StateBadge } from '../ui/Glass';
 import { NodeInspector } from './NodeInspector';
-import { formatBytes, formatClockTime, nodeStateTone } from './nodePresentation';
+import { FleetCard } from './FleetCard';
+import { formatClockTime } from './nodePresentation';
 
 const LIST_REFRESH_MS = 15000;
 
@@ -21,7 +22,7 @@ function errorText(error: unknown): string {
 }
 
 /**
- * Node inventory + inspector surface. Projects the Capability API:
+ * Node fleet + inspector surface. Projects the Capability API:
  * provider capabilities, host health, node records. Loading, empty, and
  * error states are explicit — the view never renders placeholder state.
  */
@@ -131,68 +132,43 @@ export function NodesView() {
         </header>
 
         {loading ? (
-          <SectionCard title="Inventory" subtitle="Node records">
+          <SectionCard title="Fleet" subtitle="Node records">
             <PanelMessage
               title="Loading nodes…"
-              message="Reading inventory from the control plane."
+              message="Reading node records from the control plane."
               spinning
             />
           </SectionCard>
         ) : error && nodes.length === 0 ? (
-          <SectionCard title="Inventory" subtitle="Node records">
+          <SectionCard title="Fleet" subtitle="Node records">
             <PanelMessage
               tone="rose"
-              title="Inventory unavailable"
+              title="Fleet unavailable"
               message={error}
               action={<GlassButton onClick={() => void refresh(true)}>Retry</GlassButton>}
             />
           </SectionCard>
         ) : nodes.length === 0 ? (
-          <SectionCard title="Inventory" subtitle="Node records">
+          <SectionCard title="Fleet" subtitle="Node records">
             <PanelMessage
               title="No nodes provisioned"
               message="No node records exist yet. Provision nodes through POST /api/v1/nodes; they will appear here for inspection."
             />
           </SectionCard>
         ) : (
-          <main className="grid grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
-            {/* Inventory list */}
-            <SectionCard title="Inventory" subtitle={`${nodes.length} records`}>
-              <ul className="space-y-2 py-2" role="listbox" aria-label="Nodes">
-                {nodes.map((node) => {
-                  const selected = node.id === selectedId;
-                  return (
-                    <li key={node.id}>
-                      <button
-                        role="option"
-                        aria-selected={selected}
-                        onClick={() => setSelectedId(node.id)}
-                        className={`w-full rounded-xl border p-3 text-left transition-all ${
-                          selected
-                            ? 'border-white/30 bg-white/10 backdrop-blur-xl'
-                            : 'border-white/5 bg-white/[0.02] hover:border-white/15 hover:bg-white/5'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="flex min-w-0 items-center gap-2">
-                            <Server size={14} className="shrink-0 text-neutral-400" />
-                            <span className="truncate text-sm font-medium text-white">
-                              {node.name}
-                            </span>
-                          </span>
-                          <StateBadge tone={nodeStateTone(node.state)} label={node.state} />
-                        </div>
-                        <p className="mt-1 truncate font-mono text-[11px] text-neutral-500">
-                          {node.id}
-                        </p>
-                        <p className="mt-1 text-[11px] text-neutral-400">
-                          {node.vcpuCount} vCPU · {formatBytes(node.memoryBytes)} ·{' '}
-                          {node.primaryIpAddress ?? 'no address reported'}
-                        </p>
-                      </button>
-                    </li>
-                  );
-                })}
+          <main className="grid grid-cols-1 gap-4 lg:grid-cols-[400px_minmax(0,1fr)]">
+            {/* Fleet */}
+            <SectionCard title="Fleet" subtitle={`${nodes.length} records`}>
+              <ul className="space-y-3 py-2" aria-label="Fleet">
+                {nodes.map((node) => (
+                  <li key={node.id}>
+                    <FleetCard
+                      node={node}
+                      selected={node.id === selectedId}
+                      onInspect={setSelectedId}
+                    />
+                  </li>
+                ))}
               </ul>
               <DetailRow label="Last sync">
                 {lastSyncedAt ? formatClockTime(lastSyncedAt) : '—'}

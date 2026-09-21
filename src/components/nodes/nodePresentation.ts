@@ -1,4 +1,4 @@
-import { NodeState, type NodeOperation, type OperationStatus } from '../../types';
+import { NodeState, type ComputeNode, type NodeOperation, type OperationStatus } from '../../types';
 import type { Tone } from '../ui/Glass';
 
 /**
@@ -190,6 +190,13 @@ export function operationDurationLabel(operation: NodeOperation): string {
 /** Terminal ledger states stop polling; pending/running keep refreshing. */
 export function isTerminalOperationStatus(status: OperationStatus): boolean {
   return status === 'completed' || status === 'failed';
+}
+
+/** `platform · arch` from node metadata. Missing values degrade to an em dash. */
+export function nodePlatformLabel(node: ComputeNode): string {
+  const platform = node.metadata.platform;
+  const arch = node.metadata.arch;
+  return platform || arch ? [platform, arch].filter(Boolean).join(' · ') : '—';
 }
 
 export function supportedLabel(value: boolean): string {

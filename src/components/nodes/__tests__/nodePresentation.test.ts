@@ -10,6 +10,7 @@ import {
   formatDurationMs,
   formatPercent,
   isTerminalOperationStatus,
+  nodePlatformLabel,
   nodeStateDescription,
   nodeStateTone,
   operationDurationLabel,
@@ -149,5 +150,25 @@ describe('formatters degrade honestly on bad input', () => {
     expect(isTerminalOperationStatus('failed')).toBe(true);
     expect(isTerminalOperationStatus('pending')).toBe(false);
     expect(isTerminalOperationStatus('running')).toBe(false);
+  });
+});
+
+describe('nodePlatformLabel', () => {
+  const platformNode = (metadata: Record<string, string>) =>
+    ({ metadata }) as Parameters<typeof nodePlatformLabel>[0];
+
+  it('joins platform and arch when both are reported', () => {
+    expect(nodePlatformLabel(platformNode({ platform: 'kvm', arch: 'x86_64' }))).toBe(
+      'kvm · x86_64',
+    );
+  });
+
+  it('renders a lone value without separators', () => {
+    expect(nodePlatformLabel(platformNode({ platform: 'kvm' }))).toBe('kvm');
+    expect(nodePlatformLabel(platformNode({ arch: 'arm64' }))).toBe('arm64');
+  });
+
+  it('degrades to an em dash when nothing is reported', () => {
+    expect(nodePlatformLabel(platformNode({}))).toBe('—');
   });
 });

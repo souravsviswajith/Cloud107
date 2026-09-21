@@ -23,6 +23,7 @@ import {
   canTerminateNode,
   formatBytes,
   formatDateTime,
+  nodePlatformLabel,
   nodeStateDescription,
   nodeStateTone,
   operationStatusLabel,
@@ -246,7 +247,7 @@ export function NodeInspector({
       <SectionCard title="Node Inspector" subtitle="Infrastructure detail">
         <PanelMessage
           title="No node selected"
-          message="Select a node from the inventory to inspect its identity, health, capabilities, resources, and operations."
+          message="Select a node from the fleet to inspect its identity, health, capabilities, resources, and operations."
         />
       </SectionCard>
     );
@@ -286,9 +287,7 @@ export function NodeInspector({
     : [];
   const passingCount = health ? Object.values(health.subsystemChecks).filter(Boolean).length : 0;
   const totalChecks = health ? Object.keys(health.subsystemChecks).length : 0;
-  const platform = node.metadata.platform;
-  const arch = node.metadata.arch;
-  const kind = platform || arch ? [platform, arch].filter(Boolean).join(' · ') : '—';
+  const kind = nodePlatformLabel(node);
   const memoryFraction =
     metrics && metrics.memoryTotalBytes > 0
       ? metrics.memoryUsedBytes / metrics.memoryTotalBytes
