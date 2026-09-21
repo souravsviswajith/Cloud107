@@ -8,7 +8,7 @@ import { ApplicationMode } from './ApplicationMode';
 import { CommandPalette } from './CommandPalette';
 import { NotificationsPanel } from './NotificationsPanel';
 import { AIAssistantPanel } from './AIAssistantPanel';
-import { DiagnosticsDashboard } from './DiagnosticsDashboard';
+import { DiagnosticsView } from './diagnostics/DiagnosticsView';
 import { NodesView } from './nodes/NodesView';
 import { OperationsView } from './operations/OperationsView';
 import { FloatingWorkspaceBar } from './FloatingWorkspaceBar';
@@ -135,7 +135,7 @@ export function WorkspaceShell() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full min-h-screen"
           >
-            <DiagnosticsDashboard />
+            <DiagnosticsView />
           </motion.div>
         )}
         {activeMode === 'nodes' && (
