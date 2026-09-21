@@ -125,6 +125,22 @@ async function performFetch<T>(
   }
 }
 
+/**
+ * Generic authenticated request helpers. Domain API modules (workspaces,
+ * applications, capabilities) build on these so auth, timeout, and retry
+ * behavior stays consistent across every surface.
+ */
+export async function apiGet<T>(endpoint: string): Promise<T> {
+  return fetchWithAuth<T>(endpoint, { method: 'GET' });
+}
+
+export async function apiPost<T>(endpoint: string, body?: unknown): Promise<T> {
+  return fetchWithAuth<T>(endpoint, {
+    method: 'POST',
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
 export const applicationApi = {
   listApplications: async (): Promise<Application[]> => {
     return fetchWithAuth<Application[]>('/applications');

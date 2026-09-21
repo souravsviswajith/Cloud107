@@ -77,7 +77,7 @@ const GPU_OPTIONS = [
 ];
 
 export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProps) {
-  const { addNotification } = useShell();
+  const { addNotification, setActiveMode } = useShell();
   const [vms, setVms] = useState<VmInstance[]>([]);
   const [selectedVm, setSelectedVm] = useState<VmInstance | null>(null);
   const [connectionPhase, setConnectionPhase] = useState<
@@ -281,7 +281,10 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               <button className="text-sm font-medium text-white pb-4 mb-[-17px] border-b-2 border-white">
                 Environments
               </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
+              <button
+                onClick={() => setActiveMode('nodes')}
+                className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors"
+              >
                 Nodes
               </button>
               <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">

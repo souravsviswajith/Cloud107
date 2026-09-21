@@ -29,7 +29,7 @@ export interface VmInstance {
   vCPU: number;
 }
 
-export type WorkspaceMode = 'dashboard' | 'desktop' | 'application' | 'diagnostics';
+export type WorkspaceMode = 'dashboard' | 'desktop' | 'application' | 'diagnostics' | 'nodes';
 
 export interface Application {
   id: string;

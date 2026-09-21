@@ -78,6 +78,16 @@ export function CommandPalette() {
         handleClose();
       },
     },
+    {
+      type: 'action',
+      title: 'Open Node Inspector',
+      icon: LayoutDashboard,
+      color: 'text-sky-400',
+      action: () => {
+        setActiveMode('nodes');
+        handleClose();
+      },
+    },
 
     { type: 'app', title: 'VS Code', icon: Code, color: 'text-blue-500' },
     { type: 'app', title: 'Browser', icon: Globe, color: 'text-emerald-500' },
