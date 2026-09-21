@@ -10,7 +10,6 @@ import {
   ArrowDownRight, 
   Gauge, 
   Clock, 
-  DollarSign, 
   Zap,
   RefreshCw
 } from 'lucide-react';
