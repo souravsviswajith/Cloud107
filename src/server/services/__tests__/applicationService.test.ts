@@ -60,25 +60,25 @@ describe('ApplicationService', () => {
   });
 
   it('should throw if launching on a non-running workspace', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Offline } as any);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Offline } as Partial<Workspace>);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(/Cannot launch application/);
   });
 
   it('should throw if application not found', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as any);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
     mockAppRepo.findById.mockResolvedValue(null);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow('Application not found');
   });
 
   it('should throw if application is disabled', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as any);
-    mockAppRepo.findById.mockResolvedValue({ enabled: false, installed: true } as any);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
+    mockAppRepo.findById.mockResolvedValue({ enabled: false, installed: true } as Partial<Workspace>);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow('Application is currently disabled');
   });
 
   it('should launch an application successfully', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as any);
-    mockAppRepo.findById.mockResolvedValue({ enabled: true, installed: true } as any);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
+    mockAppRepo.findById.mockResolvedValue({ enabled: true, installed: true } as Partial<Workspace>);
     mockAppRepo.findActiveSession.mockResolvedValue(null);
     
     const mockSession = { id: 'session-1' } as ApplicationSession;
