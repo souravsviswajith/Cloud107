@@ -31,20 +31,32 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
   const { timeoutMs = 15000, retries = 2, ...fetchOptions } = options;
   let attempt = 0;
-  
+
   while (attempt <= retries) {
     try {
       return await performFetch<T>(endpoint, fetchOptions, timeoutMs, attempt > 0);
     } catch (error) {
-      if (error instanceof ApiClientError && error.code === 'AUTHENTICATION_FAILED' && attempt < retries) {
+      if (
+        error instanceof ApiClientError &&
+        error.code === 'AUTHENTICATION_FAILED' &&
+        attempt < retries
+      ) {
         attempt++;
         continue;
       }
-      
-      if (attempt >= retries || (error instanceof ApiClientError && error.code !== 'SYSTEM_ERROR' && error.code !== 500 && error.code !== 502 && error.code !== 503 && error.code !== 504)) {
+
+      if (
+        attempt >= retries ||
+        (error instanceof ApiClientError &&
+          error.code !== 'SYSTEM_ERROR' &&
+          error.code !== 500 &&
+          error.code !== 502 &&
+          error.code !== 503 &&
+          error.code !== 504)
+      ) {
         throw error;
       }
-      
+
       attempt++;
       if (attempt <= retries) {
         await sleep(Math.pow(2, attempt) * 500); // Exponential backoff
@@ -54,10 +66,17 @@ async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): P
   throw new Error('Unreachable');
 }
 
-async function performFetch<T>(endpoint: string, options: RequestInit, timeoutMs: number, forceRefresh: boolean): Promise<T> {
+async function performFetch<T>(
+  endpoint: string,
+  options: RequestInit,
+  timeoutMs: number,
+  forceRefresh: boolean,
+): Promise<T> {
   const user = auth.currentUser;
   let token = '';
-  if (!user) { token = 'dev-token'; }
+  if (!user) {
+    token = 'dev-token';
+  }
 
   if (user) {
     token = await user.getIdToken(forceRefresh);
@@ -78,22 +97,25 @@ async function performFetch<T>(endpoint: string, options: RequestInit, timeoutMs
       headers,
       signal: controller.signal,
     });
-    
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("text/html")) {
-      throw new ApiClientError("Received HTML instead of JSON. The dev server may have been in a bad state. Please refresh the page.", 502);
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('text/html')) {
+      throw new ApiClientError(
+        'Received HTML instead of JSON. The dev server may have been in a bad state. Please refresh the page.',
+        502,
+      );
     }
     const data = await response.json();
-    
+
     if (!response.ok || !data.success) {
       const apiError = data.error as ApiErrorResponse | undefined;
       throw new ApiClientError(
         apiError?.message || `API request failed with status ${response.status}`,
         apiError?.code || response.status,
-        apiError?.details
+        apiError?.details,
       );
     }
-    
+
     return data.data as T;
   } catch (error) {
     if (error instanceof ApiClientError) {
@@ -102,7 +124,10 @@ async function performFetch<T>(endpoint: string, options: RequestInit, timeoutMs
     if (error instanceof Error && error.name === 'AbortError') {
       throw new ApiClientError('Request timed out', 'TIMEOUT');
     }
-    throw new ApiClientError(error instanceof Error ? error.message : 'Network error', 'NETWORK_ERROR');
+    throw new ApiClientError(
+      error instanceof Error ? error.message : 'Network error',
+      'NETWORK_ERROR',
+    );
   } finally {
     clearTimeout(id);
   }
@@ -117,7 +142,10 @@ export const applicationApi = {
     return fetchWithAuth<Application>(`/applications/${id}`);
   },
 
-  launchApplication: async (applicationId: string, workspaceId: string): Promise<ApplicationSession> => {
+  launchApplication: async (
+    applicationId: string,
+    workspaceId: string,
+  ): Promise<ApplicationSession> => {
     return fetchWithAuth<ApplicationSession>(`/applications/${applicationId}/launch`, {
       method: 'POST',
       body: JSON.stringify({ workspaceId }),
@@ -125,7 +153,9 @@ export const applicationApi = {
   },
 
   stopApplication: async (sessionId: string): Promise<ApplicationSession> => {
-    return fetchWithAuth<ApplicationSession>(`/applications/sessions/${sessionId}/stop`, { method: 'POST' });
+    return fetchWithAuth<ApplicationSession>(`/applications/sessions/${sessionId}/stop`, {
+      method: 'POST',
+    });
   },
 };
 
@@ -172,4 +202,3 @@ export const workspaceApi = {
     return fetchWithAuth<void>(`/workspaces/${id}`, { method: 'DELETE' });
   },
 };
-

@@ -41,32 +41,39 @@ applicationsRouter.post('/:id/launch', async (req: Request, res: Response, next:
   try {
     const user = await getDbUser(req);
     const body = launchSchema.parse(req.body);
-    
-    logger.info(`Launching application`, { 
-      applicationId: req.params.id, 
+
+    logger.info(`Launching application`, {
+      applicationId: req.params.id,
       workspaceId: body.workspaceId,
-      userId: user.id 
+      userId: user.id,
     });
-    
-    const session = await applicationService.launchApplication(req.params.id, body.workspaceId, user.id);
+
+    const session = await applicationService.launchApplication(
+      req.params.id,
+      body.workspaceId,
+      user.id,
+    );
     res.json(successResponse(session, req));
   } catch (error) {
     next(error);
   }
 });
 
-applicationsRouter.post('/sessions/:id/stop', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = await getDbUser(req);
-    
-    logger.info(`Stopping application session`, { 
-      sessionId: req.params.id, 
-      userId: user.id 
-    });
-    
-    const session = await applicationService.stopApplication(req.params.id, user.id);
-    res.json(successResponse(session, req));
-  } catch (error) {
-    next(error);
-  }
-});
+applicationsRouter.post(
+  '/sessions/:id/stop',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = await getDbUser(req);
+
+      logger.info(`Stopping application session`, {
+        sessionId: req.params.id,
+        userId: user.id,
+      });
+
+      const session = await applicationService.stopApplication(req.params.id, user.id);
+      res.json(successResponse(session, req));
+    } catch (error) {
+      next(error);
+    }
+  },
+);

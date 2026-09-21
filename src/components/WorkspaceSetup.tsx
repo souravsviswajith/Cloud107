@@ -7,7 +7,9 @@ export function WorkspaceSetup() {
     <div className="mb-12">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-white tracking-tight">Workspace Setup</h2>
-        <p className="text-sm text-neutral-400 mt-0.5">Choose how this environment is attached to infrastructure.</p>
+        <p className="text-sm text-neutral-400 mt-0.5">
+          Choose how this environment is attached to infrastructure.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
@@ -22,12 +24,16 @@ export function WorkspaceSetup() {
             </div>
             <div>
               <h3 className="font-semibold text-white text-base">Remote / Self-Managed Node</h3>
-              <p className="text-xs text-blue-400 font-medium mt-0.5">Use infrastructure you control.</p>
+              <p className="text-xs text-blue-400 font-medium mt-0.5">
+                Use infrastructure you control.
+              </p>
             </div>
           </div>
-          
+
           <p className="text-neutral-400 text-sm leading-relaxed flex-1 mb-6">
-            Attach a remote node or provider-managed resource while retaining Cloud107 as the control surface. Configure the provider, node, network, and storage according to your policy.
+            Attach a remote node or provider-managed resource while retaining Cloud107 as the
+            control surface. Configure the provider, node, network, and storage according to your
+            policy.
           </p>
 
           <div className="pt-4 border-t border-white/5 flex items-center justify-between">
@@ -48,12 +54,15 @@ export function WorkspaceSetup() {
             </div>
             <div>
               <h3 className="font-semibold text-white text-base">Integrated Environment</h3>
-              <p className="text-xs text-emerald-400 font-medium mt-0.5">Preconfigured execution environment.</p>
+              <p className="text-xs text-emerald-400 font-medium mt-0.5">
+                Preconfigured execution environment.
+              </p>
             </div>
           </div>
-          
+
           <p className="text-neutral-400 text-sm leading-relaxed flex-1 mb-6">
-            Provision a reproducible environment with its required runtime, applications, storage, and capabilities. Environment state remains visible to the control plane.
+            Provision a reproducible environment with its required runtime, applications, storage,
+            and capabilities. Environment state remains visible to the control plane.
           </p>
 
           <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">

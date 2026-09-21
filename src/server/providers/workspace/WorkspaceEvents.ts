@@ -5,7 +5,7 @@ import { WorkspaceMetrics } from './WorkspaceProvider';
 export enum WorkspaceEventTypes {
   STATE_CHANGED = 'state_changed',
   METRICS_UPDATED = 'metrics_updated',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 export interface WorkspaceStateChangedEvent {

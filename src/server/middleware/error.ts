@@ -15,6 +15,6 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
 
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
-  
+
   res.status(status).json(errorResponse(message, ErrorCode.SYSTEM_ERROR, req));
 };

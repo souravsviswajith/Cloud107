@@ -57,6 +57,7 @@ Cloud107 is built for organizations that require:
 ## Key Features
 
 ### Frontend
+
 - **React 19** — Latest React with hooks and server components support
 - **Vite** — Lightning-fast build tool with HMR (Hot Module Replacement)
 - **Tailwind CSS** — Utility-first CSS framework for rapid UI development
@@ -64,6 +65,7 @@ Cloud107 is built for organizations that require:
 - **Responsive Design** — Works perfectly on desktop, tablet, and mobile
 
 ### Backend
+
 - **Express.js** — Lightweight, flexible Node.js framework
 - **Modular Architecture** — Clean separation of concerns for easy maintenance
 - **RESTful API** — Standard HTTP API for all operations
@@ -71,12 +73,14 @@ Cloud107 is built for organizations that require:
 - **Middleware Security** — Helmet.js, CORS, compression, and rate limiting
 
 ### Database
+
 - **PostgreSQL 15+** — Industry-standard relational database
 - **Drizzle ORM** — Type-safe SQL query builder
 - **Migrations** — Version-controlled schema changes
 - **Session Persistence** — Local relational storage for sessions and state
 
 ### Authentication & Security
+
 - **WebAuthn/FIDO2** — Hardware security key and biometric authentication
 - **Sovereign Local Credentials** — Keep authentication under your control
 - **Cryptographic Signing** — All updates are cryptographically verified
@@ -84,6 +88,7 @@ Cloud107 is built for organizations that require:
 - **CORS Protection** — Cross-Origin Resource Sharing configuration
 
 ### CLI Tools
+
 - **`c107` Command** — Powerful command-line interface for automation
 - **Source-First Updates** — `c107 update` with cryptographic verification
 - **Configuration Management** — Configure via CLI, environment variables, or files
@@ -94,27 +99,27 @@ Cloud107 is built for organizations that require:
 
 ### Minimum Requirements
 
-| Component | Requirement |
-|-----------|-------------|
-| **OS** | Linux (Ubuntu 20.04+, CentOS 8+), macOS 12+, or Windows 11 with WSL2 |
-| **CPU** | 2 cores (4+ recommended) |
-| **Memory** | 4 GB RAM (8+ GB recommended) |
-| **Disk** | 20 GB free space (SSD recommended) |
-| **Node.js** | 22.x LTS or later |
-| **npm** | 10.x or later |
-| **PostgreSQL** | 15 or later |
+| Component      | Requirement                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| **OS**         | Linux (Ubuntu 20.04+, CentOS 8+), macOS 12+, or Windows 11 with WSL2 |
+| **CPU**        | 2 cores (4+ recommended)                                             |
+| **Memory**     | 4 GB RAM (8+ GB recommended)                                         |
+| **Disk**       | 20 GB free space (SSD recommended)                                   |
+| **Node.js**    | 22.x LTS or later                                                    |
+| **npm**        | 10.x or later                                                        |
+| **PostgreSQL** | 15 or later                                                          |
 
 ### Recommended for Production
 
-| Component | Recommendation |
-|-----------|--------------|
-| **OS** | Ubuntu 22.04 LTS or CentOS 8 Stream |
-| **CPU** | 8+ cores |
-| **Memory** | 16+ GB RAM |
-| **Disk** | 100+ GB SSD with NVMe |
-| **Network** | Gigabit or faster |
-| **PostgreSQL** | 15+ with replication backup |
-| **SSL/TLS** | Modern TLS 1.3 |
+| Component      | Recommendation                      |
+| -------------- | ----------------------------------- |
+| **OS**         | Ubuntu 22.04 LTS or CentOS 8 Stream |
+| **CPU**        | 8+ cores                            |
+| **Memory**     | 16+ GB RAM                          |
+| **Disk**       | 100+ GB SSD with NVMe               |
+| **Network**    | Gigabit or faster                   |
+| **PostgreSQL** | 15+ with replication backup         |
+| **SSL/TLS**    | Modern TLS 1.3                      |
 
 ---
 
@@ -125,14 +130,16 @@ Before installing Cloud107, ensure you have:
 ### 1. Node.js & npm
 
 **Check if installed:**
+
 ```bash
 node --version  # Should be 22.x or later
 npm --version   # Should be 10.x or later
 ```
 
 **Install Node.js:**
+
 - **macOS:** `brew install node@22`
-- **Ubuntu/Debian:** 
+- **Ubuntu/Debian:**
   ```bash
   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
   sudo apt-get install -y nodejs
@@ -147,11 +154,13 @@ npm --version   # Should be 10.x or later
 ### 2. PostgreSQL
 
 **Check if installed:**
+
 ```bash
 psql --version  # Should be PostgreSQL 15+
 ```
 
 **Install PostgreSQL:**
+
 - **macOS:** `brew install postgresql@15`
 - **Ubuntu/Debian:**
   ```bash
@@ -168,6 +177,7 @@ psql --version  # Should be PostgreSQL 15+
 - **Docker:** `docker run -d -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:15`
 
 **Start PostgreSQL (if not running):**
+
 ```bash
 # macOS
 brew services start postgresql@15
@@ -193,6 +203,7 @@ git --version  # Check if installed
 ### 4. Text Editor or IDE
 
 Recommended options:
+
 - **VS Code** (free) — https://code.visualstudio.com
 - **WebStorm** (paid) — https://www.jetbrains.com/webstorm/
 - **Vim/Neovim** — For terminal lovers
@@ -335,6 +346,7 @@ npm run dev
 ```
 
 **Dev server includes:**
+
 - ✅ Hot Module Replacement (HMR)
 - ✅ Automatic browser refresh
 - ✅ Detailed error messages
@@ -377,6 +389,7 @@ WantedBy=multi-user.target
 ```
 
 Then run:
+
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable cloud107
@@ -428,25 +441,25 @@ pm2 save
 
 ### Required Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/cloud107` |
-| `JWT_SECRET` | Secret for JWT tokens (32+ chars) | `your_random_secret_key_here` |
-| `SESSION_SECRET` | Secret for sessions (32+ chars) | `another_random_secret_key_here` |
+| Variable         | Description                       | Example                                          |
+| ---------------- | --------------------------------- | ------------------------------------------------ |
+| `DATABASE_URL`   | PostgreSQL connection string      | `postgresql://user:pass@localhost:5432/cloud107` |
+| `JWT_SECRET`     | Secret for JWT tokens (32+ chars) | `your_random_secret_key_here`                    |
+| `SESSION_SECRET` | Secret for sessions (32+ chars)   | `another_random_secret_key_here`                 |
 
 ### Optional Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment mode | `development` |
-| `PORT` | Server port | `3000` |
-| `LOG_LEVEL` | Logging level | `info` |
-| `WEBAUTHN_RP_ID` | WebAuthn RP ID | `localhost` |
-| `WEBAUTHN_RP_NAME` | WebAuthn RP Name | `Cloud107` |
-| `WEBAUTHN_ORIGIN` | WebAuthn origin URL | `http://localhost:3000` |
-| `CORS_ORIGIN` | CORS origin | `http://localhost:3000` |
-| `RATE_LIMIT_WINDOW` | Rate limit window (ms) | `900000` |
-| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100` |
+| Variable                  | Description             | Default                 |
+| ------------------------- | ----------------------- | ----------------------- |
+| `NODE_ENV`                | Environment mode        | `development`           |
+| `PORT`                    | Server port             | `3000`                  |
+| `LOG_LEVEL`               | Logging level           | `info`                  |
+| `WEBAUTHN_RP_ID`          | WebAuthn RP ID          | `localhost`             |
+| `WEBAUTHN_RP_NAME`        | WebAuthn RP Name        | `Cloud107`              |
+| `WEBAUTHN_ORIGIN`         | WebAuthn origin URL     | `http://localhost:3000` |
+| `CORS_ORIGIN`             | CORS origin             | `http://localhost:3000` |
+| `RATE_LIMIT_WINDOW`       | Rate limit window (ms)  | `900000`                |
+| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window | `100`                   |
 
 ### Generating Secure Secrets
 
@@ -530,6 +543,7 @@ psql postgresql://cloud107:password@localhost:5432/cloud107
 ### Local Operator Credentials
 
 1. **Set Operator Password:**
+
    ```bash
    # During initial setup
    npm run setup
@@ -572,17 +586,17 @@ npm run c107 -- health
 
 ### Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `c107 init` | Initialize Cloud107 |
-| `c107 status` | Show application status |
-| `c107 update` | Update Cloud107 with verification |
-| `c107 config get KEY` | Get config value |
-| `c107 config set KEY=VALUE` | Set config value |
-| `c107 logs` | View application logs |
-| `c107 health` | Health check |
-| `c107 backup` | Backup database |
-| `c107 restore` | Restore from backup |
+| Command                     | Description                       |
+| --------------------------- | --------------------------------- |
+| `c107 init`                 | Initialize Cloud107               |
+| `c107 status`               | Show application status           |
+| `c107 update`               | Update Cloud107 with verification |
+| `c107 config get KEY`       | Get config value                  |
+| `c107 config set KEY=VALUE` | Set config value                  |
+| `c107 logs`                 | View application logs             |
+| `c107 health`               | Health check                      |
+| `c107 backup`               | Backup database                   |
+| `c107 restore`              | Restore from backup               |
 
 ---
 
@@ -639,9 +653,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cloud107"]
+      test: ['CMD-SHELL', 'pg_isready -U cloud107']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -649,7 +663,7 @@ services:
   cloud107:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       DATABASE_URL: postgresql://cloud107:${DB_PASSWORD}@postgres:5432/cloud107
       NODE_ENV: production
@@ -857,17 +871,17 @@ WEBAUTHN_ORIGIN=http://localhost:3000
 
 ### Technology Stack
 
-| Layer | Technology | Version |
-|-------|-----------|---------|
-| Frontend | React | 19 |
-| Build | Vite | 6.2+ |
-| Styling | Tailwind CSS | 4.1+ |
-| Backend | Express.js | 4.21+ |
-| Runtime | Node.js | 22+ |
-| Database | PostgreSQL | 15+ |
-| ORM | Drizzle | 0.45+ |
-| Auth | WebAuthn | Modern Browsers |
-| Runtime | Bun Lock | - |
+| Layer    | Technology   | Version         |
+| -------- | ------------ | --------------- |
+| Frontend | React        | 19              |
+| Build    | Vite         | 6.2+            |
+| Styling  | Tailwind CSS | 4.1+            |
+| Backend  | Express.js   | 4.21+           |
+| Runtime  | Node.js      | 22+             |
+| Database | PostgreSQL   | 15+             |
+| ORM      | Drizzle      | 0.45+           |
+| Auth     | WebAuthn     | Modern Browsers |
+| Runtime  | Bun Lock     | -               |
 
 ### Directory Structure
 
@@ -1002,6 +1016,7 @@ git push origin feature/your-feature-name
 ### 5. Create Pull Request
 
 Open a PR on GitHub with:
+
 - Clear description of changes
 - Related issues
 - Screenshots if UI changes
@@ -1098,6 +1113,7 @@ Cloud107 is built with modern technologies and best practices:
 ## Status & Roadmap
 
 ### Current Status
+
 - ✅ Core infrastructure management
 - ✅ WebAuthn authentication
 - ✅ CLI tools
@@ -1107,6 +1123,7 @@ Cloud107 is built with modern technologies and best practices:
 - 🚧 Kubernetes integration
 
 ### Upcoming
+
 - Enhanced dashboard
 - Mobile application
 - GraphQL API
@@ -1117,7 +1134,7 @@ Cloud107 is built with modern technologies and best practices:
 
 **Last Updated:** September 19, 2026  
 **Version:** 1.0.0  
-**Status:** Stable / Production Ready  
+**Status:** Stable / Production Ready
 
 ---
 

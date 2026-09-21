@@ -2,7 +2,7 @@
 
 /**
  * Cloud107 Command Line Interface
- * 
+ *
  * Sovereign Cloud Workspace Operator & Update Management Tool
  */
 
@@ -121,7 +121,13 @@ async function main() {
       console.log('Update Execution Log:');
       for (const step of result.steps) {
         const symbol =
-          step.status === 'success' ? '✓' : step.status === 'failed' ? '✗' : step.status === 'skipped' ? '○' : '→';
+          step.status === 'success'
+            ? '✓'
+            : step.status === 'failed'
+              ? '✗'
+              : step.status === 'skipped'
+                ? '○'
+                : '→';
         console.log(`  ${symbol} [${step.step.padEnd(20)}] ${step.message}`);
       }
 
@@ -131,7 +137,9 @@ async function main() {
       } else {
         console.error(`✗ Update failed: ${result.error}`);
         if (result.rolledBack) {
-          console.log(`✓ Automatic rollback succeeded. System returned to v${result.previousVersion}`);
+          console.log(
+            `✓ Automatic rollback succeeded. System returned to v${result.previousVersion}`,
+          );
         } else {
           console.error(`! System could not be automatically rolled back.`);
         }

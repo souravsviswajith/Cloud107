@@ -76,7 +76,7 @@ export function loadCheckpoint(id: string): Checkpoint | null {
  */
 export function updateCheckpointStatus(
   checkpoint: Checkpoint,
-  newStatus: Checkpoint['status']
+  newStatus: Checkpoint['status'],
 ): Checkpoint {
   checkpoint.status = newStatus;
   const checkpointFile = path.resolve(CHECKPOINTS_DIR, checkpoint.id, 'checkpoint.json');

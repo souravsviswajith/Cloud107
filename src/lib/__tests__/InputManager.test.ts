@@ -18,7 +18,7 @@ describe('InputManager', () => {
 
   it('should clear inputs, reset modifiers, and notify backend on focus loss', () => {
     const emitSpy = vi.spyOn(eventBus, 'emit');
-    
+
     inputManager.simulateKeyDown('Shift');
     inputManager.simulateMouseDown(0);
     // @ts-expect-error test
@@ -32,13 +32,13 @@ describe('InputManager', () => {
     // @ts-expect-error test
     expect(inputManager.modifiers).toEqual({ ctrl: false, shift: false, alt: false, meta: false });
     expect(inputManager.getPendingQueueSize()).toBe(0);
-    
+
     expect(emitSpy).toHaveBeenCalledWith('input-reset', { reason: 'focus-loss' });
   });
 
   it('should resume capture and restore pointer lock on focus regain', () => {
     const emitSpy = vi.spyOn(eventBus, 'emit');
-    
+
     inputManager.setPointerLocked(true);
     inputManager.handleFocusLoss();
     expect(inputManager.isInputCapturing()).toBe(false);

@@ -29,7 +29,7 @@ export function ConnectionScreen() {
             <span className="text-xs text-neutral-400">Latency</span>
             <span className="text-sm font-medium text-neutral-200">21 ms</span>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export function ConnectionScreen() {
             <span className="text-xs text-neutral-400">Protocol</span>
             <span className="text-sm font-medium text-neutral-200">WebRTC</span>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

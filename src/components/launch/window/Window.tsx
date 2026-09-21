@@ -49,7 +49,7 @@ export function Window({
         isActive ? 'border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-white/5'
       }`}
     >
-      <div 
+      <div
         className={`h-12 border-b flex items-center justify-between px-4 select-none cursor-move ${
           isActive ? 'bg-neutral-800/90 border-white/10' : 'bg-neutral-800/50 border-white/5'
         }`}
@@ -60,29 +60,29 @@ export function Window({
       >
         <div className="flex items-center gap-2">
           {icon}
-          <span className={`text-sm font-medium ${isActive ? 'text-neutral-200' : 'text-neutral-400'}`}>
+          <span
+            className={`text-sm font-medium ${isActive ? 'text-neutral-200' : 'text-neutral-400'}`}
+          >
             {title}
           </span>
         </div>
         <div className="flex items-center gap-4 text-neutral-500">
           <Minus size={16} className="hover:text-neutral-300 transition-colors cursor-pointer" />
           <Square size={14} className="hover:text-neutral-300 transition-colors cursor-pointer" />
-          <X 
-            size={16} 
-            className="hover:text-red-400 transition-colors cursor-pointer" 
+          <X
+            size={16}
+            className="hover:text-red-400 transition-colors cursor-pointer"
             onPointerDown={(e) => {
               e.stopPropagation();
             }}
             onClick={(e) => {
               e.stopPropagation();
               onClose();
-            }} 
+            }}
           />
         </div>
       </div>
-      <div className="flex-1 overflow-hidden relative">
-        {children}
-      </div>
+      <div className="flex-1 overflow-hidden relative">{children}</div>
     </motion.div>
   );
 }

@@ -5,7 +5,7 @@ import { ArtifactEntry, UpdateManifest } from './types';
 
 /**
  * Cloud107 Sovereign Root Signing Authority Keys (Ed25519)
- * 
+ *
  * Cryptographically trusted public keys embedded in the core distribution.
  */
 export const CLOUD107_TRUSTED_KEYS: Record<string, string> = {
@@ -57,7 +57,7 @@ export function computeFileSha256(filePath: string): string {
  */
 export function verifyManifestSignature(
   manifest: UpdateManifest,
-  trustedKeys: Record<string, string> = CLOUD107_TRUSTED_KEYS
+  trustedKeys: Record<string, string> = CLOUD107_TRUSTED_KEYS,
 ): { valid: boolean; keyId?: string; error?: string } {
   try {
     const keyId = manifest.signingKeyId;
@@ -77,13 +77,15 @@ export function verifyManifestSignature(
       null, // Ed25519 does not require a hash pre-algorithm
       Buffer.from(payload, 'utf8'),
       publicKeyPem,
-      signatureBuffer
+      signatureBuffer,
     );
 
     return {
       valid: isVerified,
       keyId,
-      error: isVerified ? undefined : 'Ed25519 digital signature verification failed: signature does not match manifest payload.',
+      error: isVerified
+        ? undefined
+        : 'Ed25519 digital signature verification failed: signature does not match manifest payload.',
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
@@ -97,7 +99,11 @@ export function verifyManifestSignature(
 /**
  * Generates an Ed25519 keypair for signing and verification.
  */
-export function generateEd25519KeyPair(): { publicKeyPem: string; privateKeyPem: string; keyId: string } {
+export function generateEd25519KeyPair(): {
+  publicKeyPem: string;
+  privateKeyPem: string;
+  keyId: string;
+} {
   const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519', {
     publicKeyEncoding: { type: 'spki', format: 'pem' },
     privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
@@ -111,7 +117,7 @@ export function generateEd25519KeyPair(): { publicKeyPem: string; privateKeyPem:
  */
 export function signManifest(
   manifestWithoutSignature: Omit<UpdateManifest, 'signature'>,
-  privateKeyPem: string
+  privateKeyPem: string,
 ): string {
   const payload = getCanonicalManifestPayload(manifestWithoutSignature);
   const signature = crypto.sign(null, Buffer.from(payload, 'utf8'), privateKeyPem);
@@ -123,7 +129,7 @@ export function signManifest(
  */
 export function verifyArtifactHashes(
   artifacts: ArtifactEntry[],
-  baseDirectory: string
+  baseDirectory: string,
 ): { valid: boolean; mismatchedFiles: string[]; missingFiles: string[] } {
   const mismatchedFiles: string[] = [];
   const missingFiles: string[] = [];
@@ -138,7 +144,7 @@ export function verifyArtifactHashes(
     const actualHash = computeFileSha256(fullPath);
     if (actualHash.toLowerCase() !== artifact.sha256.toLowerCase()) {
       mismatchedFiles.push(
-        `${artifact.path} (expected sha256: ${artifact.sha256}, actual: ${actualHash})`
+        `${artifact.path} (expected sha256: ${artifact.sha256}, actual: ${actualHash})`,
       );
     }
   }

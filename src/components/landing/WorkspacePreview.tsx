@@ -1,6 +1,18 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Folder, Globe, FileText, Terminal, Settings, Wifi, Battery, Volume2, X, Minus, Square } from 'lucide-react';
+import {
+  Folder,
+  Globe,
+  FileText,
+  Terminal,
+  Settings,
+  Wifi,
+  Battery,
+  Volume2,
+  X,
+  Minus,
+  Square,
+} from 'lucide-react';
 import { Container } from '../common/Container';
 
 export function WorkspacePreview() {
@@ -10,7 +22,7 @@ export function WorkspacePreview() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.7 }}
           className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 bg-[#111111] shadow-[0_0_100px_rgba(59,130,246,0.15)] max-w-6xl mx-auto ring-1 ring-white/5"
         >
@@ -34,7 +46,6 @@ export function WorkspacePreview() {
 
           {/* Desktop Area */}
           <div className="relative h-[400px] md:h-[600px] bg-gradient-to-br from-neutral-900 to-[#050505] overflow-hidden p-6">
-            
             {/* Desktop Icons */}
             <div className="absolute top-6 right-6 flex flex-col gap-6">
               {[
@@ -84,7 +95,9 @@ export function WorkspacePreview() {
             <div className="absolute bottom-24 right-6 w-64 bg-neutral-900/90 backdrop-blur-md rounded-xl border border-white/10 p-4 shadow-xl hidden sm:block">
               <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/5">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-semibold text-white tracking-wider uppercase">Live Telemetry</span>
+                <span className="text-xs font-semibold text-white tracking-wider uppercase">
+                  Live Telemetry
+                </span>
               </div>
               <div className="space-y-2.5">
                 <div className="flex justify-between items-center text-xs">
@@ -94,7 +107,7 @@ export function WorkspacePreview() {
                 <div className="w-full h-1 bg-neutral-800 rounded-full overflow-hidden mb-1">
                   <div className="h-full bg-emerald-500 w-[22%]" />
                 </div>
-                
+
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-neutral-400">Memory (32 GB)</span>
                   <span className="text-blue-400 font-mono font-medium">12.4 GB</span>
@@ -130,7 +143,9 @@ export function WorkspacePreview() {
             {/* Runtime State Panel (Top Right overlay) */}
             <div className="absolute top-24 right-6 w-64 bg-neutral-900/90 backdrop-blur-md rounded-xl border border-white/10 p-4 shadow-xl hidden md:block">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
-                <span className="text-xs font-semibold text-white tracking-wider uppercase">Runtime State</span>
+                <span className="text-xs font-semibold text-white tracking-wider uppercase">
+                  Runtime State
+                </span>
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
               <div className="space-y-3">
@@ -145,11 +160,26 @@ export function WorkspacePreview() {
                   </div>
                 </div>
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between"><span className="text-neutral-500">CPU</span><span className="text-neutral-300 font-mono">22%</span></div>
-                  <div className="flex justify-between"><span className="text-neutral-500">Memory</span><span className="text-neutral-300 font-mono">12.4 / 32 GB</span></div>
-                  <div className="flex justify-between"><span className="text-neutral-500">GPU</span><span className="text-neutral-300 font-mono">34%</span></div>
-                  <div className="flex justify-between"><span className="text-neutral-500">Network</span><span className="text-neutral-300 font-mono">18.6 Mbps</span></div>
-                  <div className="flex justify-between pt-2 border-t border-white/5"><span className="text-neutral-500">Health</span><span className="text-emerald-400 font-mono">HEALTHY</span></div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">CPU</span>
+                    <span className="text-neutral-300 font-mono">22%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Memory</span>
+                    <span className="text-neutral-300 font-mono">12.4 / 32 GB</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">GPU</span>
+                    <span className="text-neutral-300 font-mono">34%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Network</span>
+                    <span className="text-neutral-300 font-mono">18.6 Mbps</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-white/5">
+                    <span className="text-neutral-500">Health</span>
+                    <span className="text-emerald-400 font-mono">HEALTHY</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,7 +208,6 @@ export function WorkspacePreview() {
                 </div>
               ))}
             </div>
-            
           </div>
         </motion.div>
       </Container>

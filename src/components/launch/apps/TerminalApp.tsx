@@ -7,8 +7,19 @@ interface TerminalLine {
 }
 
 const COMMANDS = [
-  'help', 'clear', 'pwd', 'ls', 'cd', 'echo', 'date', 
-  'whoami', 'hostname', 'uname', 'history', 'neofetch', 'cat'
+  'help',
+  'clear',
+  'pwd',
+  'ls',
+  'cd',
+  'echo',
+  'date',
+  'whoami',
+  'hostname',
+  'uname',
+  'history',
+  'neofetch',
+  'cat',
 ];
 
 const WELCOME_TEXT = `Cloud 107 Terminal
@@ -82,7 +93,7 @@ export function TerminalApp() {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [cwd, setCwd] = useState('/home/demo');
-  
+
   const endOfTerminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -97,27 +108,27 @@ export function TerminalApp() {
   useEffect(() => {
     const focusInput = () => inputRef.current?.focus();
     focusInput();
-    
+
     // Startup animation
     let i = 0;
     const textLines = WELCOME_TEXT.split('\n');
     const bootInterval = setInterval(() => {
       if (i < textLines.length) {
-        setLines(prev => [...prev, { text: textLines[i] }]);
+        setLines((prev) => [...prev, { text: textLines[i] }]);
         i++;
       } else {
         clearInterval(bootInterval);
         setIsBooting(false);
       }
     }, 50);
-    
+
     return () => clearInterval(bootInterval);
   }, []);
 
   const handleCommand = (cmd: string) => {
     const trimmedCmd = cmd.trim();
     if (!trimmedCmd) {
-      setLines(prev => [...prev, { text: `demo@cloud:${cwd}$ `, isPrompt: true }]);
+      setLines((prev) => [...prev, { text: `demo@cloud:${cwd}$ `, isPrompt: true }]);
       return;
     }
 
@@ -137,7 +148,7 @@ export function TerminalApp() {
         break;
       case 'clear':
         setLines([]);
-        return; 
+        return;
       case 'pwd':
         response = cwd;
         break;
@@ -191,7 +202,7 @@ export function TerminalApp() {
         response = `${baseCmd}: command not found`;
     }
 
-    setLines(prev => [...prev, promptLine, ...(response ? [{ text: response }] : [])]);
+    setLines((prev) => [...prev, promptLine, ...(response ? [{ text: response }] : [])]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -217,7 +228,7 @@ export function TerminalApp() {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      const match = COMMANDS.find(c => c.startsWith(input));
+      const match = COMMANDS.find((c) => c.startsWith(input));
       if (match) {
         setInput(match);
       } else if (input === 'cat w') {
@@ -228,14 +239,14 @@ export function TerminalApp() {
       setLines([]);
     } else if (e.key === 'c' && e.ctrlKey) {
       e.preventDefault();
-      setLines(prev => [...prev, { text: `demo@cloud:${cwd}$ ${input}^C`, isPrompt: true }]);
+      setLines((prev) => [...prev, { text: `demo@cloud:${cwd}$ ${input}^C`, isPrompt: true }]);
       setInput('');
       setHistoryIndex(-1);
     }
   };
 
   return (
-    <div 
+    <div
       className="h-full bg-[#1e1e1e] text-[#cccccc] font-mono text-sm p-2 overflow-y-auto"
       onClick={() => inputRef.current?.focus()}
     >
@@ -245,7 +256,9 @@ export function TerminalApp() {
             <span>
               <span className="text-emerald-400 font-bold">demo@cloud</span>
               <span className="text-white">:</span>
-              <span className="text-blue-400 font-bold">{line.text.toString().split('$ ')[0].split(':')[1]}</span>
+              <span className="text-blue-400 font-bold">
+                {line.text.toString().split('$ ')[0].split(':')[1]}
+              </span>
               <span className="text-white">$ </span>
               {line.text.toString().split('$ ')[1]}
             </span>
@@ -275,9 +288,9 @@ export function TerminalApp() {
             />
             <div className="absolute inset-0 pointer-events-none text-[#cccccc] whitespace-pre flex">
               <span>{input}</span>
-              <motion.span 
-                animate={{ opacity: [1, 0, 1] }} 
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
                 className="inline-block w-2.5 h-4 bg-[#cccccc] ml-[1px]"
               />
             </div>

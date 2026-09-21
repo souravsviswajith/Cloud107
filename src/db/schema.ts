@@ -13,7 +13,9 @@ export const workspaces = pgTable('workspaces', {
   id: text('id').primaryKey(), // using uuid for workspace id
   name: text('name').notNull(),
   state: text('state').notNull().$type<WorkspaceState>(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -43,9 +45,15 @@ export const applications = pgTable('applications', {
 
 export const applicationSessions = pgTable('application_sessions', {
   id: text('id').primaryKey(),
-  applicationId: text('application_id').notNull().references(() => applications.id),
-  workspaceId: text('workspace_id').notNull().references(() => workspaces.id),
-  userId: integer('user_id').notNull().references(() => users.id),
+  applicationId: text('application_id')
+    .notNull()
+    .references(() => applications.id),
+  workspaceId: text('workspace_id')
+    .notNull()
+    .references(() => workspaces.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   status: text('status').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

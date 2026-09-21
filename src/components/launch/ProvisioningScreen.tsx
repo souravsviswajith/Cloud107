@@ -30,8 +30,10 @@ export function ProvisioningScreen() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center font-sans">
       <div className="max-w-md w-full px-6">
-        <h2 className="text-2xl font-semibold text-white mb-8 text-center tracking-tight">Provisioning Workspace</h2>
-        
+        <h2 className="text-2xl font-semibold text-white mb-8 text-center tracking-tight">
+          Provisioning Workspace
+        </h2>
+
         <div className="space-y-4">
           {steps.map((step, index) => {
             const isCompleted = index < activeStep;
@@ -46,7 +48,9 @@ export function ProvisioningScreen() {
                 transition={{ duration: 0.3 }}
                 className={`flex items-center gap-4 p-4 rounded-xl border ${isActive ? 'bg-white/5 border-white/10' : 'border-transparent'}`}
               >
-                <div className={`w-6 h-6 flex items-center justify-center rounded-full ${isCompleted ? 'bg-emerald-500/20 text-emerald-400' : isActive ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-neutral-500'}`}>
+                <div
+                  className={`w-6 h-6 flex items-center justify-center rounded-full ${isCompleted ? 'bg-emerald-500/20 text-emerald-400' : isActive ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-neutral-500'}`}
+                >
                   {isCompleted ? (
                     <Check size={14} strokeWidth={3} />
                   ) : isActive ? (
@@ -55,7 +59,9 @@ export function ProvisioningScreen() {
                     <div className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
                   )}
                 </div>
-                <span className={`text-sm font-medium ${isCompleted ? 'text-neutral-300' : isActive ? 'text-white' : 'text-neutral-500'}`}>
+                <span
+                  className={`text-sm font-medium ${isCompleted ? 'text-neutral-300' : isActive ? 'text-white' : 'text-neutral-500'}`}
+                >
                   {step}
                 </span>
               </motion.div>

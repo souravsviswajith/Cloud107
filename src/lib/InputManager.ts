@@ -9,7 +9,7 @@ export class EventBus {
 
   emit(event: string, data?: unknown) {
     if (this.listeners[event]) {
-      this.listeners[event].forEach(cb => cb(data));
+      this.listeners[event].forEach((cb) => cb(data));
     }
   }
 }
@@ -57,29 +57,31 @@ export class InputManager {
 
   public handleFocusLoss() {
     this.isCapturing = false;
-    
+
     // Release all pressed keyboard keys
     this.pressedKeys.clear();
-    
+
     // Release all pressed mouse buttons
     this.pressedMouseButtons.clear();
-    
+
     // Reset modifier key state
     this.modifiers = { ctrl: false, shift: false, alt: false, meta: false };
-    
+
     // Clear pending input queues
     this.inputQueue = [];
-    
+
     // Notify the backend if an input-reset message exists
     this.eventBus.emit('input-reset', { reason: 'focus-loss' });
-    console.log('[InputManager] Focus lost: Released inputs, reset modifiers, cleared queues, notified backend.');
+    console.log(
+      '[InputManager] Focus lost: Released inputs, reset modifiers, cleared queues, notified backend.',
+    );
   }
 
   public handleFocusRegain() {
     // Resume input capture
     this.isCapturing = true;
     console.log('[InputManager] Focus regained: Resumed input capture.');
-    
+
     // Restore pointer lock if used
     if (this.pointerLocked) {
       console.log('[InputManager] Restoring pointer lock...');

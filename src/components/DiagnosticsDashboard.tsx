@@ -8,11 +8,10 @@ export function DiagnosticsDashboard() {
   const { setActiveMode } = useShell();
   const [activeTab, setActiveTab] = useState<'health' | 'metrics' | 'logs' | 'benchmark'>('health');
 
-  
   const [healthData, setHealthData] = useState<unknown>(null);
   const [metricsData, setMetricsData] = useState<unknown>(null);
   const [logs, setLogs] = useState<string[]>([]);
-  
+
   useEffect(() => {
     // Mock fetching diagnostics
     const interval = setInterval(() => {
@@ -23,10 +22,10 @@ export function DiagnosticsDashboard() {
           { name: 'Workspace Controller', status: 'healthy', ping: '12ms' },
           { name: 'Stream Broker', status: 'healthy', ping: '8ms' },
           { name: 'Agent Gateway', status: 'degraded', ping: '145ms' },
-          { name: 'State Store', status: 'healthy', ping: '2ms' }
-        ]
+          { name: 'State Store', status: 'healthy', ping: '2ms' },
+        ],
       });
-      
+
       setMetricsData({
         activeSessions: 42,
         cpuUsage: '45%',
@@ -38,15 +37,17 @@ export function DiagnosticsDashboard() {
         avgFrameRate: '59.8 FPS',
         avgBitrate: '8.4 Mbps',
         avgLatency: '14 ms',
-        droppedFrames: '0.02%'
+        droppedFrames: '0.02%',
       });
-      
-      setLogs(prev => [
-        `[${new Date().toISOString()}] [INFO] [corr_id: ${Math.random().toString(36).substr(2, 8)}] Workspace stream heartbeat OK`,
-        ...prev
-      ].slice(0, 50));
+
+      setLogs((prev) =>
+        [
+          `[${new Date().toISOString()}] [INFO] [corr_id: ${Math.random().toString(36).substr(2, 8)}] Workspace stream heartbeat OK`,
+          ...prev,
+        ].slice(0, 50),
+      );
     }, 2000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -55,7 +56,7 @@ export function DiagnosticsDashboard() {
       {/* Header */}
       <div className="h-14 border-b border-white/10 flex items-center px-6 justify-between bg-black/40">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => setActiveMode('dashboard')}
             className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
           >
@@ -66,7 +67,7 @@ export function DiagnosticsDashboard() {
             <h1 className="text-lg font-semibold text-white tracking-wide">Platform Diagnostics</h1>
           </div>
         </div>
-        
+
         <div className="flex space-x-1 bg-white/5 rounded-lg p-1">
           <button
             onClick={() => setActiveTab('health')}
@@ -105,7 +106,9 @@ export function DiagnosticsDashboard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/5 border border-white/10 rounded-xl p-5 flex items-center justify-between">
                 <div>
-                  <div className="text-white/50 mb-1 uppercase tracking-wider text-xs">System Status</div>
+                  <div className="text-white/50 mb-1 uppercase tracking-wider text-xs">
+                    System Status
+                  </div>
                   <div className="text-2xl font-light text-emerald-400 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     All Systems Operational
@@ -121,21 +124,30 @@ export function DiagnosticsDashboard() {
                 <RefreshCw className="w-8 h-8 text-white/20" />
               </div>
             </div>
-            
+
             <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
               <div className="px-5 py-4 border-b border-white/10 bg-black/20 font-medium text-white">
                 Service Status
               </div>
               <div className="divide-y divide-white/5">
-                {(healthData as { services?: { name: string; status: string; uptime: string }[] })?.services?.map((service, i: number) => (
-                  <div key={i} className="px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                {(
+                  healthData as { services?: { name: string; status: string; uptime: string }[] }
+                )?.services?.map((service, i: number) => (
+                  <div
+                    key={i}
+                    className="px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className={`w-1.5 h-1.5 rounded-full ${service.status === 'healthy' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${service.status === 'healthy' ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                      />
                       <span className="text-white">{service.name}</span>
                     </div>
                     <div className="flex items-center gap-6">
                       <span className="text-white/40">{service.ping}</span>
-                      <span className={`px-2 py-0.5 rounded text-xs ${service.status === 'healthy' ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20' : 'bg-amber-400/10 text-amber-400 border border-amber-400/20'}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-xs ${service.status === 'healthy' ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20' : 'bg-amber-400/10 text-amber-400 border border-amber-400/20'}`}
+                      >
                         {service.status}
                       </span>
                     </div>
@@ -149,14 +161,15 @@ export function DiagnosticsDashboard() {
         {activeTab === 'metrics' && (
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-3 gap-4">
-              {metricsData && Object.entries(metricsData).map(([key, value]) => (
-                <div key={key} className="bg-white/5 border border-white/10 rounded-xl p-5">
-                  <div className="text-white/50 mb-2 uppercase tracking-wider text-xs">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
+              {metricsData &&
+                Object.entries(metricsData).map(([key, value]) => (
+                  <div key={key} className="bg-white/5 border border-white/10 rounded-xl p-5">
+                    <div className="text-white/50 mb-2 uppercase tracking-wider text-xs">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </div>
+                    <div className="text-xl text-white font-light">{String(value)}</div>
                   </div>
-                  <div className="text-xl text-white font-light">{String(value)}</div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
@@ -167,7 +180,15 @@ export function DiagnosticsDashboard() {
               {logs.map((log, i) => (
                 <div key={i} className="mb-1">
                   <span className="text-white/30">{log.substring(0, 26)}</span>
-                  <span className={log.includes('[ERROR]') ? 'text-rose-400' : log.includes('[WARN]') ? 'text-amber-400' : 'text-blue-400'}>
+                  <span
+                    className={
+                      log.includes('[ERROR]')
+                        ? 'text-rose-400'
+                        : log.includes('[WARN]')
+                          ? 'text-amber-400'
+                          : 'text-blue-400'
+                    }
+                  >
                     {log.substring(26, 33)}
                   </span>
                   <span className="text-white/80">{log.substring(33)}</span>
@@ -178,9 +199,7 @@ export function DiagnosticsDashboard() {
           </div>
         )}
 
-        {activeTab === 'benchmark' && (
-          <BenchmarkRunner />
-        )}
+        {activeTab === 'benchmark' && <BenchmarkRunner />}
       </div>
     </div>
   );

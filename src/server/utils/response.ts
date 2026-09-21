@@ -26,7 +26,7 @@ export const errorResponse = (
   message: string,
   code: string | number = 500,
   req?: Request,
-  details?: unknown
+  details?: unknown,
 ): ApiResponse => {
   return {
     success: false,

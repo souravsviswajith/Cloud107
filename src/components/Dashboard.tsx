@@ -1,5 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Monitor, Play, Settings, Server, Plus, Loader2, AppWindow, PlayCircle, Cpu, HardDrive, MoreVertical, LayoutGrid, Clock, ChevronRight } from 'lucide-react';
+import {
+  Monitor,
+  Play,
+  Settings,
+  Server,
+  Plus,
+  Loader2,
+  AppWindow,
+  PlayCircle,
+  Cpu,
+  HardDrive,
+  MoreVertical,
+  LayoutGrid,
+  Clock,
+  ChevronRight,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VmInstance, WorkspaceState, Workspace } from '../types';
 import { workspaceApi } from '../lib/apiClient';
@@ -14,7 +29,6 @@ interface DashboardProps {
   onLaunchDesktop: (vm: VmInstance) => void;
   onLaunchAppLibrary: (vm: VmInstance) => void;
 }
-
 
 type WorkspaceConfig = {
   cpuClass: string;
@@ -66,7 +80,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const { addNotification } = useShell();
   const [vms, setVms] = useState<VmInstance[]>([]);
   const [selectedVm, setSelectedVm] = useState<VmInstance | null>(null);
-  const [connectionPhase, setConnectionPhase] = useState<'idle' | 'provisioning' | 'connecting' | 'ready'>('idle');
+  const [connectionPhase, setConnectionPhase] = useState<
+    'idle' | 'provisioning' | 'connecting' | 'ready'
+  >('idle');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
@@ -74,7 +90,11 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [configs, setConfigs] = useState<Record<string, WorkspaceConfig>>({});
   const [monitoredVmId, setMonitoredVmId] = useState<string | null>(null);
 
-  const monitoredVm = vms.find(v => v.id === monitoredVmId) || vms.find(v => v.status === 'ready') || vms[0] || null;
+  const monitoredVm =
+    vms.find((v) => v.id === monitoredVmId) ||
+    vms.find((v) => v.status === 'ready') ||
+    vms[0] ||
+    null;
 
   const getConfig = (vmId: string): WorkspaceConfig => {
     const cfg = configs[vmId] || DEFAULT_CONFIG;
@@ -88,7 +108,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     };
   };
   const updateConfig = (vmId: string, field: keyof WorkspaceConfig, value: string | number) => {
-    setConfigs(prev => ({ ...prev, [vmId]: { ...getConfig(vmId), [field]: value } }));
+    setConfigs((prev) => ({ ...prev, [vmId]: { ...getConfig(vmId), [field]: value } }));
   };
 
   useEffect(() => {
@@ -143,7 +163,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const handleDelete = async (vm: VmInstance) => {
     setMenuOpenFor(null);
     const previousVms = [...vms];
-    setVms(prev => prev.filter(v => v.id !== vm.id));
+    setVms((prev) => prev.filter((v) => v.id !== vm.id));
     try {
       await workspaceApi.deleteWorkspace(vm.id);
       fetchWorkspaces();
@@ -152,7 +172,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       addNotification({
         title: 'Delete Failed',
         message: 'Failed to delete workspace. Please try again.',
-        type: 'error'
+        type: 'error',
       });
       setVms(previousVms);
       fetchWorkspaces();
@@ -160,7 +180,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   };
 
   const handleStop = async (vm: VmInstance) => {
-    setVms(prev => prev.map(v => v.id === vm.id ? { ...v, status: 'provisioning' } : v));
+    setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.stopWorkspace(vm.id);
       fetchWorkspaces();
@@ -190,13 +210,13 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       ...vm,
       gpu: config.gpu,
       ram: config.ram,
-      vCPU: config.cpuCores
+      vCPU: config.cpuCores,
     });
     setConnectionPhase('provisioning');
   };
 
   const handleBoot = async (vm: VmInstance) => {
-    setVms(prev => prev.map(v => v.id === vm.id ? { ...v, status: 'provisioning' } : v));
+    setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.startWorkspace(vm.id);
       fetchWorkspaces();
@@ -227,20 +247,24 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg border border-white/10 bg-neutral-900">
-              <img src="/assets/cloud107-logo.png" alt="Cloud 107" className="w-full h-full object-cover" />
+              <img
+                src="/assets/cloud107-logo.png"
+                alt="Cloud 107"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="font-semibold text-2xl tracking-tight text-white">Cloud 107</h1>
               <p className="text-sm text-neutral-400 font-medium">Infrastructure Control Plane</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <button className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/10 backdrop-blur-md">
               <Settings size={16} className="text-neutral-400" />
               Settings
             </button>
-            <button 
+            <button
               onClick={handleCreate}
               disabled={creating}
               className="flex items-center gap-2 px-4 py-2.5 bg-white text-black text-sm font-semibold rounded-xl hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
@@ -254,18 +278,26 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
         <main>
           <div className="flex items-center justify-between mb-8 mt-2">
             <div className="flex items-center gap-6 border-b border-white/10 w-full pb-4">
-              <button className="text-sm font-medium text-white pb-4 mb-[-17px] border-b-2 border-white">Environments</button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">Nodes</button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">Operations</button>
+              <button className="text-sm font-medium text-white pb-4 mb-[-17px] border-b-2 border-white">
+                Environments
+              </button>
+              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
+                Nodes
+              </button>
+              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
+                Operations
+              </button>
             </div>
           </div>
-          
+
           {vms.length === 0 && !loading && (
             <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
               <Server size={48} className="mx-auto text-neutral-600 mb-4" />
               <h3 className="text-xl font-medium mb-2">No Environments</h3>
-              <p className="text-neutral-500 mb-6 max-w-md mx-auto">Create an environment to begin.</p>
-              <button 
+              <p className="text-neutral-500 mb-6 max-w-md mx-auto">
+                Create an environment to begin.
+              </p>
+              <button
                 onClick={handleCreate}
                 disabled={creating}
                 className="bg-white/10 hover:bg-white/15 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all"
@@ -277,7 +309,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {vms.map((vm) => (
-              <motion.div 
+              <motion.div
                 key={vm.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -285,31 +317,43 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               >
                 {/* Hover gradient effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
+
                 <div className="bg-neutral-950/50 rounded-[22px] p-6 h-full flex flex-col relative z-10">
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
-                        vm.status === 'ready' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]' :
-                        vm.status === 'provisioning' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
-                        'bg-neutral-800 border-white/5 text-neutral-400'
-                      }`}>
+                      <div
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
+                          vm.status === 'ready'
+                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                            : vm.status === 'provisioning'
+                              ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                              : 'bg-neutral-800 border-white/5 text-neutral-400'
+                        }`}
+                      >
                         <Monitor size={22} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg text-white tracking-tight">{vm.name}</h3>
+                        <h3 className="font-semibold text-lg text-white tracking-tight">
+                          {vm.name}
+                        </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            vm.status === 'ready' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' :
-                            vm.status === 'provisioning' ? 'bg-amber-500 animate-pulse' :
-                            'bg-neutral-600'
-                          }`} />
-                          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">{vm.status}</span>
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              vm.status === 'ready'
+                                ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
+                                : vm.status === 'provisioning'
+                                  ? 'bg-amber-500 animate-pulse'
+                                  : 'bg-neutral-600'
+                            }`}
+                          />
+                          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                            {vm.status}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <div className="relative">
-                      <button 
+                      <button
                         onClick={() => setMenuOpenFor(menuOpenFor === vm.id ? null : vm.id)}
                         className="p-2 text-neutral-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
                       >
@@ -324,7 +368,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             transition={{ duration: 0.15 }}
                             className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-1"
                           >
-                            <button 
+                            <button
                               onClick={() => {
                                 setMenuOpenFor(null);
                                 // Rename logic placeholder
@@ -333,13 +377,16 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             >
                               Rename Environment
                             </button>
-                            <button 
+                            <button
                               disabled
                               className="w-full text-left px-4 py-2.5 text-sm text-neutral-500 bg-transparent cursor-not-allowed flex items-center justify-between"
                             >
-                              Duplicate <span className="text-[10px] uppercase bg-white/5 px-1.5 py-0.5 rounded border border-white/5">Soon</span>
+                              Duplicate{' '}
+                              <span className="text-[10px] uppercase bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
+                                Soon
+                              </span>
                             </button>
-                            <button 
+                            <button
                               onClick={() => {
                                 setMenuOpenFor(null);
                                 handleStop(vm);
@@ -350,7 +397,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                               Stop Environment
                             </button>
                             <div className="h-px bg-white/10 my-1"></div>
-                            <button 
+                            <button
                               onClick={() => {
                                 setMenuOpenFor(null);
                                 setDeletingVm(vm);
@@ -379,13 +426,17 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             onChange={(e) => updateConfig(vm.id, 'cpuClass', e.target.value)}
                             className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
                           >
-                            {CPU_CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+                            {CPU_CLASSES.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
                           </select>
                           <select
                             value={getConfig(vm.id).cpuCores}
                             onChange={(e) => {
                               const val = parseInt(e.target.value);
-                              const option = CPU_CORES.find(c => c.cores === val);
+                              const option = CPU_CORES.find((c) => c.cores === val);
                               if (option) {
                                 updateConfig(vm.id, 'cpuCores', option.cores);
                                 updateConfig(vm.id, 'cpuThreads', option.threads);
@@ -393,15 +444,20 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             }}
                             className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
                           >
-                            {CPU_CORES.map(c => (
-                              <option key={c.cores} value={c.cores}>{c.cores} Cores / {c.threads} Threads</option>
+                            {CPU_CORES.map((c) => (
+                              <option key={c.cores} value={c.cores}>
+                                {c.cores} Cores / {c.threads} Threads
+                              </option>
                             ))}
                           </select>
                         </div>
                       ) : (
                         <div className="text-sm font-medium text-neutral-200">
                           <div>{getConfig(vm.id).cpuClass}</div>
-                          <div className="text-neutral-400 font-normal mt-0.5">{getConfig(vm.id).cpuCores} Cores / {getConfig(vm.id).cpuThreads} Threads</div>
+                          <div className="text-neutral-400 font-normal mt-0.5">
+                            {getConfig(vm.id).cpuCores} Cores / {getConfig(vm.id).cpuThreads}{' '}
+                            Threads
+                          </div>
                         </div>
                       )}
                     </div>
@@ -418,10 +474,16 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                           onChange={(e) => updateConfig(vm.id, 'ram', e.target.value)}
                           className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
                         >
-                          {RAM_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                          {RAM_OPTIONS.map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
                         </select>
                       ) : (
-                        <div className="text-sm font-medium text-neutral-200">{getConfig(vm.id).ram}</div>
+                        <div className="text-sm font-medium text-neutral-200">
+                          {getConfig(vm.id).ram}
+                        </div>
                       )}
                     </div>
 
@@ -438,18 +500,28 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             onChange={(e) => updateConfig(vm.id, 'storageCapacity', e.target.value)}
                             className="w-full bg-[#111111] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
                           >
-                            {STORAGE_CAPACITIES.map(sc => <option key={sc} value={sc}>{sc}</option>)}
+                            {STORAGE_CAPACITIES.map((sc) => (
+                              <option key={sc} value={sc}>
+                                {sc}
+                              </option>
+                            ))}
                           </select>
                           <select
                             value={getConfig(vm.id).storageType}
                             onChange={(e) => updateConfig(vm.id, 'storageType', e.target.value)}
                             className="w-full bg-[#111111] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
                           >
-                            {STORAGE_TYPES.map(st => <option key={st} value={st}>{st}</option>)}
+                            {STORAGE_TYPES.map((st) => (
+                              <option key={st} value={st}>
+                                {st}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       ) : (
-                        <div className="text-sm font-medium text-neutral-200">{getConfig(vm.id).storage}</div>
+                        <div className="text-sm font-medium text-neutral-200">
+                          {getConfig(vm.id).storage}
+                        </div>
                       )}
                     </div>
 
@@ -465,16 +537,26 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                           onChange={(e) => updateConfig(vm.id, 'gpu', e.target.value)}
                           className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
                         >
-                          {Array.from(new Set(GPU_OPTIONS.map(g => g.category))).map(category => (
-                            <optgroup key={category} label={category} className="bg-neutral-800 text-neutral-400">
-                              {GPU_OPTIONS.filter(g => g.category === category).map(g => (
-                                <option key={g.label} value={g.label} className="text-white">{g.label}</option>
-                              ))}
-                            </optgroup>
-                          ))}
+                          {Array.from(new Set(GPU_OPTIONS.map((g) => g.category))).map(
+                            (category) => (
+                              <optgroup
+                                key={category}
+                                label={category}
+                                className="bg-neutral-800 text-neutral-400"
+                              >
+                                {GPU_OPTIONS.filter((g) => g.category === category).map((g) => (
+                                  <option key={g.label} value={g.label} className="text-white">
+                                    {g.label}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ),
+                          )}
                         </select>
                       ) : (
-                        <div className="text-sm font-medium text-neutral-200">{getConfig(vm.id).gpu}</div>
+                        <div className="text-sm font-medium text-neutral-200">
+                          {getConfig(vm.id).gpu}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -482,7 +564,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                   <div className="mt-auto">
                     {vm.status === 'ready' ? (
                       <div className="flex gap-2">
-                        <button 
+                        <button
                           onClick={() => handleConnect(vm)}
                           className="flex-1 py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-neutral-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
                         >
@@ -497,18 +579,22 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                         </button>
                       </div>
                     ) : (
-                      <button 
+                      <button
                         onClick={() => handleBoot(vm)}
                         disabled={vm.status === 'provisioning'}
                         className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 border ${
                           vm.status === 'provisioning'
-                          ? 'bg-neutral-900 border-white/5 text-neutral-500 cursor-not-allowed'
-                          : 'bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 hover:border-white/20'
+                            ? 'bg-neutral-900 border-white/5 text-neutral-500 cursor-not-allowed'
+                            : 'bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 hover:border-white/20'
                         }`}
                       >
-                        {vm.status === 'provisioning' && <Loader2 size={16} className="animate-spin" />}
+                        {vm.status === 'provisioning' && (
+                          <Loader2 size={16} className="animate-spin" />
+                        )}
                         {vm.status === 'offline' && <Play size={16} />}
-                        {vm.status === 'provisioning' ? 'Starting Environment...' : 'Start Environment'}
+                        {vm.status === 'provisioning'
+                          ? 'Starting Environment...'
+                          : 'Start Environment'}
                       </button>
                     )}
                   </div>
@@ -534,18 +620,18 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
         </main>
       </div>
 
-            {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {deletingVm && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/60 backdrop-blur-xl"
               onClick={() => setDeletingVm(null)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -553,7 +639,8 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             >
               <h3 className="text-xl font-semibold text-white mb-2">Delete Environment?</h3>
               <p className="text-sm text-neutral-400 mb-6">
-                Are you sure you want to remove this environment? This action cannot be undone in the demo.
+                Are you sure you want to remove this environment? This action cannot be undone in
+                the demo.
               </p>
               <div className="flex justify-end gap-3">
                 <button
@@ -581,14 +668,17 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       <AnimatePresence>
         {selectedVm && connectionPhase === 'ready' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/60 backdrop-blur-xl"
-              onClick={() => { setSelectedVm(null); setConnectionPhase('idle'); }}
+              onClick={() => {
+                setSelectedVm(null);
+                setConnectionPhase('idle');
+              }}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -600,13 +690,17 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                     <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                       <Monitor size={16} className="text-white" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight">{selectedVm.name}</h3>
+                    <h3 className="text-2xl font-semibold text-white tracking-tight">
+                      {selectedVm.name}
+                    </h3>
                   </div>
-                  <p className="text-sm text-neutral-400">Select an execution surface for this environment.</p>
+                  <p className="text-sm text-neutral-400">
+                    Select an execution surface for this environment.
+                  </p>
                 </div>
 
                 <div className="space-y-4">
-                  <button 
+                  <button
                     onClick={() => {
                       onLaunchDesktop(selectedVm);
                       setSelectedVm(null);
@@ -620,13 +714,18 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                       </div>
                       <div>
                         <div className="font-semibold text-lg text-white mb-1">Desktop Mode</div>
-                        <div className="text-sm text-neutral-400">Open the complete graphical environment with multi-window support.</div>
+                        <div className="text-sm text-neutral-400">
+                          Open the complete graphical environment with multi-window support.
+                        </div>
                       </div>
                     </div>
-                    <ChevronRight size={20} className="text-neutral-600 group-hover:text-white transition-colors" />
+                    <ChevronRight
+                      size={20}
+                      className="text-neutral-600 group-hover:text-white transition-colors"
+                    />
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => {
                       onLaunchAppLibrary(selectedVm);
                       setSelectedVm(null);
@@ -639,15 +738,22 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                         <AppWindow size={26} />
                       </div>
                       <div>
-                        <div className="font-semibold text-lg text-white mb-1">Application Mode</div>
-                        <div className="text-sm text-neutral-400">Open a single application through the application runtime.</div>
+                        <div className="font-semibold text-lg text-white mb-1">
+                          Application Mode
+                        </div>
+                        <div className="text-sm text-neutral-400">
+                          Open a single application through the application runtime.
+                        </div>
                       </div>
                     </div>
-                    <ChevronRight size={20} className="text-neutral-600 group-hover:text-white transition-colors" />
+                    <ChevronRight
+                      size={20}
+                      className="text-neutral-600 group-hover:text-white transition-colors"
+                    />
                   </button>
-                  
+
                   <div className="pt-4 mt-2 border-t border-white/5">
-                    <button 
+                    <button
                       onClick={() => {
                         onLaunchDesktop(selectedVm);
                         setSelectedVm(null);
@@ -660,11 +766,18 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                           <Clock size={20} />
                         </div>
                         <div>
-                          <div className="font-medium text-neutral-200">Resume Previous Session</div>
-                          <div className="text-xs text-neutral-500">Reconnect to your last active mode.</div>
+                          <div className="font-medium text-neutral-200">
+                            Resume Previous Session
+                          </div>
+                          <div className="text-xs text-neutral-500">
+                            Reconnect to your last active mode.
+                          </div>
                         </div>
                       </div>
-                      <PlayCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
+                      <PlayCircle
+                        size={18}
+                        className="text-neutral-600 group-hover:text-white transition-colors"
+                      />
                     </button>
                   </div>
                 </div>
@@ -702,4 +815,3 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     </div>
   );
 }
-

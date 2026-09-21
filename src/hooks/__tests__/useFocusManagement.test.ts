@@ -7,7 +7,7 @@ describe('useFocusManagement', () => {
     vi.clearAllMocks();
     Object.defineProperty(document, 'visibilityState', {
       value: 'visible',
-      writable: true
+      writable: true,
     });
   });
 
@@ -37,7 +37,7 @@ describe('useFocusManagement', () => {
 
     Object.defineProperty(document, 'visibilityState', {
       value: 'hidden',
-      writable: true
+      writable: true,
     });
     document.dispatchEvent(new Event('visibilitychange'));
 

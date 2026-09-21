@@ -13,7 +13,7 @@ export interface DecodedCloud107Token {
 
 /**
  * Cloud107 Self-Hosted Authentication Service
- * 
+ *
  * Supports WebAuthn / FIDO2 assertions, cryptographic session tokens,
  * and sovereign local operator authentication without any centralized SaaS dependencies.
  */
@@ -28,12 +28,16 @@ export class AuthenticationService {
    * Generates a signed token for a given user identity.
    */
   generateToken(payload: { uid: string; email?: string; roles?: string[] }): string {
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'C107-JWT' })).toString('base64url');
-    const body = Buffer.from(JSON.stringify({
-      ...payload,
-      auth_time: Math.floor(Date.now() / 1000),
-      iss: 'cloud107-identity',
-    })).toString('base64url');
+    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'C107-JWT' })).toString(
+      'base64url',
+    );
+    const body = Buffer.from(
+      JSON.stringify({
+        ...payload,
+        auth_time: Math.floor(Date.now() / 1000),
+        iss: 'cloud107-identity',
+      }),
+    ).toString('base64url');
 
     const signature = crypto
       .createHmac('sha256', this.secretKey)
@@ -68,7 +72,9 @@ export class AuthenticationService {
 
       // 2. Check for local base64-encoded operator tokens (e.g. c107-token-...)
       if (token.startsWith('c107-token-')) {
-        const payloadStr = Buffer.from(token.replace('c107-token-', ''), 'base64').toString('utf-8');
+        const payloadStr = Buffer.from(token.replace('c107-token-', ''), 'base64').toString(
+          'utf-8',
+        );
         const parsed = JSON.parse(payloadStr);
         return {
           uid: parsed.uid || 'c107-local-operator-001',
@@ -81,7 +87,9 @@ export class AuthenticationService {
 
       // 3. Check for WebAuthn assertion tokens (e.g. c107-webauthn-...)
       if (token.startsWith('c107-webauthn-')) {
-        const payloadStr = Buffer.from(token.replace('c107-webauthn-', ''), 'base64').toString('utf-8');
+        const payloadStr = Buffer.from(token.replace('c107-webauthn-', ''), 'base64').toString(
+          'utf-8',
+        );
         const parsed = JSON.parse(payloadStr);
         const username = parsed.u || 'operator';
         return {

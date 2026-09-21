@@ -3,7 +3,7 @@ import { WorkspaceState } from '../../../../types';
 export class HyperVMapper {
   static mapState(hypervState: string): WorkspaceState {
     const stateStr = hypervState.toString().toLowerCase();
-    
+
     // ConvertTo-Json might output the string or integer values of the Hyper-V State enum
     // 2: Running, 3: Off, etc.
     switch (stateStr) {

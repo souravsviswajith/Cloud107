@@ -67,7 +67,7 @@ export function DocsViewer({ onApprove }: DocsViewerProps) {
                 <p className="text-xs text-amber-500/80 mb-3">
                   Click below to proceed to the application dashboard.
                 </p>
-                <button 
+                <button
                   onClick={onApprove}
                   className="w-full py-2 bg-amber-500 hover:bg-amber-600 text-[#0A0A0A] rounded-md text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                 >

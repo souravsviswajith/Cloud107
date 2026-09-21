@@ -6,10 +6,13 @@ import './src/server/env'; // Run environment validation
 
 const PORT = 3000;
 
-import fs from "fs";
+import fs from 'fs';
 async function startServer() {
   app.use((req, res, next) => {
-    fs.appendFileSync("requests.log", `[${new Date().toISOString()}] ${req.method} ${req.url} ${req.headers.accept}\n`);
+    fs.appendFileSync(
+      'requests.log',
+      `[${new Date().toISOString()}] ${req.method} ${req.url} ${req.headers.accept}\n`,
+    );
     next();
   });
   // Mount Vite middleware for development

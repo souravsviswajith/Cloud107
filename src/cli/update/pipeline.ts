@@ -14,11 +14,7 @@ import {
   verifyManifestSignature,
 } from './crypto';
 import { verifyCompatibility } from './compatibility';
-import {
-  createCheckpoint,
-  rollbackToCheckpoint,
-  updateCheckpointStatus,
-} from './checkpoint';
+import { createCheckpoint, rollbackToCheckpoint, updateCheckpointStatus } from './checkpoint';
 
 export const CANONICAL_CLOUD107_ORIGIN = 'https://github.com/cloud107/cloud107.git';
 
@@ -50,7 +46,7 @@ export function getCurrentEnvironment(): SystemEnvironment {
  * The 15-Step Source-First Cryptographically Verified Update Pipeline.
  */
 export async function executeUpdatePipeline(
-  options: UpdateOptions = {}
+  options: UpdateOptions = {},
 ): Promise<UpdateExecutionResult> {
   const steps: UpdateStepLog[] = [];
   const currentEnv = getCurrentEnvironment();
@@ -58,11 +54,7 @@ export async function executeUpdatePipeline(
   let activeCheckpoint: ReturnType<typeof createCheckpoint> | null = null;
   let rolledBack = false;
 
-  const recordStep = (
-    step: string,
-    status: UpdateStepLog['status'],
-    message: string
-  ) => {
+  const recordStep = (step: string, status: UpdateStepLog['status'], message: string) => {
     steps.push({
       step,
       status,
@@ -74,7 +66,11 @@ export async function executeUpdatePipeline(
   const failPipeline = (stepName: string, errorMessage: string): UpdateExecutionResult => {
     recordStep(stepName, 'failed', errorMessage);
     if (activeCheckpoint) {
-      recordStep('rollback_on_failure', 'pending', `Initiating fail-closed rollback to checkpoint ${activeCheckpoint.id}`);
+      recordStep(
+        'rollback_on_failure',
+        'pending',
+        `Initiating fail-closed rollback to checkpoint ${activeCheckpoint.id}`,
+      );
       const rolled = rollbackToCheckpoint(activeCheckpoint);
       rolledBack = rolled;
       recordStep(
@@ -82,7 +78,7 @@ export async function executeUpdatePipeline(
         rolled ? 'success' : 'failed',
         rolled
           ? `Rollback restored previous state v${previousVersion} cleanly.`
-          : `Failed to restore checkpoint files.`
+          : `Failed to restore checkpoint files.`,
       );
     }
     return {
@@ -137,7 +133,11 @@ export async function executeUpdatePipeline(
         signature: 'PLACEHOLDER_OR_VERIFIED_SIGNATURE',
       };
     }
-    recordStep('fetch_metadata', 'success', `Retrieved update manifest for target version ${manifest.version}`);
+    recordStep(
+      'fetch_metadata',
+      'success',
+      `Retrieved update manifest for target version ${manifest.version}`,
+    );
 
     // -------------------------------------------------------------
     // Step 3: Verify provenance
@@ -149,10 +149,14 @@ export async function executeUpdatePipeline(
     if (manifest.canonicalOrigin !== canonicalOrigin) {
       return failPipeline(
         'verify_provenance',
-        `Provenance check failed: Manifest origin '${manifest.canonicalOrigin}' does not match trusted canonical origin '${canonicalOrigin}'.`
+        `Provenance check failed: Manifest origin '${manifest.canonicalOrigin}' does not match trusted canonical origin '${canonicalOrigin}'.`,
       );
     }
-    recordStep('verify_provenance', 'success', `Provenance verified against trusted origin ${canonicalOrigin}`);
+    recordStep(
+      'verify_provenance',
+      'success',
+      `Provenance verified against trusted origin ${canonicalOrigin}`,
+    );
 
     // -------------------------------------------------------------
     // Step 4: Verify cryptographic signature
@@ -165,11 +169,22 @@ export async function executeUpdatePipeline(
     if (options.customManifest) {
       const sigResult = verifyManifestSignature(manifest, CLOUD107_TRUSTED_KEYS);
       if (!sigResult.valid) {
-        return failPipeline('verify_signature', sigResult.error || 'Invalid cryptographic signature');
+        return failPipeline(
+          'verify_signature',
+          sigResult.error || 'Invalid cryptographic signature',
+        );
       }
-      recordStep('verify_signature', 'success', `Ed25519 signature verified with key ${manifest.signingKeyId}`);
+      recordStep(
+        'verify_signature',
+        'success',
+        `Ed25519 signature verified with key ${manifest.signingKeyId}`,
+      );
     } else {
-      recordStep('verify_signature', 'success', `Digital signature verified for built-in release ${manifest.signingKeyId}`);
+      recordStep(
+        'verify_signature',
+        'success',
+        `Digital signature verified for built-in release ${manifest.signingKeyId}`,
+      );
     }
 
     // -------------------------------------------------------------
@@ -184,7 +199,7 @@ export async function executeUpdatePipeline(
       if (!hashResult.valid) {
         return failPipeline(
           'verify_hashes',
-          `Hash check failed: ${hashResult.mismatchedFiles.join(', ')} ${hashResult.missingFiles.join(', ')}`
+          `Hash check failed: ${hashResult.mismatchedFiles.join(', ')} ${hashResult.missingFiles.join(', ')}`,
         );
       }
     }
@@ -201,19 +216,29 @@ export async function executeUpdatePipeline(
     if (!compat.compatible && !options.force) {
       return failPipeline('check_compatibility', compat.errors.join('; '));
     }
-    recordStep('check_compatibility', 'success', `System compatibility verified: version, architecture, and schema valid`);
+    recordStep(
+      'check_compatibility',
+      'success',
+      `System compatibility verified: version, architecture, and schema valid`,
+    );
 
     // -------------------------------------------------------------
     // Step 7: Create recovery / checkpoint state
     // -------------------------------------------------------------
     activeCheckpoint = createCheckpoint(previousVersion, manifest.version);
-    recordStep('create_checkpoint', 'success', `Checkpoint ${activeCheckpoint.id} created with immutable backup`);
+    recordStep(
+      'create_checkpoint',
+      'success',
+      `Checkpoint ${activeCheckpoint.id} created with immutable backup`,
+    );
 
     // -------------------------------------------------------------
     // Step 8: Fetch source or artifacts into staging
     // -------------------------------------------------------------
     const stagedPkgPath = path.resolve(activeCheckpoint.stagedPath, 'package.json');
-    const currentPkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+    const currentPkg = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'),
+    );
     currentPkg.version = manifest.version;
     fs.writeFileSync(stagedPkgPath, JSON.stringify(currentPkg, null, 2), 'utf8');
     recordStep('fetch_artifacts', 'success', `Staged version ${manifest.version} artifacts`);
@@ -238,7 +263,11 @@ export async function executeUpdatePipeline(
     // Step 11: Stage new version
     // -------------------------------------------------------------
     updateCheckpointStatus(activeCheckpoint, 'staged');
-    recordStep('stage_version', 'success', `Staging directory verified at ${activeCheckpoint.stagedPath}`);
+    recordStep(
+      'stage_version',
+      'success',
+      `Staging directory verified at ${activeCheckpoint.stagedPath}`,
+    );
 
     // -------------------------------------------------------------
     // Step 12: Health verification
@@ -253,7 +282,11 @@ export async function executeUpdatePipeline(
     // -------------------------------------------------------------
     if (options.dryRun) {
       recordStep('atomic_activation', 'skipped', `Dry-run specified: skipping live activation`);
-      recordStep('post_verify', 'skipped', `Dry-run specified: skipping post-activation verification`);
+      recordStep(
+        'post_verify',
+        'skipped',
+        `Dry-run specified: skipping post-activation verification`,
+      );
       updateCheckpointStatus(activeCheckpoint, 'committed');
       recordStep('commit_update', 'success', `Update validated successfully (dry-run mode)`);
 
@@ -279,17 +312,30 @@ export async function executeUpdatePipeline(
       return failPipeline('post_verify', 'Post-activation health verification failed');
     }
 
-    const verifyPkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+    const verifyPkg = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'),
+    );
     if (verifyPkg.version !== manifest.version) {
-      return failPipeline('post_verify', `Version verification failed: expected ${manifest.version}, found ${verifyPkg.version}`);
+      return failPipeline(
+        'post_verify',
+        `Version verification failed: expected ${manifest.version}, found ${verifyPkg.version}`,
+      );
     }
-    recordStep('post_verify', 'success', `Post-update verification confirmed active version v${manifest.version}`);
+    recordStep(
+      'post_verify',
+      'success',
+      `Post-update verification confirmed active version v${manifest.version}`,
+    );
 
     // -------------------------------------------------------------
     // Step 15: Commit update
     // -------------------------------------------------------------
     updateCheckpointStatus(activeCheckpoint, 'committed');
-    recordStep('commit_update', 'success', `Committed update to v${manifest.version}. Upgrade complete.`);
+    recordStep(
+      'commit_update',
+      'success',
+      `Committed update to v${manifest.version}. Upgrade complete.`,
+    );
 
     return {
       success: true,
@@ -301,6 +347,9 @@ export async function executeUpdatePipeline(
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    return failPipeline('unexpected_exception', `Unhandled exception in update pipeline: ${errorMsg}`);
+    return failPipeline(
+      'unexpected_exception',
+      `Unhandled exception in update pipeline: ${errorMsg}`,
+    );
   }
 }

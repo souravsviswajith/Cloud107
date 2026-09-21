@@ -11,22 +11,29 @@ export function Footer() {
             <Cloud size={18} className="text-neutral-500" />
             <span className="font-medium text-sm text-neutral-400 tracking-tight">Cloud 107</span>
           </div>
-          
+
           <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-            <a href="#" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+            <a
+              href="#"
+              className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+            >
               Documentation
             </a>
-            <a href="#" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+            <a
+              href="#"
+              className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+            >
               Privacy
             </a>
-            <a href="#" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+            <a
+              href="#"
+              className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+            >
               GitHub
             </a>
           </nav>
-          
-          <div className="text-sm text-neutral-600">
-            v1.1
-          </div>
+
+          <div className="text-sm text-neutral-600">v1.1</div>
         </div>
       </Container>
     </footer>

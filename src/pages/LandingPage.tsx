@@ -8,7 +8,13 @@ import { HowItWorks } from '../components/landing/HowItWorks';
 import { FinalCTA } from '../components/landing/FinalCTA';
 import { Footer } from '../components/landing/Footer';
 
-export function LandingPage({ onLaunch, launchState = 'idle' }: { onLaunch: () => void, launchState?: string }) {
+export function LandingPage({
+  onLaunch,
+  launchState = 'idle',
+}: {
+  onLaunch: () => void;
+  launchState?: string;
+}) {
   return (
     <div className="min-h-screen bg-[#0A0A0A] font-sans selection:bg-blue-500/30 selection:text-white">
       <Navbar onLaunch={onLaunch} launchState={launchState} />

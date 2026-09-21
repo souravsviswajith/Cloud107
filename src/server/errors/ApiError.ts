@@ -18,7 +18,7 @@ export class ApiError extends Error {
     message: string,
     statusCode: number,
     code: ErrorCode = ErrorCode.SYSTEM_ERROR,
-    details?: unknown
+    details?: unknown,
   ) {
     super(message);
     this.statusCode = statusCode;

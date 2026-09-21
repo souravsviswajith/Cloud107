@@ -10,25 +10,35 @@ export class WorkspaceRepository {
   }
 
   async findByIdAndUserId(id: string, userId: number): Promise<Workspace | null> {
-    const result = await db.select()
+    const result = await db
+      .select()
       .from(workspaces)
       .where(and(eq(workspaces.id, id), eq(workspaces.userId, userId)))
       .limit(1);
     return result.length > 0 ? this.mapWorkspace(result[0]) : null;
   }
 
-  async create(id: string, name: string, userId: number, state: WorkspaceState): Promise<Workspace> {
-    const result = await db.insert(workspaces).values({
-      id,
-      name,
-      state,
-      userId,
-    }).returning();
+  async create(
+    id: string,
+    name: string,
+    userId: number,
+    state: WorkspaceState,
+  ): Promise<Workspace> {
+    const result = await db
+      .insert(workspaces)
+      .values({
+        id,
+        name,
+        state,
+        userId,
+      })
+      .returning();
     return this.mapWorkspace(result[0]);
   }
 
   async updateState(id: string, userId: number, state: WorkspaceState): Promise<Workspace | null> {
-    const result = await db.update(workspaces)
+    const result = await db
+      .update(workspaces)
       .set({ state, updatedAt: new Date() })
       .where(and(eq(workspaces.id, id), eq(workspaces.userId, userId)))
       .returning();

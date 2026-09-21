@@ -11,10 +11,14 @@ describe('HyperVCommandBuilder', () => {
   });
 
   it('should build getVM command', () => {
-    expect(HyperVCommandBuilder.getVM('123')).toBe('Get-VM -Name "123" | Select-Object State, Name, Uptime | ConvertTo-Json');
+    expect(HyperVCommandBuilder.getVM('123')).toBe(
+      'Get-VM -Name "123" | Select-Object State, Name, Uptime | ConvertTo-Json',
+    );
   });
 
   it('should build getVMMetrics command', () => {
-    expect(HyperVCommandBuilder.getVMMetrics('123')).toBe('Measure-VM -Name "123" | Select-Object AverageProcessorUsage, AverageMemoryUsage | ConvertTo-Json');
+    expect(HyperVCommandBuilder.getVMMetrics('123')).toBe(
+      'Measure-VM -Name "123" | Select-Object AverageProcessorUsage, AverageMemoryUsage | ConvertTo-Json',
+    );
   });
 });

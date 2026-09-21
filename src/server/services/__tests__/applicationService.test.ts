@@ -13,7 +13,7 @@ describe('ApplicationService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     mockAppRepo = {
       findAll: vi.fn(),
       findById: vi.fn(),
@@ -49,43 +49,65 @@ describe('ApplicationService', () => {
     mockAppRepo.findAll.mockResolvedValue(mockApps);
 
     const result = await applicationService.listApplications();
-    
+
     expect(mockAppRepo.findAll).toHaveBeenCalled();
     expect(result).toEqual(mockApps);
   });
 
   it('should throw if launching on a non-existent workspace', async () => {
     mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue(null);
-    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow('Workspace not found or unauthorized');
+    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
+      'Workspace not found or unauthorized',
+    );
   });
 
   it('should throw if launching on a non-running workspace', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Offline } as Partial<Workspace>);
-    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(/Cannot launch application/);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
+      state: WorkspaceState.Offline,
+    } as Partial<Workspace>);
+    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
+      /Cannot launch application/,
+    );
   });
 
   it('should throw if application not found', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
+      state: WorkspaceState.Running,
+    } as Partial<Workspace>);
     mockAppRepo.findById.mockResolvedValue(null);
-    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow('Application not found');
+    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
+      'Application not found',
+    );
   });
 
   it('should throw if application is disabled', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
-    mockAppRepo.findById.mockResolvedValue({ enabled: false, installed: true } as Partial<Workspace>);
-    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow('Application is currently disabled');
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
+      state: WorkspaceState.Running,
+    } as Partial<Workspace>);
+    mockAppRepo.findById.mockResolvedValue({
+      enabled: false,
+      installed: true,
+    } as Partial<Workspace>);
+    await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
+      'Application is currently disabled',
+    );
   });
 
   it('should launch an application successfully', async () => {
-    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({ state: WorkspaceState.Running } as Partial<Workspace>);
-    mockAppRepo.findById.mockResolvedValue({ enabled: true, installed: true } as Partial<Workspace>);
+    mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
+      state: WorkspaceState.Running,
+    } as Partial<Workspace>);
+    mockAppRepo.findById.mockResolvedValue({
+      enabled: true,
+      installed: true,
+    } as Partial<Workspace>);
     mockAppRepo.findActiveSession.mockResolvedValue(null);
-    
+
     const mockSession = { id: 'session-1' } as ApplicationSession;
     mockAppRepo.createSession.mockResolvedValue(mockSession);
 
     const result = await applicationService.launchApplication('app-1', 'ws-1', 1);
-    
+
     expect(mockAppRepo.createSession).toHaveBeenCalled();
     expect(result).toEqual(mockSession);
   });

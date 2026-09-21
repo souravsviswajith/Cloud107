@@ -9,10 +9,7 @@ import {
   verifyArtifactHashes,
 } from '../crypto';
 import { verifyCompatibility, compareSemver } from '../compatibility';
-import {
-  createCheckpoint,
-  rollbackToCheckpoint,
-} from '../checkpoint';
+import { createCheckpoint, rollbackToCheckpoint } from '../checkpoint';
 import { executeUpdatePipeline } from '../pipeline';
 import { UpdateManifest, SystemEnvironment } from '../types';
 
@@ -77,14 +74,20 @@ describe('Cloud107 Source-First Update Protocol', () => {
       // Correct hash
       const passResult = verifyArtifactHashes(
         [{ path: 'package.json', sha256: realHash, size: 100 }],
-        process.cwd()
+        process.cwd(),
       );
       expect(passResult.valid).toBe(true);
 
       // Tampered hash
       const failResult = verifyArtifactHashes(
-        [{ path: 'package.json', sha256: 'deadbeef00000000000000000000000000000000000000000000000000000000', size: 100 }],
-        process.cwd()
+        [
+          {
+            path: 'package.json',
+            sha256: 'deadbeef00000000000000000000000000000000000000000000000000000000',
+            size: 100,
+          },
+        ],
+        process.cwd(),
       );
       expect(failResult.valid).toBe(false);
       expect(failResult.mismatchedFiles.length).toBe(1);

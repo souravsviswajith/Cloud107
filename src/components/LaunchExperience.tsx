@@ -44,7 +44,7 @@ export function LaunchExperience() {
             <LandingPage onLaunch={handleLaunch} launchState={launchState} />
           </motion.div>
         )}
-        
+
         {launchState === 'provisioning' && (
           <motion.div
             key="provisioning"

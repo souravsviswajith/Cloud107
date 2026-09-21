@@ -13,7 +13,7 @@ export class ApplicationService {
   constructor(
     applicationRepo?: ApplicationRepository,
     workspaceRepo?: WorkspaceRepository,
-    workspaceProvider?: WorkspaceProvider
+    workspaceProvider?: WorkspaceProvider,
   ) {
     this.applicationRepository = applicationRepo || new ApplicationRepository();
     this.workspaceRepository = workspaceRepo || new WorkspaceRepository();
@@ -28,34 +28,48 @@ export class ApplicationService {
     return this.applicationRepository.findById(id);
   }
 
-  async launchApplication(applicationId: string, workspaceId: string, userId: number): Promise<ApplicationSession> {
+  async launchApplication(
+    applicationId: string,
+    workspaceId: string,
+    userId: number,
+  ): Promise<ApplicationSession> {
     const workspace = await this.workspaceRepository.findByIdAndUserId(workspaceId, userId);
-    
+
     if (!workspace) {
       throw new Error('Workspace not found or unauthorized');
     }
-    
-    if (workspace.state !== WorkspaceState.Running && workspace.state !== WorkspaceState.Streaming) {
-      throw new Error(`Cannot launch application. Workspace is currently in state: ${workspace.state}`);
+
+    if (
+      workspace.state !== WorkspaceState.Running &&
+      workspace.state !== WorkspaceState.Streaming
+    ) {
+      throw new Error(
+        `Cannot launch application. Workspace is currently in state: ${workspace.state}`,
+      );
     }
 
     const application = await this.applicationRepository.findById(applicationId);
-    
+
     if (!application) {
       throw new Error('Application not found');
     }
-    
+
     if (!application.enabled) {
       throw new Error('Application is currently disabled');
     }
-    
+
     if (!application.installed) {
       throw new Error('Application is not installed on this workspace image');
     }
-    
-    const activeSession = await this.applicationRepository.findActiveSession(applicationId, workspaceId);
+
+    const activeSession = await this.applicationRepository.findActiveSession(
+      applicationId,
+      workspaceId,
+    );
     if (activeSession) {
-      logger.info(`Returning existing session for app ${applicationId} on workspace ${workspaceId}`);
+      logger.info(
+        `Returning existing session for app ${applicationId} on workspace ${workspaceId}`,
+      );
       return activeSession;
     }
 
@@ -65,7 +79,7 @@ export class ApplicationService {
       applicationId,
       workspaceId,
       userId,
-      status: 'launching'
+      status: 'launching',
     });
 
     // Simulate async launch flow
@@ -86,11 +100,14 @@ export class ApplicationService {
     if (!session) {
       throw new Error('Session not found');
     }
-    
+
     if (session.userId !== userId) {
       throw new Error('Unauthorized');
     }
-    
-    return await this.applicationRepository.updateSessionStatus(sessionId, 'stopped') as ApplicationSession;
+
+    return (await this.applicationRepository.updateSessionStatus(
+      sessionId,
+      'stopped',
+    )) as ApplicationSession;
   }
 }

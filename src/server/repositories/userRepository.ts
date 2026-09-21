@@ -9,10 +9,13 @@ export class UserRepository {
   }
 
   async create(uid: string, email: string) {
-    const result = await db.insert(users).values({
-      uid,
-      email,
-    }).returning();
+    const result = await db
+      .insert(users)
+      .values({
+        uid,
+        email,
+      })
+      .returning();
     return result[0];
   }
 }

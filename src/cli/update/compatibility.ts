@@ -25,7 +25,7 @@ export function compareSemver(v1: string, v2: string): number {
  */
 export function verifyCompatibility(
   manifest: UpdateManifest,
-  currentEnv: SystemEnvironment
+  currentEnv: SystemEnvironment,
 ): CompatibilityReport {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -34,7 +34,7 @@ export function verifyCompatibility(
   const targetVsCurrent = compareSemver(manifest.version, currentEnv.version);
   if (targetVsCurrent < 0) {
     warnings.push(
-      `Downgrade warning: Target version (${manifest.version}) is lower than currently installed (${currentEnv.version}).`
+      `Downgrade warning: Target version (${manifest.version}) is lower than currently installed (${currentEnv.version}).`,
     );
   } else if (targetVsCurrent === 0) {
     warnings.push(`Target version (${manifest.version}) is already installed.`);
@@ -46,7 +46,7 @@ export function verifyCompatibility(
   if (currentVsMin < 0) {
     versionCompatible = false;
     errors.push(
-      `Incompatible base version: Installed version (${currentEnv.version}) is lower than the minimum required upgrade base (${manifest.minSupportedVersion}). Please perform intermediate upgrades first.`
+      `Incompatible base version: Installed version (${currentEnv.version}) is lower than the minimum required upgrade base (${manifest.minSupportedVersion}). Please perform intermediate upgrades first.`,
     );
   }
 
@@ -56,14 +56,20 @@ export function verifyCompatibility(
   if (manifest.targetPlatform !== 'any' && manifest.targetPlatform !== currentPlatformKey) {
     // If platform target is generic or matches
     const matchesPlatform =
-      (manifest.targetPlatform === 'linux-x64' && currentEnv.platform === 'linux' && currentEnv.arch === 'x64') ||
-      (manifest.targetPlatform === 'darwin-arm64' && currentEnv.platform === 'darwin' && currentEnv.arch === 'arm64') ||
-      (manifest.targetPlatform === 'win-x64' && currentEnv.platform === 'win32' && currentEnv.arch === 'x64');
+      (manifest.targetPlatform === 'linux-x64' &&
+        currentEnv.platform === 'linux' &&
+        currentEnv.arch === 'x64') ||
+      (manifest.targetPlatform === 'darwin-arm64' &&
+        currentEnv.platform === 'darwin' &&
+        currentEnv.arch === 'arm64') ||
+      (manifest.targetPlatform === 'win-x64' &&
+        currentEnv.platform === 'win32' &&
+        currentEnv.arch === 'x64');
 
     if (!matchesPlatform) {
       platformCompatible = false;
       errors.push(
-        `Incompatible target platform: Update is compiled for ${manifest.targetPlatform}, but current host is ${currentPlatformKey}.`
+        `Incompatible target platform: Update is compiled for ${manifest.targetPlatform}, but current host is ${currentPlatformKey}.`,
       );
     }
   }
@@ -73,11 +79,11 @@ export function verifyCompatibility(
   if (manifest.schemaVersion > currentEnv.schemaVersion + 2) {
     schemaCompatible = false;
     errors.push(
-      `Incompatible schema version: Manifest requires schema version ${manifest.schemaVersion}, which is too far ahead of current schema version ${currentEnv.schemaVersion}.`
+      `Incompatible schema version: Manifest requires schema version ${manifest.schemaVersion}, which is too far ahead of current schema version ${currentEnv.schemaVersion}.`,
     );
   } else if (manifest.schemaVersion > currentEnv.schemaVersion) {
     warnings.push(
-      `Database schema migration will be required from v${currentEnv.schemaVersion} to v${manifest.schemaVersion}.`
+      `Database schema migration will be required from v${currentEnv.schemaVersion} to v${manifest.schemaVersion}.`,
     );
   }
 

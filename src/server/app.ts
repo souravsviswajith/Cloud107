@@ -18,9 +18,11 @@ morgan.token('id', (req: any) => req.context?.correlationId || req.id);
 app.use(morgan(':id :method :url :status :res[content-length] - :response-time ms'));
 
 // Security & Parsing
-app.use(helmet({
-  contentSecurityPolicy: false, // Often disabled in dev for Vite
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Often disabled in dev for Vite
+  }),
+);
 app.use(cors());
 app.use(compression());
 app.use(express.json());

@@ -12,17 +12,17 @@ import { DiagnosticsDashboard } from './DiagnosticsDashboard';
 import { FloatingWorkspaceBar } from './FloatingWorkspaceBar';
 
 export function WorkspaceShell() {
-  const { 
-    activeMode, 
-    activeVm, 
-    activeApp, 
-    setActiveMode, 
-    setActiveVm, 
+  const {
+    activeMode,
+    activeVm,
+    activeApp,
+    setActiveMode,
+    setActiveVm,
     setActiveApp,
     isCommandPaletteOpen,
     isNotificationsOpen,
     isAIAssistantOpen,
-    addNotification
+    addNotification,
   } = useShell();
 
   // Initial welcome notification
@@ -31,7 +31,7 @@ export function WorkspaceShell() {
       addNotification({
         title: 'Workspace Ready',
         message: 'Cloud107 control plane is ready.',
-        type: 'success'
+        type: 'success',
       });
     }, 1000);
   }, []);
@@ -45,86 +45,90 @@ export function WorkspaceShell() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
       {/* Background/Base layer for transitions */}
-      
+
       {/* Main Content Area */}
       <AnimatePresence mode="wait">
         {activeMode === 'dashboard' && (
-          <motion.div 
-            key="dashboard" 
-            initial={{ opacity: 0, scale: 0.98 }} 
-            animate={{ opacity: 1, scale: 1 }} 
+          <motion.div
+            key="dashboard"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.02 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full min-h-screen"
           >
-            <Dashboard 
+            <Dashboard
               onLaunchDesktop={(vm) => {
                 setActiveVm(vm);
                 setActiveMode('desktop');
               }}
               onLaunchAppLibrary={(vm) => {
                 setActiveVm(vm);
-                setActiveMode('application'); 
+                setActiveMode('application');
               }}
             />
           </motion.div>
         )}
-        
+
         {activeMode === 'desktop' && activeVm && (
-          <motion.div 
-            key="desktop" 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            key="desktop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="w-full h-full min-h-screen"
           >
-            <Workspace vm={activeVm} onClose={handleCloseSession} onLaunchApps={() => setActiveMode('application')} />
+            <Workspace
+              vm={activeVm}
+              onClose={handleCloseSession}
+              onLaunchApps={() => setActiveMode('application')}
+            />
           </motion.div>
         )}
-        
+
         {activeMode === 'application' && activeVm && !activeApp && (
-          <motion.div 
-            key="app-library" 
-            initial={{ opacity: 0, x: 20 }} 
-            animate={{ opacity: 1, x: 0 }} 
+          <motion.div
+            key="app-library"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full min-h-screen"
           >
-            <AppLibrary 
-              vm={activeVm} 
+            <AppLibrary
+              vm={activeVm}
               onBack={() => {
                 setActiveMode('dashboard');
                 setActiveVm(null);
-              }} 
-              onLaunchApp={(app) => setActiveApp(app)} 
+              }}
+              onLaunchApp={(app) => setActiveApp(app)}
             />
           </motion.div>
         )}
-        
+
         {activeMode === 'application' && activeVm && activeApp && (
-          <motion.div 
-            key="app-mode" 
-            initial={{ opacity: 0, scale: 0.95 }} 
-            animate={{ opacity: 1, scale: 1 }} 
+          <motion.div
+            key="app-mode"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full min-h-screen"
           >
-            <ApplicationMode 
-              vm={activeVm} 
-              app={activeApp} 
+            <ApplicationMode
+              vm={activeVm}
+              app={activeApp}
               onClose={handleCloseSession}
               onBackToLibrary={() => setActiveApp(null)}
             />
           </motion.div>
         )}
         {activeMode === 'diagnostics' && (
-          <motion.div 
-            key="diagnostics" 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.div
+            key="diagnostics"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full min-h-screen"

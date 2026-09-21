@@ -3,7 +3,6 @@ import { AuthenticationService } from '../services/authenticationService';
 import { UserService } from '../services/userService';
 import { ApiError, ErrorCode } from '../errors/ApiError';
 
-
 const authService = new AuthenticationService();
 const userService = new UserService();
 

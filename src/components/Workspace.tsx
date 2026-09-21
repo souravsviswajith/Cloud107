@@ -7,7 +7,7 @@ interface WorkspaceProps {
   onLaunchApps: () => void;
 }
 
-export function Workspace({ vm,  }: WorkspaceProps) {
+export function Workspace({ vm }: WorkspaceProps) {
   // Top Toolbar was removed as it's replaced by the FloatingWorkspaceBar
   return (
     <div className="min-h-screen bg-black text-white flex flex-col font-sans relative z-50">

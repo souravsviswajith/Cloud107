@@ -27,9 +27,9 @@ export function useFocusManagement(options: FocusManagementOptions = {}) {
       if (document.visibilityState === 'hidden') {
         handleFocusLoss();
       } else if (document.visibilityState === 'visible') {
-        // visibilitychange to visible typically coincides with focus, 
+        // visibilitychange to visible typically coincides with focus,
         // but we'll let the focus event handle true window focus to avoid false positives,
-        // unless we want to trigger regain immediately on visibility. 
+        // unless we want to trigger regain immediately on visibility.
         // We can just rely on focus/blur for the window state.
       }
     };

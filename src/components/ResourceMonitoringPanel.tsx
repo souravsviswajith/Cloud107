@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
-import { 
-  Activity, 
-  Cpu, 
-  HardDrive, 
-  LayoutGrid, 
-  Server, 
-  Wifi, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  Gauge, 
-  Clock, 
+import {
+  Activity,
+  Cpu,
+  HardDrive,
+  LayoutGrid,
+  Server,
+  Wifi,
+  ArrowUpRight,
+  ArrowDownRight,
+  Gauge,
+  Clock,
   Zap,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { VmInstance } from '../types';
-
 
 type EnvironmentResourceConfig = {
   cpuClass: string;
@@ -34,7 +33,12 @@ interface ResourceMonitoringPanelProps {
   onSelectVm?: (vm: VmInstance) => void;
 }
 
-export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }: ResourceMonitoringPanelProps) {
+export function ResourceMonitoringPanel({
+  vm,
+  config,
+  allVms = [],
+  onSelectVm,
+}: ResourceMonitoringPanelProps) {
   const isRunning = vm?.status === 'ready';
 
   // Live telemetry state
@@ -54,7 +58,13 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
 
   const totalRamGB = parseInt(config.ram) || 16;
   const totalStorageGB = 120;
-  const totalGpuMemGB = config.gpu.includes('4090') ? 24 : config.gpu.includes('4070') ? 12 : config.gpu.includes('3060') ? 12 : 16;
+  const totalGpuMemGB = config.gpu.includes('4090')
+    ? 24
+    : config.gpu.includes('4070')
+      ? 12
+      : config.gpu.includes('3060')
+        ? 12
+        : 16;
 
   // Interval for live metric jitter & uptime ticker
   useEffect(() => {
@@ -63,9 +73,9 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
     }
 
     const timer = setInterval(() => {
-      setUptimeSeconds(prev => prev + 1);
+      setUptimeSeconds((prev) => prev + 1);
 
-      setMetrics(prev => {
+      setMetrics((prev) => {
         const jitter = (val: number, min: number, max: number, step = 1.5) => {
           const delta = (Math.random() - 0.48) * step;
           return Math.min(max, Math.max(min, Number((val + delta).toFixed(1))));
@@ -75,7 +85,10 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
           cpuUtil: jitter(prev.cpuUtil, 12, 85, 3),
           ramUsedGB: jitter(prev.ramUsedGB, 4.0, totalRamGB * 0.85, 0.2),
           gpuUtil: config.gpu === 'CPU Only' ? 0 : jitter(prev.gpuUtil, 10, 92, 4),
-          gpuMemUsedGB: config.gpu === 'CPU Only' ? 0 : jitter(prev.gpuMemUsedGB, 1.5, totalGpuMemGB * 0.8, 0.1),
+          gpuMemUsedGB:
+            config.gpu === 'CPU Only'
+              ? 0
+              : jitter(prev.gpuMemUsedGB, 1.5, totalGpuMemGB * 0.8, 0.1),
           storageUsedGB: prev.storageUsedGB, // stable storage
           netUploadMbps: jitter(prev.netUploadMbps, 0.8, 25.0, 1.2),
           netDownloadMbps: jitter(prev.netDownloadMbps, 4.0, 85.0, 3.5),
@@ -95,7 +108,7 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
     const hrs = Math.floor(secs / 3600);
     const mins = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
-    return [hrs, mins, s].map(v => v.toString().padStart(2, '0')).join(':');
+    return [hrs, mins, s].map((v) => v.toString().padStart(2, '0')).join(':');
   };
 
   return (
@@ -108,8 +121,12 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
               <Activity size={18} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white tracking-tight">Real-Time Resource & Network Telemetry</h2>
-              <p className="text-xs text-neutral-400 mt-0.5">Live CPU, memory, GPU, storage, network, and transport metrics.</p>
+              <h2 className="text-xl font-semibold text-white tracking-tight">
+                Real-Time Resource & Network Telemetry
+              </h2>
+              <p className="text-xs text-neutral-400 mt-0.5">
+                Live CPU, memory, GPU, storage, network, and transport metrics.
+              </p>
             </div>
           </div>
         </div>
@@ -119,15 +136,15 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
           {allVms.length > 0 && onSelectVm && (
             <div className="flex items-center gap-2 bg-neutral-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-neutral-300">
               <Server size={14} className="text-neutral-500" />
-              <select 
-                value={vm?.id || ''} 
+              <select
+                value={vm?.id || ''}
                 onChange={(e) => {
-                  const target = allVms.find(v => v.id === e.target.value);
+                  const target = allVms.find((v) => v.id === e.target.value);
                   if (target) onSelectVm(target);
                 }}
                 className="bg-transparent text-white text-xs font-medium focus:outline-none cursor-pointer"
               >
-                {allVms.map(v => (
+                {allVms.map((v) => (
                   <option key={v.id} value={v.id} className="bg-neutral-900 text-white">
                     {v.name} ({v.status})
                   </option>
@@ -137,12 +154,16 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
           )}
 
           {/* Status Badge */}
-          <div className={`px-3 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-2 ${
-            isRunning 
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]' 
-              : 'bg-neutral-800 border-white/10 text-neutral-400'
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`} />
+          <div
+            className={`px-3 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-2 ${
+              isRunning
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
+                : 'bg-neutral-800 border-white/10 text-neutral-400'
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`}
+            />
             {isRunning ? 'Telemetry Active' : 'Environment Standby'}
           </div>
         </div>
@@ -150,7 +171,6 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
 
       {/* Main Grid: 3 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Column 1: Workspace Specification Summary */}
         <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex flex-col justify-between">
           <div>
@@ -170,7 +190,9 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 </span>
                 <div className="text-right">
                   <div className="font-medium text-white">{config.cpuClass}</div>
-                  <div className="text-[11px] text-neutral-400">{config.cpuCores} Cores / {config.cpuThreads} Threads</div>
+                  <div className="text-[11px] text-neutral-400">
+                    {config.cpuCores} Cores / {config.cpuThreads} Threads
+                  </div>
                 </div>
               </div>
 
@@ -199,14 +221,21 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 <span className="text-neutral-400 flex items-center gap-1.5">
                   <Clock size={14} className="text-neutral-500" /> Uptime
                 </span>
-                <span className="font-mono font-medium text-emerald-400">{formatUptime(uptimeSeconds)}</span>
+                <span className="font-mono font-medium text-emerald-400">
+                  {formatUptime(uptimeSeconds)}
+                </span>
               </div>
             </div>
           </div>
 
           <div className="mt-6 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500">
-            <span>Latency: <strong className="text-neutral-300 font-mono">{metrics.latencyMs} ms</strong></span>
-            <span>Region: <strong className="text-neutral-300">asia-east1</strong></span>
+            <span>
+              Latency:{' '}
+              <strong className="text-neutral-300 font-mono">{metrics.latencyMs} ms</strong>
+            </span>
+            <span>
+              Region: <strong className="text-neutral-300">asia-east1</strong>
+            </span>
           </div>
         </div>
 
@@ -217,7 +246,8 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
               <Gauge size={14} className="text-emerald-400" /> Resource Utilization
             </span>
             <span className="text-[11px] text-neutral-500 flex items-center gap-1">
-              <RefreshCw size={10} className={isRunning ? "animate-spin text-emerald-400" : ""} /> Live 1s telemetry
+              <RefreshCw size={10} className={isRunning ? 'animate-spin text-emerald-400' : ''} />{' '}
+              Live 1s telemetry
             </span>
           </div>
 
@@ -228,10 +258,12 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 <span className="text-xs text-neutral-400 font-medium flex items-center gap-1.5">
                   <Cpu size={14} className="text-blue-400" /> CPU Utilization
                 </span>
-                <span className="text-xs font-mono font-semibold text-white">{metrics.cpuUtil}%</span>
+                <span className="text-xs font-mono font-semibold text-white">
+                  {metrics.cpuUtil}%
+                </span>
               </div>
               <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-blue-500 transition-all duration-500 rounded-full"
                   style={{ width: `${Math.min(100, metrics.cpuUtil)}%` }}
                 />
@@ -254,7 +286,7 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 </span>
               </div>
               <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-purple-500 transition-all duration-500 rounded-full"
                   style={{ width: `${Math.min(100, (metrics.ramUsedGB / totalRamGB) * 100)}%` }}
                 />
@@ -277,13 +309,20 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 </span>
               </div>
               <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-amber-500 transition-all duration-500 rounded-full"
-                  style={{ width: `${config.gpu === 'CPU Only' ? 0 : Math.min(100, metrics.gpuUtil)}%` }}
+                  style={{
+                    width: `${config.gpu === 'CPU Only' ? 0 : Math.min(100, metrics.gpuUtil)}%`,
+                  }}
                 />
               </div>
               <div className="flex justify-between text-[10px] text-neutral-500 mt-1 font-mono">
-                <span>VRAM: {config.gpu === 'CPU Only' ? 'N/A' : `${metrics.gpuMemUsedGB.toFixed(1)} GB / ${totalGpuMemGB} GB`}</span>
+                <span>
+                  VRAM:{' '}
+                  {config.gpu === 'CPU Only'
+                    ? 'N/A'
+                    : `${metrics.gpuMemUsedGB.toFixed(1)} GB / ${totalGpuMemGB} GB`}
+                </span>
                 <span>{config.gpu}</span>
               </div>
             </div>
@@ -299,7 +338,7 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
                 </span>
               </div>
               <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-indigo-500 transition-all duration-500 rounded-full"
                   style={{ width: `${(metrics.storageUsedGB / totalStorageGB) * 100}%` }}
                 />
@@ -317,21 +356,27 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
               <span className="text-[11px] text-neutral-400 flex items-center gap-1">
                 <ArrowUpRight size={12} className="text-emerald-400" /> Upload
               </span>
-              <span className="text-xs font-mono font-medium text-white">{metrics.netUploadMbps.toFixed(1)} Mbps</span>
+              <span className="text-xs font-mono font-medium text-white">
+                {metrics.netUploadMbps.toFixed(1)} Mbps
+              </span>
             </div>
 
             <div className="bg-white/[0.02] border border-white/5 rounded-lg p-2.5 flex items-center justify-between">
               <span className="text-[11px] text-neutral-400 flex items-center gap-1">
                 <ArrowDownRight size={12} className="text-blue-400" /> Download
               </span>
-              <span className="text-xs font-mono font-medium text-white">{metrics.netDownloadMbps.toFixed(1)} Mbps</span>
+              <span className="text-xs font-mono font-medium text-white">
+                {metrics.netDownloadMbps.toFixed(1)} Mbps
+              </span>
             </div>
 
             <div className="bg-white/[0.02] border border-white/5 rounded-lg p-2.5 flex items-center justify-between">
               <span className="text-[11px] text-neutral-400 flex items-center gap-1">
                 <Zap size={12} className="text-amber-400" /> Latency
               </span>
-              <span className="text-xs font-mono font-medium text-white">{metrics.latencyMs} ms</span>
+              <span className="text-xs font-mono font-medium text-white">
+                {metrics.latencyMs} ms
+              </span>
             </div>
 
             <div className="bg-white/[0.02] border border-white/5 rounded-lg p-2.5 flex items-center justify-between">
@@ -348,8 +393,12 @@ export function ResourceMonitoringPanel({ vm, config, allVms = [], onSelectVm }:
       <div className="mt-8 pt-6 border-t border-white/10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-white tracking-tight uppercase">Runtime State</h3>
-            <p className="text-[11px] text-neutral-500 mt-1">Observed state from the active environment telemetry surface.</p>
+            <h3 className="text-sm font-semibold text-white tracking-tight uppercase">
+              Runtime State
+            </h3>
+            <p className="text-[11px] text-neutral-500 mt-1">
+              Observed state from the active environment telemetry surface.
+            </p>
           </div>
           <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-400">
             <span>Uptime {formatUptime(uptimeSeconds)}</span>

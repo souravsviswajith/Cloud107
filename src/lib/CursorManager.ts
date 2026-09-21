@@ -28,7 +28,7 @@ export class CursorManager {
 
   public detach() {
     if (this.containerElement) {
-       this.containerElement.style.cursor = 'auto';
+      this.containerElement.style.cursor = 'auto';
     }
     this.containerElement = null;
   }

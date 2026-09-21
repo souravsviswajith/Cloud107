@@ -2,30 +2,44 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { MockWorkspaceProvider } from '../MockWorkspaceProvider';
 import { WorkspaceState } from '../../../../types';
 
-
 describe('MockWorkspaceProvider', () => {
   let provider: MockWorkspaceProvider;
   let mockRepo: unknown;
-  
+
   beforeEach(() => {
     provider = new MockWorkspaceProvider();
-    
+
     mockRepo = {
       findAllByUserId: vi.fn().mockResolvedValue([]),
       findByIdAndUserId: vi.fn().mockImplementation(async (id, userId) => ({
-        id, name: 'Mock WS', userId, state: WorkspaceState.Offline, createdAt: '', updatedAt: ''
+        id,
+        name: 'Mock WS',
+        userId,
+        state: WorkspaceState.Offline,
+        createdAt: '',
+        updatedAt: '',
       })),
       create: vi.fn().mockImplementation(async (id, name, userId, state) => ({
-        id, name, userId, state, createdAt: '', updatedAt: ''
+        id,
+        name,
+        userId,
+        state,
+        createdAt: '',
+        updatedAt: '',
       })),
       updateState: vi.fn().mockImplementation(async (id, userId, state) => ({
-        id, name: 'Mock WS', userId, state, createdAt: '', updatedAt: ''
+        id,
+        name: 'Mock WS',
+        userId,
+        state,
+        createdAt: '',
+        updatedAt: '',
       })),
     };
-    
+
     // Inject the mock repo
     (provider as unknown as { workspaceRepository: unknown }).workspaceRepository = mockRepo;
-    
+
     vi.useFakeTimers();
   });
 
@@ -39,7 +53,7 @@ describe('MockWorkspaceProvider', () => {
     expect(ws.name).toBe('Test WS');
     expect(ws.userId).toBe(1);
     expect(ws.state).toBe(WorkspaceState.Offline);
-    
+
     const fetched = await provider.get(ws.id, 1);
     expect(fetched?.id).toBe(ws.id);
   });

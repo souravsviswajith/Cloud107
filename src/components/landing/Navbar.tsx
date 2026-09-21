@@ -4,7 +4,13 @@ import { Container } from '../common/Container';
 import { Button } from '../common/Button';
 import { motion, AnimatePresence } from 'motion/react';
 
-export function Navbar({ onLaunch, launchState = 'idle' }: { onLaunch: () => void, launchState?: string }) {
+export function Navbar({
+  onLaunch,
+  launchState = 'idle',
+}: {
+  onLaunch: () => void;
+  launchState?: string;
+}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -29,13 +35,20 @@ export function Navbar({ onLaunch, launchState = 'idle' }: { onLaunch: () => voi
       <Container>
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <img src="/assets/cloud107-logo.png" alt="Cloud 107" className="w-9 h-9 rounded-lg object-cover border border-white/10" />
+            <img
+              src="/assets/cloud107-logo.png"
+              alt="Cloud 107"
+              className="w-9 h-9 rounded-lg object-cover border border-white/10"
+            />
             <span className="font-semibold text-white tracking-tight">Cloud 107</span>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
+            <a
+              href="#"
+              className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+            >
               Documentation
             </a>
             <button className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">
@@ -70,10 +83,13 @@ export function Navbar({ onLaunch, launchState = 'idle' }: { onLaunch: () => voi
               <a href="#" className="text-sm font-medium text-neutral-300">
                 Documentation
               </a>
-              <button className="text-sm font-medium text-neutral-300 text-left">
-                Sign In
-              </button>
-              <Button variant="primary" className="w-full mt-2" onClick={onLaunch} disabled={isLaunching}>
+              <button className="text-sm font-medium text-neutral-300 text-left">Sign In</button>
+              <Button
+                variant="primary"
+                className="w-full mt-2"
+                onClick={onLaunch}
+                disabled={isLaunching}
+              >
                 {isLaunching ? 'Launching...' : 'Launch Demo'}
               </Button>
             </div>

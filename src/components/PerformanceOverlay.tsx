@@ -11,7 +11,7 @@ interface PerformanceOverlayProps {
 export function PerformanceOverlay({ vm, onClose }: PerformanceOverlayProps) {
   return (
     <div className="fixed inset-0 z-[120] pointer-events-none flex justify-center pt-20">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -23,7 +23,7 @@ export function PerformanceOverlay({ vm, onClose }: PerformanceOverlayProps) {
             <Activity className="text-blue-400" size={20} />
             Performance & Diagnostics
           </h3>
-          <button 
+          <button
             onClick={onClose}
             className="p-1.5 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors"
           >
@@ -37,23 +37,27 @@ export function PerformanceOverlay({ vm, onClose }: PerformanceOverlayProps) {
               <SignalHigh size={16} />
               <span className="text-sm">Network Latency</span>
             </div>
-            <div className="text-3xl font-light text-emerald-400">12<span className="text-sm text-emerald-500/50 ml-1">ms</span></div>
+            <div className="text-3xl font-light text-emerald-400">
+              12<span className="text-sm text-emerald-500/50 ml-1">ms</span>
+            </div>
             <div className="mt-2 text-xs text-neutral-500">Jitter: 1.2ms | Packet Loss: 0%</div>
           </div>
-          
+
           <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col">
             <div className="flex items-center gap-2 text-neutral-400 mb-2">
               <Activity size={16} />
               <span className="text-sm">Stream Quality</span>
             </div>
-            <div className="text-3xl font-light text-blue-400">60<span className="text-sm text-blue-500/50 ml-1">fps</span></div>
+            <div className="text-3xl font-light text-blue-400">
+              60<span className="text-sm text-blue-500/50 ml-1">fps</span>
+            </div>
             <div className="mt-2 text-xs text-neutral-500">Bitrate: 15 Mbps | AV1 Codec</div>
           </div>
         </div>
 
         <div className="space-y-4 border-t border-white/10 pt-6">
           <h4 className="text-sm font-medium text-neutral-300">VM Hardware ({vm.name})</h4>
-          
+
           <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col">
               <div className="flex items-center gap-2 text-neutral-400 mb-1">
@@ -65,7 +69,7 @@ export function PerformanceOverlay({ vm, onClose }: PerformanceOverlayProps) {
                 <div className="h-full bg-indigo-400 w-1/4 rounded-full" />
               </div>
             </div>
-            
+
             <div className="flex flex-col">
               <div className="flex items-center gap-2 text-neutral-400 mb-1">
                 <Activity size={14} />
@@ -76,20 +80,21 @@ export function PerformanceOverlay({ vm, onClose }: PerformanceOverlayProps) {
                 <div className="h-full bg-purple-400 w-[45%] rounded-full" />
               </div>
             </div>
-            
+
             <div className="flex flex-col">
               <div className="flex items-center gap-2 text-neutral-400 mb-1">
                 <MemoryStick size={14} />
                 <span className="text-xs">Memory</span>
               </div>
-              <div className="text-lg text-white">12 GB <span className="text-xs text-neutral-500">/ {vm.ram}</span></div>
+              <div className="text-lg text-white">
+                12 GB <span className="text-xs text-neutral-500">/ {vm.ram}</span>
+              </div>
               <div className="w-full h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
                 <div className="h-full bg-blue-400 w-[60%] rounded-full" />
               </div>
             </div>
           </div>
         </div>
-
       </motion.div>
     </div>
   );

@@ -1,6 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Zap, MonitorPlay, ShieldCheck, Settings2, Activity, Gauge, AppWindow, Server } from 'lucide-react';
+import {
+  Zap,
+  MonitorPlay,
+  ShieldCheck,
+  Settings2,
+  Activity,
+  Gauge,
+  AppWindow,
+  Server,
+} from 'lucide-react';
 import { Container } from '../common/Container';
 import { Section } from '../common/Section';
 
@@ -14,7 +23,8 @@ export function FeatureCards() {
     {
       icon: MonitorPlay,
       title: 'Browser-Based Environment',
-      description: 'Full graphical environment rendering directly in your tab without installation.',
+      description:
+        'Full graphical environment rendering directly in your tab without installation.',
     },
     {
       icon: ShieldCheck,
@@ -24,17 +34,20 @@ export function FeatureCards() {
     {
       icon: Settings2,
       title: 'Declare Resources Before Launch',
-      description: 'Tailor your CPU, GPU, RAM, and Storage exactly to your workload needs before booting.',
+      description:
+        'Tailor your CPU, GPU, RAM, and Storage exactly to your workload needs before booting.',
     },
     {
       icon: Activity,
       title: 'Live Resource Monitoring',
-      description: 'Track real-time CPU, Memory, GPU, Storage, and Network usage with low-latency telemetry.',
+      description:
+        'Track real-time CPU, Memory, GPU, Storage, and Network usage with low-latency telemetry.',
     },
     {
       icon: Gauge,
       title: 'Observed Resource State',
-      description: 'Inspect live CPU, memory, GPU, storage, network, runtime, and health state from the control plane.',
+      description:
+        'Inspect live CPU, memory, GPU, storage, network, runtime, and health state from the control plane.',
     },
     {
       icon: AppWindow,
@@ -67,9 +80,7 @@ export function FeatureCards() {
               <h3 className="text-xl font-medium text-white mb-3 tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-sm text-neutral-400 leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-sm text-neutral-400 leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>

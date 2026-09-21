@@ -15,7 +15,7 @@ export function BrowserApp() {
     if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
       finalUrl = 'https://' + finalUrl;
     }
-    
+
     // Check if it's likely to be blocked
     if (finalUrl.includes('google.com') || finalUrl.includes('openai.com')) {
       setHasError(true);
@@ -24,7 +24,7 @@ export function BrowserApp() {
       setIsLoading(false);
       return;
     }
-    
+
     setHasError(false);
     setUrl(finalUrl);
     setInputUrl(finalUrl);
@@ -61,17 +61,26 @@ export function BrowserApp() {
         <button className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600">
           <ArrowRight size={16} />
         </button>
-        <button className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600" onClick={handleRefresh}>
-          <RotateCw size={16} className={isLoading ? "animate-spin" : ""} />
+        <button
+          className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600"
+          onClick={handleRefresh}
+        >
+          <RotateCw size={16} className={isLoading ? 'animate-spin' : ''} />
         </button>
-        <button className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600" onClick={handleHome}>
+        <button
+          className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600"
+          onClick={handleHome}
+        >
           <Home size={16} />
         </button>
 
-        <form onSubmit={handleNavigate} className="flex-1 flex items-center bg-white rounded-full border border-neutral-300 px-3 py-1 text-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
+        <form
+          onSubmit={handleNavigate}
+          className="flex-1 flex items-center bg-white rounded-full border border-neutral-300 px-3 py-1 text-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent"
+        >
           <Lock size={12} className="text-emerald-600 mr-2" />
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
             className="flex-1 outline-none bg-transparent"
@@ -83,10 +92,10 @@ export function BrowserApp() {
       <div className="flex-1 relative bg-white">
         <AnimatePresence mode="wait">
           {hasError ? (
-            <motion.div 
+            <motion.div
               key="error"
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-neutral-50"
             >
@@ -94,10 +103,13 @@ export function BrowserApp() {
                 <Lock size={24} className="text-neutral-500" />
               </div>
               <h3 className="text-lg font-medium text-neutral-800 mb-2">Refused to Connect</h3>
-              <p className="text-neutral-500 text-sm mb-6 max-w-sm">The destination website prevents embedding due to its security policy (X-Frame-Options).</p>
-              <a 
-                href={url} 
-                target="_blank" 
+              <p className="text-neutral-500 text-sm mb-6 max-w-sm">
+                The destination website prevents embedding due to its security policy
+                (X-Frame-Options).
+              </p>
+              <a
+                href={url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
               >

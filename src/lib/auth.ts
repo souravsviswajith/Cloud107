@@ -1,6 +1,6 @@
 /**
  * Cloud107 Self-Hosted Identity & Authentication Client
- * 
+ *
  * Implements self-hosted WebAuthn / FIDO2 authentication and local operator identity.
  * Replaces centralized SaaS dependencies with sovereign cryptographic identity.
  */
@@ -52,7 +52,8 @@ class Cloud107Auth {
       email: 'operator@cloud107.local',
       displayName: 'Cloud107 Operator',
       roles: ['admin', 'operator'],
-      token: 'c107-token-' + btoa(JSON.stringify({ uid: 'c107-local-operator-001', roles: ['admin'] })),
+      token:
+        'c107-token-' + btoa(JSON.stringify({ uid: 'c107-local-operator-001', roles: ['admin'] })),
       credentialType: 'local_operator',
       createdAt: Date.now(),
     };
@@ -125,7 +126,8 @@ class Cloud107Auth {
       email: 'operator@cloud107.local',
       displayName: 'Cloud107 Operator',
       roles: ['admin', 'operator'],
-      token: 'c107-token-' + btoa(JSON.stringify({ uid: 'c107-local-operator-001', roles: ['admin'] })),
+      token:
+        'c107-token-' + btoa(JSON.stringify({ uid: 'c107-local-operator-001', roles: ['admin'] })),
       credentialType: 'local_operator',
       createdAt: Date.now(),
     };

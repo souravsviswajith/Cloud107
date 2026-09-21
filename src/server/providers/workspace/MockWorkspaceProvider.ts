@@ -58,7 +58,7 @@ export class MockWorkspaceProvider implements WorkspaceProvider {
     return workspace.state;
   }
 
-  getCapabilities(): import("./WorkspaceProvider").WorkspaceProviderCapabilities {
+  getCapabilities(): import('./WorkspaceProvider').WorkspaceProviderCapabilities {
     return { supportsSuspend: true, supportsMetrics: true, supportsDynamicResize: true };
   }
 
@@ -68,11 +68,15 @@ export class MockWorkspaceProvider implements WorkspaceProvider {
       cpuUsage: Math.random() * 100,
       memoryUsage: Math.random() * 100,
       uptime: 3600,
-      status: 'simulated'
+      status: 'simulated',
     };
   }
 
-  private async _transitionState(id: string, userId: number, newState: WorkspaceState): Promise<Workspace> {
+  private async _transitionState(
+    id: string,
+    userId: number,
+    newState: WorkspaceState,
+  ): Promise<Workspace> {
     const workspace = await this.workspaceRepository.findByIdAndUserId(id, userId);
     if (!workspace) {
       throw new Error('Workspace not found or unauthorized');
@@ -100,7 +104,11 @@ export class MockWorkspaceProvider implements WorkspaceProvider {
     if (nextState) {
       setTimeout(async () => {
         try {
-          await this.workspaceRepository.updateState(workspace.id, workspace.userId, nextState as WorkspaceState);
+          await this.workspaceRepository.updateState(
+            workspace.id,
+            workspace.userId,
+            nextState as WorkspaceState,
+          );
           logger.info(`[Simulator] Workspace ${workspace.id} transitioned to ${nextState}`);
         } catch (e) {
           logger.error(`[Simulator] Failed to transition workspace ${workspace.id}`, { error: e });

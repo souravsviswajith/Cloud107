@@ -1,4 +1,4 @@
-import type React from "react";
+import type React from 'react';
 export enum WorkspaceState {
   Offline = 'Offline',
   Starting = 'Starting',

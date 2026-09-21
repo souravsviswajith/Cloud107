@@ -1,9 +1,7 @@
-import { 
-  WorkspaceProvider, 
-  WorkspaceMetrics, 
+import {
+  WorkspaceProvider,
+  WorkspaceMetrics,
   WorkspaceProviderCapabilities,
-  
-  
 } from './WorkspaceProvider';
 import { Workspace, WorkspaceState } from '../../../types';
 import { WorkspaceRepository } from '../../repositories/workspaceRepository';
@@ -28,7 +26,7 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
     return {
       supportsSuspend: true,
       supportsMetrics: true,
-      supportsDynamicResize: false
+      supportsDynamicResize: false,
     };
   }
 
@@ -43,7 +41,7 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async create(name: string, userId: number): Promise<Workspace> {
     const id = uuidv4();
     logger.info(`[Hyper-V] Provisioning new VM for workspace ${id}`);
-    
+
     try {
       const command = HyperVCommandBuilder.createVM(id, name);
       await this.executor.execute(command);
@@ -57,12 +55,12 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async start(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Starting VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     try {
       await this.updateState(id, userId, WorkspaceState.Starting);
       const command = HyperVCommandBuilder.startVM(id);
       await this.executor.execute(command);
-      
+
       const updated = await this.updateState(id, userId, WorkspaceState.Running);
       return updated;
     } catch (error) {
@@ -75,12 +73,12 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async stop(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Stopping VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     try {
       await this.updateState(id, userId, WorkspaceState.Stopping);
       const command = HyperVCommandBuilder.stopVM(id);
       await this.executor.execute(command);
-      
+
       const updated = await this.updateState(id, userId, WorkspaceState.Offline);
       return updated;
     } catch (error) {
@@ -92,12 +90,12 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async restart(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Restarting VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     try {
       await this.updateState(id, userId, WorkspaceState.Starting);
       const command = HyperVCommandBuilder.restartVM(id);
       await this.executor.execute(command);
-      
+
       const updated = await this.updateState(id, userId, WorkspaceState.Running);
       return updated;
     } catch (error) {
@@ -110,12 +108,12 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async suspend(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Suspending VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     try {
       await this.updateState(id, userId, WorkspaceState.Stopping);
       const command = HyperVCommandBuilder.suspendVM(id);
       await this.executor.execute(command);
-      
+
       const updated = await this.updateState(id, userId, WorkspaceState.Stopped);
       return updated;
     } catch (error) {
@@ -127,7 +125,7 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async connect(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Connecting to VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     // In a real implementation this might setup XRDP/VNC endpoints, tokens, etc.
     // For now we just return the workspace indicating connecting state.
     return this.updateState(id, userId, WorkspaceState.Connecting);
@@ -136,7 +134,7 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
   async disconnect(id: string, userId: number): Promise<Workspace> {
     logger.info(`[Hyper-V] Disconnecting from VM for workspace ${id}, user ${userId}`);
     await this.verifyAccess(id, userId);
-    
+
     // We revert to running state once disconnected (assuming it wasn't stopped)
     return this.updateState(id, userId, WorkspaceState.Running);
   }
@@ -147,18 +145,18 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
 
   async getStatus(id: string, userId: number): Promise<WorkspaceState> {
     await this.verifyAccess(id, userId);
-    
+
     try {
       const command = HyperVCommandBuilder.getVM(id);
       const output = await this.executor.execute(command);
       const state = HyperVCommandParser.parseVMStatus(output);
-      
+
       // Sync state back to DB if it differs
       const workspace = await this.get(id, userId);
       if (workspace && workspace.state !== state) {
         await this.updateState(id, userId, state);
       }
-      
+
       return state;
     } catch (error) {
       logger.error(`[Hyper-V] Failed to get status for VM ${id}`, { error });
@@ -168,35 +166,35 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
 
   async getMetrics(id: string, userId: number): Promise<WorkspaceMetrics> {
     await this.verifyAccess(id, userId);
-    
+
     try {
       const command = HyperVCommandBuilder.getVMMetrics(id);
       const output = await this.executor.execute(command);
       const parsed = HyperVCommandParser.parseVMMetrics(output);
-      
+
       const status = await this.getStatus(id, userId);
-      
+
       const metrics: WorkspaceMetrics = {
         cpuUsage: parsed.cpuUsage || 0,
         memoryUsage: parsed.memoryUsage || 0,
         uptime: 0, // Would be fetched from getVM, mocked for now
-        status: status.toString()
+        status: status.toString(),
       };
-      
+
       workspaceEvents.emit(WorkspaceEventTypes.METRICS_UPDATED, {
         workspaceId: id,
         userId,
         metrics,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       return metrics;
     } catch (error) {
       logger.error(`[Hyper-V] Failed to get metrics for VM ${id}`, { error });
       throw new HyperVError(`Failed to get metrics: ${error}`);
     }
   }
-  
+
   private async verifyAccess(id: string, userId: number): Promise<Workspace> {
     const workspace = await this.get(id, userId);
     if (!workspace) {
@@ -204,24 +202,28 @@ export class HyperVWorkspaceProvider implements WorkspaceProvider {
     }
     return workspace;
   }
-  
-  private async updateState(id: string, userId: number, newState: WorkspaceState): Promise<Workspace> {
+
+  private async updateState(
+    id: string,
+    userId: number,
+    newState: WorkspaceState,
+  ): Promise<Workspace> {
     await this.verifyAccess(id, userId);
     const oldState = (await this.get(id, userId))!.state;
-    
+
     const updated = await this.workspaceRepository.updateState(id, userId, newState);
     if (!updated) {
       throw new Error('Failed to update workspace state');
     }
-    
+
     workspaceEvents.emit(WorkspaceEventTypes.STATE_CHANGED, {
       workspaceId: id,
       userId,
       oldState,
       newState,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
+
     return updated;
   }
 }

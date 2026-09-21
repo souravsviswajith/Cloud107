@@ -1,6 +1,6 @@
 /**
  * Cloud107 Source-First Update Protocol Types
- * 
+ *
  * Strict specifications for cryptographically verified updates, provenance checks,
  * compatibility matrices, recovery checkpoints, and fail-closed state machines.
  */

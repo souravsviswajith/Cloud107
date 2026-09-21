@@ -11,14 +11,14 @@ describe('PowerShellExecutor', () => {
   it('should use mock execute on non-Windows platforms', async () => {
     const originalPlatform = process.platform;
     Object.defineProperty(process, 'platform', {
-      value: 'linux'
+      value: 'linux',
     });
 
     const output = await executor.execute('Get-VM');
     expect(output).toContain('MockVM');
 
     Object.defineProperty(process, 'platform', {
-      value: originalPlatform
+      value: originalPlatform,
     });
   });
 });

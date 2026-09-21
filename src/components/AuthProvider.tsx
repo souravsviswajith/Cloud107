@@ -12,12 +12,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       } else {
         // Automatically establish self-hosted operator session
-        auth.signInAsLocalOperator().then((op) => {
-          setUser(op);
-          setLoading(false);
-        }).catch(() => {
-          setLoading(false);
-        });
+        auth
+          .signInAsLocalOperator()
+          .then((op) => {
+            setUser(op);
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
       }
     });
 

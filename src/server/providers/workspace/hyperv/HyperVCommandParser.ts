@@ -25,7 +25,7 @@ export class HyperVCommandParser {
       if (!output) return { cpuUsage: 0, memoryUsage: 0 };
       const parsed = JSON.parse(output);
       const metricsObj = Array.isArray(parsed) ? parsed[0] : parsed;
-      
+
       return {
         cpuUsage: Number(metricsObj?.AverageProcessorUsage) || 0,
         memoryUsage: Number(metricsObj?.AverageMemoryUsage) || 0,

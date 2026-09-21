@@ -15,31 +15,40 @@ export class ApplicationRepository {
   }
 
   async create(app: Omit<Application, 'createdAt' | 'updatedAt'>): Promise<Application> {
-    const record = await db.insert(applications).values({
-      id: app.id,
-      name: app.name,
-      category: app.category,
-      icon: app.icon,
-      color: app.color,
-      enabled: app.enabled ?? true,
-      installed: app.installed ?? true,
-    }).returning();
+    const record = await db
+      .insert(applications)
+      .values({
+        id: app.id,
+        name: app.name,
+        category: app.category,
+        icon: app.icon,
+        color: app.color,
+        enabled: app.enabled ?? true,
+        installed: app.installed ?? true,
+      })
+      .returning();
     return this.mapApplication(record[0]);
   }
 
-  async createSession(session: Omit<ApplicationSession, 'createdAt' | 'updatedAt'>): Promise<ApplicationSession> {
-    const record = await db.insert(applicationSessions).values({
-      id: session.id,
-      applicationId: session.applicationId,
-      workspaceId: session.workspaceId,
-      userId: session.userId,
-      status: session.status,
-    }).returning();
+  async createSession(
+    session: Omit<ApplicationSession, 'createdAt' | 'updatedAt'>,
+  ): Promise<ApplicationSession> {
+    const record = await db
+      .insert(applicationSessions)
+      .values({
+        id: session.id,
+        applicationId: session.applicationId,
+        workspaceId: session.workspaceId,
+        userId: session.userId,
+        status: session.status,
+      })
+      .returning();
     return this.mapSession(record[0]);
   }
 
   async updateSessionStatus(id: string, status: string): Promise<ApplicationSession | null> {
-    const record = await db.update(applicationSessions)
+    const record = await db
+      .update(applicationSessions)
       .set({ status, updatedAt: new Date() })
       .where(eq(applicationSessions.id, id))
       .returning();
@@ -47,20 +56,29 @@ export class ApplicationRepository {
   }
 
   async findSessionById(id: string): Promise<ApplicationSession | null> {
-    const record = await db.select().from(applicationSessions).where(eq(applicationSessions.id, id)).limit(1);
+    const record = await db
+      .select()
+      .from(applicationSessions)
+      .where(eq(applicationSessions.id, id))
+      .limit(1);
     return record.length > 0 ? this.mapSession(record[0]) : null;
   }
-  
-  async findActiveSession(applicationId: string, workspaceId: string): Promise<ApplicationSession | null> {
-    const records = await db.select()
+
+  async findActiveSession(
+    applicationId: string,
+    workspaceId: string,
+  ): Promise<ApplicationSession | null> {
+    const records = await db
+      .select()
       .from(applicationSessions)
       .where(
         and(
           eq(applicationSessions.applicationId, applicationId),
           eq(applicationSessions.workspaceId, workspaceId),
-          eq(applicationSessions.status, 'running')
-        )
-      ).limit(1);
+          eq(applicationSessions.status, 'running'),
+        ),
+      )
+      .limit(1);
     return records.length > 0 ? this.mapSession(records[0]) : null;
   }
 
