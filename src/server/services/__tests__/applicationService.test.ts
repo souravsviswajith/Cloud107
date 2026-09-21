@@ -1,15 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mocked } from 'vitest';
 import { ApplicationService } from '../applicationService';
-import { WorkspaceState, Application, ApplicationSession } from '../../../types';
+import { WorkspaceState, Workspace, Application, ApplicationSession } from '../../../types';
 import { ApplicationRepository } from '../../repositories/applicationRepository';
 import { WorkspaceRepository } from '../../repositories/workspaceRepository';
 import { WorkspaceProvider } from '../../providers/workspace';
 
 describe('ApplicationService', () => {
   let applicationService: ApplicationService;
-  let mockAppRepo: vi.Mocked<ApplicationRepository>;
-  let mockWorkspaceRepo: vi.Mocked<WorkspaceRepository>;
-  let mockProvider: vi.Mocked<WorkspaceProvider>;
+  let mockAppRepo: Mocked<ApplicationRepository>;
+  let mockWorkspaceRepo: Mocked<WorkspaceRepository>;
+  let mockProvider: Mocked<WorkspaceProvider>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,11 +23,11 @@ describe('ApplicationService', () => {
       updateSessionStatus: vi.fn(),
       findSessionById: vi.fn(),
       findActiveSession: vi.fn(),
-    } as unknown as vi.Mocked<ApplicationRepository>;
+    } as unknown as Mocked<ApplicationRepository>;
 
     mockWorkspaceRepo = {
       findByIdAndUserId: vi.fn(),
-    } as unknown as vi.Mocked<WorkspaceRepository>;
+    } as unknown as Mocked<WorkspaceRepository>;
 
     mockProvider = {
       list: vi.fn(),
@@ -39,7 +40,7 @@ describe('ApplicationService', () => {
       connect: vi.fn(),
       disconnect: vi.fn(),
       metrics: vi.fn(),
-    } as unknown as vi.Mocked<WorkspaceProvider>;
+    } as unknown as Mocked<WorkspaceProvider>;
 
     applicationService = new ApplicationService(mockAppRepo, mockWorkspaceRepo, mockProvider);
   });
@@ -64,7 +65,7 @@ describe('ApplicationService', () => {
   it('should throw if launching on a non-running workspace', async () => {
     mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
       state: WorkspaceState.Offline,
-    } as Partial<Workspace>);
+    } as Workspace);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
       /Cannot launch application/,
     );
@@ -73,7 +74,7 @@ describe('ApplicationService', () => {
   it('should throw if application not found', async () => {
     mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
       state: WorkspaceState.Running,
-    } as Partial<Workspace>);
+    } as Workspace);
     mockAppRepo.findById.mockResolvedValue(null);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
       'Application not found',
@@ -83,11 +84,11 @@ describe('ApplicationService', () => {
   it('should throw if application is disabled', async () => {
     mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
       state: WorkspaceState.Running,
-    } as Partial<Workspace>);
+    } as Workspace);
     mockAppRepo.findById.mockResolvedValue({
       enabled: false,
       installed: true,
-    } as Partial<Workspace>);
+    } as Application);
     await expect(applicationService.launchApplication('app-1', 'ws-1', 1)).rejects.toThrow(
       'Application is currently disabled',
     );
@@ -96,11 +97,11 @@ describe('ApplicationService', () => {
   it('should launch an application successfully', async () => {
     mockWorkspaceRepo.findByIdAndUserId.mockResolvedValue({
       state: WorkspaceState.Running,
-    } as Partial<Workspace>);
+    } as Workspace);
     mockAppRepo.findById.mockResolvedValue({
       enabled: true,
       installed: true,
-    } as Partial<Workspace>);
+    } as Application);
     mockAppRepo.findActiveSession.mockResolvedValue(null);
 
     const mockSession = { id: 'session-1' } as ApplicationSession;

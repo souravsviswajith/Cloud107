@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mocked } from 'vitest';
 import { WorkspaceService } from '../workspaceService';
 import { WorkspaceState } from '../../../types';
 import { WorkspaceProvider } from '../../providers/workspace';
 
 describe('WorkspaceService', () => {
   let workspaceService: WorkspaceService;
-  let mockProvider: vi.Mocked<WorkspaceProvider>;
+  let mockProvider: Mocked<WorkspaceProvider>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,7 +23,7 @@ describe('WorkspaceService', () => {
       disconnect: vi.fn(),
       getMetrics: vi.fn(),
       getStatus: vi.fn(),
-    } as unknown as vi.Mocked<WorkspaceProvider>;
+    } as unknown as Mocked<WorkspaceProvider>;
 
     workspaceService = new WorkspaceService(mockProvider);
   });

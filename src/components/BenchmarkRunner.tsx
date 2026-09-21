@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { Play, Cpu, Network, Monitor } from 'lucide-react';
 
+interface BenchmarkResults {
+  network: { latency: string; jitter: string; bandwidth: string };
+  decode: { hwAcceleration: string; time: string };
+  render: { fps: number; dropped: number };
+}
+
 export function BenchmarkRunner() {
   const [status, setStatus] = useState<'idle' | 'running' | 'completed'>('idle');
   const [progress, setProgress] = useState(0);
-  const [results, setResults] = useState<unknown>(null);
+  const [results, setResults] = useState<BenchmarkResults | null>(null);
 
   const runBenchmark = () => {
     setStatus('running');

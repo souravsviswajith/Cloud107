@@ -1,10 +1,27 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { HyperVWorkspaceProvider } from '../HyperVWorkspaceProvider';
 import { WorkspaceState } from '../../../../types';
 
+interface MockWorkspaceRepository {
+  findAllByUserId: Mock;
+  findByIdAndUserId: Mock;
+  create: Mock;
+  updateState: Mock;
+}
+
+interface HyperVProviderInternals {
+  workspaceRepository: MockWorkspaceRepository;
+  executor: { execute: Mock };
+}
+
+function internalsOf(provider: HyperVWorkspaceProvider): HyperVProviderInternals {
+  return provider as unknown as HyperVProviderInternals;
+}
+
 describe('HyperVWorkspaceProvider', () => {
   let provider: HyperVWorkspaceProvider;
-  let mockRepo: unknown;
+  let mockRepo: MockWorkspaceRepository;
 
   beforeEach(() => {
     provider = new HyperVWorkspaceProvider();
@@ -37,14 +54,9 @@ describe('HyperVWorkspaceProvider', () => {
       })),
     };
 
-    (
-      provider as unknown as { workspaceRepository: unknown; executor: unknown }
-    ).workspaceRepository = mockRepo;
+    internalsOf(provider).workspaceRepository = mockRepo;
 
-    vi.spyOn(
-      (provider as unknown as { workspaceRepository: unknown; executor: unknown }).executor,
-      'execute',
-    ).mockResolvedValue('');
+    vi.spyOn(internalsOf(provider).executor, 'execute').mockResolvedValue('');
   });
 
   afterEach(() => {
@@ -56,9 +68,7 @@ describe('HyperVWorkspaceProvider', () => {
     expect(ws.name).toBe('HyperV WS');
     expect(ws.userId).toBe(1);
     expect(ws.state).toBe(WorkspaceState.Offline);
-    expect(
-      (provider as unknown as { workspaceRepository: unknown; executor: unknown }).executor.execute,
-    ).toHaveBeenCalled();
+    expect(internalsOf(provider).executor.execute).toHaveBeenCalled();
   });
 
   it('should list workspaces', async () => {
@@ -70,16 +80,16 @@ describe('HyperVWorkspaceProvider', () => {
     const ws = await provider.create('HyperV WS', 1);
     const started = await provider.start(ws.id, 1);
     expect(started.state).toBe(WorkspaceState.Running);
-    expect(
-      (provider as unknown as { workspaceRepository: unknown; executor: unknown }).executor.execute,
-    ).toHaveBeenCalledWith(expect.stringContaining('Start-VM'));
+    expect(internalsOf(provider).executor.execute).toHaveBeenCalledWith(
+      expect.stringContaining('Start-VM'),
+    );
   });
 
   it('should get metrics', async () => {
     const ws = await provider.create('HyperV WS', 1);
     // Mock the metrics output
-    (provider as unknown as { workspaceRepository: unknown; executor: unknown }).executor.execute
-      .mockResolvedValueOnce(
+    internalsOf(provider)
+      .executor.execute.mockResolvedValueOnce(
         JSON.stringify({ AverageProcessorUsage: 10, AverageMemoryUsage: 1024 }),
       )
       .mockResolvedValueOnce(JSON.stringify({ State: 'Running' }));

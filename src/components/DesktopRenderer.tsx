@@ -1,5 +1,10 @@
 import { Desktop } from './launch/Desktop';
+import type { VmInstance } from '../types';
 
-export function DesktopRenderer() {
-  return <Desktop />;
+interface DesktopRendererProps {
+  vm?: VmInstance;
+}
+
+export function DesktopRenderer({ vm }: DesktopRendererProps) {
+  return <Desktop vm={vm} />;
 }

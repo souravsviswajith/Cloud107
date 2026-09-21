@@ -34,7 +34,7 @@ async function fetchWithAuth<T>(endpoint: string, options: FetchOptions = {}): P
 
   while (attempt <= retries) {
     try {
-      return await performFetch<T>(endpoint, fetchOptions, timeoutMs, attempt > 0);
+      return await performFetch<T>(endpoint, fetchOptions, timeoutMs);
     } catch (error) {
       if (
         error instanceof ApiClientError &&
@@ -70,17 +70,9 @@ async function performFetch<T>(
   endpoint: string,
   options: RequestInit,
   timeoutMs: number,
-  forceRefresh: boolean,
 ): Promise<T> {
   const user = auth.currentUser;
-  let token = '';
-  if (!user) {
-    token = 'dev-token';
-  }
-
-  if (user) {
-    token = await user.getIdToken(forceRefresh);
-  }
+  const token = !user ? 'dev-token' : await auth.getIdToken();
 
   const headers = {
     'Content-Type': 'application/json',

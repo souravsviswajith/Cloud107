@@ -20,6 +20,7 @@ import { Window } from './window/Window';
 import { NotesApp } from './apps/NotesApp';
 import { TerminalApp } from './apps/TerminalApp';
 import { BrowserApp } from './apps/BrowserApp';
+import type { VmInstance } from '../../types';
 
 type AppId = 'notes' | 'terminal' | 'browser' | 'files' | 'settings';
 
@@ -50,7 +51,11 @@ const APP_REGISTRY = {
   },
 };
 
-export function Desktop() {
+interface DesktopProps {
+  vm?: VmInstance;
+}
+
+export function Desktop({ vm }: DesktopProps) {
   const [time, setTime] = useState(new Date());
   const [cpu, setCpu] = useState(14);
   const [memory, setMemory] = useState(2.4);
@@ -131,7 +136,7 @@ export function Desktop() {
       {/* Top Bar */}
       <div className="h-7 bg-neutral-900 border-b border-white/5 flex items-center justify-between px-4 text-[12px] text-neutral-400 select-none z-[100] shadow-sm relative">
         <div className="flex items-center gap-4">
-          <span className="font-medium text-neutral-200">Workspace</span>
+          <span className="font-medium text-neutral-200">Workspace{vm ? ` · ${vm.name}` : ''}</span>
           <span className="hover:text-neutral-200 cursor-default">File</span>
           <span className="hover:text-neutral-200 cursor-default">Edit</span>
           <span className="hover:text-neutral-200 cursor-default">View</span>

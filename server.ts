@@ -17,8 +17,17 @@ async function startServer() {
   });
   // Mount Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
+    // Optional comma-separated host allowlist for proxied dev environments
+    // (e.g. cloud workspaces/previews). Unset = Vite's secure default.
+    const allowedHosts = (process.env.VITE_ALLOWED_HOSTS || '')
+      .split(',')
+      .map((host) => host.trim())
+      .filter(Boolean);
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        ...(allowedHosts.length > 0 ? { allowedHosts } : {}),
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);

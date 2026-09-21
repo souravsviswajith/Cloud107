@@ -4,12 +4,26 @@ import { useShell } from '../contexts/ShellContext';
 import { Activity, Server, RefreshCw, ArrowLeft, Zap } from 'lucide-react';
 import { BenchmarkRunner } from './BenchmarkRunner';
 
+interface ServiceHealth {
+  name: string;
+  status: string;
+  ping: string;
+}
+
+interface HealthData {
+  status: string;
+  uptime: string;
+  services: ServiceHealth[];
+}
+
+type MetricsData = Record<string, string | number>;
+
 export function DiagnosticsDashboard() {
   const { setActiveMode } = useShell();
   const [activeTab, setActiveTab] = useState<'health' | 'metrics' | 'logs' | 'benchmark'>('health');
 
-  const [healthData, setHealthData] = useState<unknown>(null);
-  const [metricsData, setMetricsData] = useState<unknown>(null);
+  const [healthData, setHealthData] = useState<HealthData | null>(null);
+  const [metricsData, setMetricsData] = useState<MetricsData | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
@@ -130,9 +144,7 @@ export function DiagnosticsDashboard() {
                 Service Status
               </div>
               <div className="divide-y divide-white/5">
-                {(
-                  healthData as { services?: { name: string; status: string; uptime: string }[] }
-                )?.services?.map((service, i: number) => (
+                {healthData?.services?.map((service, i: number) => (
                   <div
                     key={i}
                     className="px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
