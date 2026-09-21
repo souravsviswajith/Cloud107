@@ -4,7 +4,7 @@ import { WorkspaceService } from '../../services/workspaceService';
 import { successResponse, errorResponse } from '../../utils/response';
 import { logger } from '../../utils/logger';
 import { z } from 'zod';
-import { Workspace } from '../../types';
+import { Workspace } from '../../../types';
 
 export const workspacesRouter = Router();
 const workspaceService = new WorkspaceService();
@@ -59,10 +59,10 @@ workspacesRouter.post('/', async (req, res, next) => {
     const parsed = createWorkspaceSchema.safeParse(req.body);
     if (!parsed.success) {
       logger.warn('Invalid workspace creation request', {
-        errors: parsed.error.errors,
+        errors: parsed.error.issues,
         correlationId: req.id,
       });
-      res.status(400).json(errorResponse(parsed.error.errors[0].message, 400, req));
+      res.status(400).json(errorResponse(parsed.error.issues[0].message, 400, req));
       return;
     }
     const user = await getDbUser(req);

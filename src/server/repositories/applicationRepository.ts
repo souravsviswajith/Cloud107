@@ -1,7 +1,7 @@
 import { db } from '../../db';
 import { applications, applicationSessions } from '../../db/schema';
 import { eq, and } from 'drizzle-orm';
-import { Application, ApplicationSession } from '../../types';
+import { Application, ApplicationSession, ApplicationSessionStatus } from '../../types';
 
 export class ApplicationRepository {
   async findAll(): Promise<Application[]> {

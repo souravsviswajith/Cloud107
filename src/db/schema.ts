@@ -1,6 +1,15 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core';
-import { WorkspaceState } from '../types';
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  integer,
+  boolean,
+  bigint,
+  jsonb,
+} from 'drizzle-orm/pg-core';
+import { WorkspaceState, NodeState, OperationStatus, OperationType } from '../types';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -74,6 +83,64 @@ export const applicationSessionsRelations = relations(applicationSessions, ({ on
   }),
   user: one(users, {
     fields: [applicationSessions.userId],
+    references: [users.id],
+  }),
+}));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Capability API (Release Candidate): persistent node state & operation ledger.
+// Replaces the scaffold's in-memory arrays with PostgreSQL-backed tables.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const nodes = pgTable('nodes', {
+  id: text('id').primaryKey(), // uuid
+  name: text('name').notNull(),
+  providerId: text('provider_id').notNull().default('local-unix'),
+  state: text('state').notNull().$type<NodeState>(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  vcpuCount: integer('vcpu_count').notNull(),
+  memoryBytes: bigint('memory_bytes', { mode: 'number' }).notNull(),
+  diskSizeBytes: bigint('disk_size_bytes', { mode: 'number' }).notNull(),
+  primaryIpAddress: text('primary_ip_address'),
+  metadata: jsonb('metadata').$type<Record<string, string>>().notNull().default({}),
+  startedAt: timestamp('started_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const operations = pgTable('operations', {
+  id: text('id').primaryKey(), // uuid
+  nodeId: text('node_id').references(() => nodes.id, { onDelete: 'set null' }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  type: text('type').notNull().$type<OperationType>(),
+  status: text('status').notNull().$type<OperationStatus>().default('pending'),
+  payload: jsonb('payload').$type<Record<string, unknown>>(),
+  result: jsonb('result').$type<Record<string, unknown>>(),
+  error: text('error'),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const nodesRelations = relations(nodes, ({ one, many }) => ({
+  user: one(users, {
+    fields: [nodes.userId],
+    references: [users.id],
+  }),
+  operations: many(operations),
+}));
+
+export const operationsRelations = relations(operations, ({ one }) => ({
+  node: one(nodes, {
+    fields: [operations.nodeId],
+    references: [nodes.id],
+  }),
+  user: one(users, {
+    fields: [operations.userId],
     references: [users.id],
   }),
 }));
