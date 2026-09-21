@@ -99,8 +99,23 @@ export const capabilityApi = {
 };
 
 export const operationsApi = {
-  listOperations: async (): Promise<NodeOperation[]> => {
-    return apiGet<NodeOperation[]>('/operations');
+  listOperations: async (query?: {
+    nodeId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<NodeOperation[]> => {
+    const params = new URLSearchParams();
+    if (query?.nodeId) {
+      params.set('nodeId', query.nodeId);
+    }
+    if (query?.limit !== undefined) {
+      params.set('limit', String(query.limit));
+    }
+    if (query?.offset !== undefined) {
+      params.set('offset', String(query.offset));
+    }
+    const suffix = params.size > 0 ? `?${params.toString()}` : '';
+    return apiGet<NodeOperation[]>(`/operations${suffix}`);
   },
 
   getOperation: async (id: string): Promise<NodeOperation> => {

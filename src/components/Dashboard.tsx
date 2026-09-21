@@ -287,7 +287,10 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               >
                 Nodes
               </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
+              <button
+                onClick={() => setActiveMode('operations')}
+                className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors"
+              >
                 Operations
               </button>
             </div>

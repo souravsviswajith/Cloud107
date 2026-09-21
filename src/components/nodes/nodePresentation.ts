@@ -1,4 +1,4 @@
-import { NodeState, type OperationStatus } from '../../types';
+import { NodeState, type NodeOperation, type OperationStatus } from '../../types';
 import type { Tone } from '../ui/Glass';
 
 /**
@@ -147,6 +147,49 @@ export function formatDateTime(iso: string | null | undefined): string {
 
 export function formatClockTime(date: Date): string {
   return date.toLocaleTimeString();
+}
+
+/** Milliseconds → `850ms`, `12.4s`, `3m 20s`, `2h 5m`. Invalid input → `—`. */
+export function formatDurationMs(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) {
+    return '—';
+  }
+  if (ms < 1000) {
+    return `${Math.round(ms)}ms`;
+  }
+  const totalSeconds = ms / 1000;
+  if (totalSeconds < 60) {
+    return `${Math.round(totalSeconds * 10) / 10}s`;
+  }
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  if (totalMinutes < 60) {
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${totalMinutes}m ${seconds}s`;
+  }
+  const hours = Math.floor(totalMinutes / 60);
+  return `${hours}h ${totalMinutes % 60}m`;
+}
+
+/**
+ * Operation wall-clock duration from backend timestamps only. Terminal
+ * operations report createdAt → completedAt; in-flight operations report
+ * `In progress` — never a synthesized percentage.
+ */
+export function operationDurationLabel(operation: NodeOperation): string {
+  if (!operation.completedAt) {
+    return 'In progress';
+  }
+  const start = new Date(operation.createdAt).getTime();
+  const end = new Date(operation.completedAt).getTime();
+  if (Number.isNaN(start) || Number.isNaN(end)) {
+    return '—';
+  }
+  return formatDurationMs(end - start);
+}
+
+/** Terminal ledger states stop polling; pending/running keep refreshing. */
+export function isTerminalOperationStatus(status: OperationStatus): boolean {
+  return status === 'completed' || status === 'failed';
 }
 
 export function supportedLabel(value: boolean): string {

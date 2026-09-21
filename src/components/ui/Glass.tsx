@@ -100,17 +100,30 @@ type ButtonVariant = 'default' | 'danger' | 'ghost';
 /** Elevation 2 — interactive control. */
 export function GlassButton({
   variant = 'default',
+  size = 'md',
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  size?: 'md' | 'sm';
+}) {
   const base =
-    'inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all disabled:cursor-not-allowed disabled:opacity-40';
+    'inline-flex items-center justify-center gap-2 border font-medium backdrop-blur-xl transition-all disabled:cursor-not-allowed disabled:opacity-40';
+  const sizes = {
+    md: 'rounded-xl px-4 py-2 text-sm',
+    sm: 'rounded-full px-3 py-1 text-xs',
+  };
   const variants: Record<ButtonVariant, string> = {
     default: 'border-white/20 bg-white/10 text-white shadow-2xl hover:bg-white/15',
     danger:
       'border-rose-400/30 bg-rose-500/10 text-rose-200 shadow-2xl hover:bg-rose-500/20 disabled:hover:bg-rose-500/10',
     ghost: 'border-transparent text-neutral-300 hover:bg-white/10 hover:text-white',
   };
-  return <button {...props} className={`${base} ${variants[variant]} ${props.className ?? ''}`} />;
+  return (
+    <button
+      {...props}
+      className={`${base} ${sizes[size]} ${variants[variant]} ${props.className ?? ''}`}
+    />
+  );
 }
 
 /** Elevation 3 — technical diagnostics block. Renders real data only. */

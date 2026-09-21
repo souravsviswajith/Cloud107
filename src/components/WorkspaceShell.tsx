@@ -10,6 +10,7 @@ import { NotificationsPanel } from './NotificationsPanel';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { DiagnosticsDashboard } from './DiagnosticsDashboard';
 import { NodesView } from './nodes/NodesView';
+import { OperationsView } from './operations/OperationsView';
 import { FloatingWorkspaceBar } from './FloatingWorkspaceBar';
 
 export function WorkspaceShell() {
@@ -147,6 +148,18 @@ export function WorkspaceShell() {
             className="w-full h-full min-h-screen"
           >
             <NodesView />
+          </motion.div>
+        )}
+        {activeMode === 'operations' && (
+          <motion.div
+            key="operations"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full h-full min-h-screen"
+          >
+            <OperationsView />
           </motion.div>
         )}
       </AnimatePresence>

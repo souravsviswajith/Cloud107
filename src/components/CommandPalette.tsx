@@ -88,6 +88,16 @@ export function CommandPalette() {
         handleClose();
       },
     },
+    {
+      type: 'action',
+      title: 'Open Operations Stream',
+      icon: Terminal,
+      color: 'text-amber-400',
+      action: () => {
+        setActiveMode('operations');
+        handleClose();
+      },
+    },
 
     { type: 'app', title: 'VS Code', icon: Code, color: 'text-blue-500' },
     { type: 'app', title: 'Browser', icon: Globe, color: 'text-emerald-500' },

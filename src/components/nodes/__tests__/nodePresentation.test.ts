@@ -7,9 +7,12 @@ import {
   formatBytes,
   formatClockTime,
   formatDateTime,
+  formatDurationMs,
   formatPercent,
+  isTerminalOperationStatus,
   nodeStateDescription,
   nodeStateTone,
+  operationDurationLabel,
   operationStatusLabel,
   operationStatusTone,
   operationTypeLabel,
@@ -110,5 +113,41 @@ describe('formatters degrade honestly on bad input', () => {
     expect(supportedLabel(false)).toBe('Not available');
     expect(supportedTone(true)).toBe('emerald');
     expect(supportedTone(false)).toBe('zinc');
+  });
+
+  it('formats durations from milliseconds', () => {
+    expect(formatDurationMs(850)).toBe('850ms');
+    expect(formatDurationMs(12400)).toBe('12.4s');
+    expect(formatDurationMs(200000)).toBe('3m 20s');
+    expect(formatDurationMs(7500000)).toBe('2h 5m');
+    expect(formatDurationMs(-5)).toBe('—');
+    expect(formatDurationMs(Number.NaN)).toBe('—');
+  });
+
+  it('derives operation durations from backend timestamps only', () => {
+    const completed = {
+      createdAt: '2026-09-21T00:00:00.000Z',
+      completedAt: '2026-09-21T00:00:12.500Z',
+    } as Parameters<typeof operationDurationLabel>[0];
+    expect(operationDurationLabel(completed)).toBe('12.5s');
+
+    const running = {
+      createdAt: '2026-09-21T00:00:00.000Z',
+      completedAt: null,
+    } as Parameters<typeof operationDurationLabel>[0];
+    expect(operationDurationLabel(running)).toBe('In progress');
+
+    const corrupt = {
+      createdAt: 'not-a-date',
+      completedAt: 'also-not-a-date',
+    } as Parameters<typeof operationDurationLabel>[0];
+    expect(operationDurationLabel(corrupt)).toBe('—');
+  });
+
+  it('distinguishes terminal from in-flight statuses', () => {
+    expect(isTerminalOperationStatus('completed')).toBe(true);
+    expect(isTerminalOperationStatus('failed')).toBe(true);
+    expect(isTerminalOperationStatus('pending')).toBe(false);
+    expect(isTerminalOperationStatus('running')).toBe(false);
   });
 });
