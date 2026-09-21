@@ -24,6 +24,7 @@ import { ProvisioningScreen } from './launch/ProvisioningScreen';
 import { ConnectionScreen } from './launch/ConnectionScreen';
 import { WorkspaceSetup } from './WorkspaceSetup';
 import { ResourceMonitoringPanel } from './ResourceMonitoringPanel';
+import { ProvisionWorkspaceForm } from './workspaces/ProvisionWorkspaceForm';
 
 interface DashboardProps {
   onLaunchDesktop: (vm: VmInstance) => void;
@@ -84,7 +85,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     'idle' | 'provisioning' | 'connecting' | 'ready'
   >('idle');
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
+  const [showProvisionForm, setShowProvisionForm] = useState(false);
   const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
   const [deletingVm, setDeletingVm] = useState<VmInstance | null>(null);
   const [configs, setConfigs] = useState<Record<string, WorkspaceConfig>>({});
@@ -148,16 +149,14 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     }
   };
 
-  const handleCreate = async () => {
-    setCreating(true);
-    try {
-      await workspaceApi.createWorkspace(`Workspace ${vms.length + 1}`);
-      await fetchWorkspaces();
-    } catch (e) {
-      console.error('Failed to create workspace', e);
-    } finally {
-      setCreating(false);
-    }
+  const openProvisionForm = () => {
+    setShowProvisionForm(true);
+    setTimeout(() => {
+      document.getElementById('provision-workspace')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }, 50);
   };
 
   const handleDelete = async (vm: VmInstance) => {
@@ -265,11 +264,10 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               Settings
             </button>
             <button
-              onClick={handleCreate}
-              disabled={creating}
+              onClick={openProvisionForm}
               className="flex items-center gap-2 px-4 py-2.5 bg-white text-black text-sm font-semibold rounded-xl hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
-              {creating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+              <Plus size={16} />
               New Environment
             </button>
           </div>
@@ -296,6 +294,17 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             </div>
           </div>
 
+          {showProvisionForm && vms.length > 0 && (
+            <div id="provision-workspace" className="mb-8">
+              <ProvisionWorkspaceForm
+                onCreated={() => {
+                  void fetchWorkspaces();
+                }}
+                onCancel={() => setShowProvisionForm(false)}
+              />
+            </div>
+          )}
+
           {vms.length === 0 && !loading && (
             <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
               <Server size={48} className="mx-auto text-neutral-600 mb-4" />
@@ -303,13 +312,13 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               <p className="text-neutral-500 mb-6 max-w-md mx-auto">
                 Create an environment to begin.
               </p>
-              <button
-                onClick={handleCreate}
-                disabled={creating}
-                className="bg-white/10 hover:bg-white/15 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all"
-              >
-                {creating ? 'Creating...' : 'New Environment'}
-              </button>
+              <div id="provision-workspace" className="mx-auto max-w-md text-left">
+                <ProvisionWorkspaceForm
+                  onCreated={() => {
+                    void fetchWorkspaces();
+                  }}
+                />
+              </div>
             </div>
           )}
 
