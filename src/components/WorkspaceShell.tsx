@@ -45,7 +45,7 @@ export function WorkspaceShell() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
+    <div className="min-h-screen bg-neutral-900 text-white font-sans">
       {/* Background/Base layer for transitions */}
 
       {/* Main Content Area */}

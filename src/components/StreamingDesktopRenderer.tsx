@@ -260,7 +260,7 @@ export function StreamingDesktopRenderer() {
             </div>
           </div>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-indigo-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-transparent" />
         )}
 
         <div className="relative z-10 flex flex-col items-center gap-6">

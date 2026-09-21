@@ -19,12 +19,12 @@ export function WorkspaceSetup() {
           className="group bg-[#111111] border border-white/10 hover:border-white/20 p-6 rounded-2xl transition-all shadow-sm text-left flex flex-col h-full relative overflow-hidden"
         >
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-zinc-500/10 border border-zinc-500/20 text-zinc-300 flex items-center justify-center shrink-0">
               <ShieldCheck size={20} />
             </div>
             <div>
               <h3 className="font-semibold text-white text-base">Remote / Self-Managed Node</h3>
-              <p className="text-xs text-blue-400 font-medium mt-0.5">
+              <p className="text-xs text-zinc-300 font-medium mt-0.5">
                 Use infrastructure you control.
               </p>
             </div>
@@ -49,12 +49,12 @@ export function WorkspaceSetup() {
           className="group bg-[#111111] border border-white/10 hover:border-white/20 p-6 rounded-2xl transition-all shadow-sm text-left flex flex-col h-full relative overflow-hidden"
         >
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-zinc-500/10 border border-zinc-500/20 text-zinc-300 flex items-center justify-center shrink-0">
               <Server size={20} />
             </div>
             <div>
               <h3 className="font-semibold text-white text-base">Integrated Environment</h3>
-              <p className="text-xs text-emerald-400 font-medium mt-0.5">
+              <p className="text-xs text-zinc-300 font-medium mt-0.5">
                 Preconfigured execution environment.
               </p>
             </div>

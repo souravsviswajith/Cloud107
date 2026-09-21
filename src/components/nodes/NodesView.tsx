@@ -85,8 +85,8 @@ export function NodesView() {
     <div className="relative min-h-screen">
       {/* Elevation 0 — spatial background */}
       <div className="pointer-events-none fixed left-0 top-0 h-full w-full overflow-hidden">
-        <div className="absolute left-[-10%] top-[-20%] h-[50%] w-[50%] rounded-full bg-blue-900/20 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-[-20%] right-[-10%] h-[50%] w-[50%] rounded-full bg-indigo-900/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute left-[-10%] top-[-20%] h-[50%] w-[50%] rounded-full bg-white/[0.07] blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-[50%] w-[50%] rounded-full bg-white/[0.07] blur-[120px] mix-blend-screen" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">

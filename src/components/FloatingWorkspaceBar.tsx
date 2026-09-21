@@ -130,7 +130,7 @@ export function FloatingWorkspaceBar({ vm }: FloatingWorkspaceBarProps) {
                 <SignalHigh size={12} />
                 <span>{latency}ms</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 px-2 py-1 rounded-md">
+              <div className="flex items-center gap-1.5 bg-zinc-500/10 text-zinc-300 px-2 py-1 rounded-md">
                 <Activity size={12} />
                 <span>{fps} FPS</span>
               </div>

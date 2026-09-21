@@ -237,8 +237,8 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     <div className="min-h-screen bg-[#0A0A0A] text-white p-6 md:p-8 lg:p-12 font-sans relative">
       {/* Premium Background Effects */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-indigo-900/20 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/[0.07] blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-white/[0.07] blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
@@ -724,7 +724,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                     className="w-full flex items-center justify-between p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all text-left group"
                   >
                     <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-zinc-500/20 to-zinc-600/10 border border-zinc-500/20 text-zinc-300 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(161,161,170,0.1)]">
                         <Monitor size={26} />
                       </div>
                       <div>
