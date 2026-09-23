@@ -47,7 +47,7 @@ export function WorkspaceShell() {
     }, 1000);
 
     return () => window.clearTimeout(timer);
-  }, [addNotification]);
+  }, []);
 
   const handleCloseSession = () => {
     setActiveMode('dashboard');
