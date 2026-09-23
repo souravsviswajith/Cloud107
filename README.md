@@ -331,15 +331,15 @@ Infrastructure
 
 ## System Requirements
 
-| Component | Minimum | Recommended |
-|---|---|---|
-| OS | Linux, macOS, or Windows + WSL2 | Linux server |
-| CPU | 2 cores | 8+ cores |
-| RAM | 4 GB | 16+ GB |
-| Disk | 20 GB | 100+ GB SSD |
-| Node.js | 22.x | Current Node.js 22 LTS |
-| npm | 10.x | Current compatible release |
-| PostgreSQL | 15+ | Current supported PostgreSQL release |
+| Component  | Minimum                         | Recommended                          |
+| ---------- | ------------------------------- | ------------------------------------ |
+| OS         | Linux, macOS, or Windows + WSL2 | Linux server                         |
+| CPU        | 2 cores                         | 8+ cores                             |
+| RAM        | 4 GB                            | 16+ GB                               |
+| Disk       | 20 GB                           | 100+ GB SSD                          |
+| Node.js    | 22.x                            | Current Node.js 22 LTS               |
+| npm        | 10.x                            | Current compatible release           |
+| PostgreSQL | 15+                             | Current supported PostgreSQL release |
 
 ---
 
@@ -709,17 +709,17 @@ The important distinction is that the deployment environment is yours to choose.
 
 ### Technology stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19 |
-| Build | Vite |
-| Styling | Tailwind CSS |
-| Backend | Express.js |
-| Runtime | Node.js 22+ |
-| Database | PostgreSQL 15+ |
-| ORM | Drizzle |
+| Layer          | Technology       |
+| -------------- | ---------------- |
+| Frontend       | React 19         |
+| Build          | Vite             |
+| Styling        | Tailwind CSS     |
+| Backend        | Express.js       |
+| Runtime        | Node.js 22+      |
+| Database       | PostgreSQL 15+   |
+| ORM            | Drizzle          |
 | Authentication | WebAuthn / FIDO2 |
-| CLI | `c107` |
+| CLI            | `c107`           |
 
 ### Repository structure
 
@@ -965,7 +965,6 @@ npm run c107 -- --help
 **Status:** Active development
 
 > If you understand the code, infrastructure, or documentation better than the current implementation explains it, a correction is a contribution.
-
 
 - [Overview](#overview)
 - [Key Features](#key-features)
