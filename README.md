@@ -1,17 +1,971 @@
 # Cloud107 — Sovereign Infrastructure Control Plane
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-22%2B-green.svg)](https://nodejs.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-336791.svg)](https://www.postgresql.org)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
 
-**Cloud107** is a self-hosted, source-first infrastructure control plane designed for organizations that need full sovereignty over their computing infrastructure. It provides unified management of nodes, workloads, runtimes, applications, and resources with cryptographic verification and secure identity management.
+Cloud107 is a self-hosted infrastructure control plane. It is intended to give you a practical place to manage infrastructure, workloads, runtimes, nodes, identities, and configuration without assuming that a hosted control plane must sit between you and your machines.
+
+This project is deliberately source-first. If something is unclear, the goal of the documentation is to show the path through the system rather than hide it behind terminology.
+
+> **A note for technically experienced readers**
+>
+> You do not need to know Cloud107's terminology before reading this repository. If you know Linux, containers, networking, VMs, APIs, or Git, you already have most of the concepts needed to follow the project.
+>
+> If you are new to hypervisors or infrastructure control planes, the diagrams below are meant to make the execution path visible.
 
 ![Cloud107 Logo](public/assets/cloud107-logo.png)
 
 ---
 
+## How to Read This Repository
+
+The simplest mental model is:
+
+```text
+You
+ │
+ ▼
+Cloud107 UI / CLI
+ │
+ ▼
+Cloud107 Control Plane
+ │
+ ├── Identity & authentication
+ ├── Configuration
+ ├── Workload management
+ ├── Runtime / agent communication
+ └── Infrastructure operations
+        │
+        ▼
+   Your machines
+        │
+        ├── CPU / RAM
+        ├── Storage
+        ├── Network
+        └── Virtualized or physical workloads
+```
+
+Cloud107 is not the hardware, hypervisor, VM, container, or operating system itself. It is the control layer that coordinates those pieces.
+
+### What is a hypervisor?
+
+If the word **hypervisor** is unfamiliar, think of it as software that allows one physical computer to run isolated virtual computers.
+
+```text
+Physical machine
+┌─────────────────────────────────────────┐
+│ CPU │ RAM │ Disk │ Network              │
+└───────────────────┬─────────────────────┘
+                    │
+                    ▼
+              Hypervisor
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+      Virtual VM A        Virtual VM B
+      ┌──────────┐        ┌──────────┐
+      │ Linux    │        │ Linux    │
+      │ App      │        │ App      │
+      └──────────┘        └──────────┘
+```
+
+Cloud107's job is not to reinvent that lower layer. Its job is to provide a control and management layer around the infrastructure.
+
+---
+
 ## Table of Contents
+
+- [What Cloud107 Is](#what-cloud107-is)
+- [What Cloud107 Is Not](#what-cloud107-is-not)
+- [System Flow](#system-flow)
+- [Key Features](#key-features)
+- [System Requirements](#system-requirements)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running Cloud107](#running-cloud107)
+- [CLI Usage](#cli-usage)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
+- [Architecture](#architecture)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## What Cloud107 Is
+
+Cloud107 is a self-hosted control plane for infrastructure.
+
+A useful way to think about it is:
+
+```text
+                 CLOUD107
+                    │
+       ┌────────────┼────────────┐
+       ▼            ▼            ▼
+   Identity      Workloads    Infrastructure
+       │            │            │
+       ▼            ▼            ▼
+   Who can act   What runs    Where it runs
+```
+
+The project aims to make infrastructure operations observable, reproducible, and controllable from your own environment.
+
+### Design goals
+
+- **Self-hosted** — your control plane can live on infrastructure you control.
+- **Source-first** — configuration and behavior should remain inspectable.
+- **Security-conscious** — authentication, signing, and explicit boundaries matter.
+- **Modular** — infrastructure components should not become an opaque monolith.
+- **Practical** — documentation should show what actually happens.
+- **Humble by design** — this project does not assume that its abstractions are obvious to everyone.
+
+---
+
+## What Cloud107 Is Not
+
+Understanding the boundary is important.
+
+```text
+                 ┌───────────────────────────┐
+                 │          Cloud107          │
+                 │       CONTROL PLANE       │
+                 └─────────────┬─────────────┘
+                               │
+             manages / coordinates / observes
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+   Hypervisor              Containers              Host OS
+   (e.g. VM layer)          (if used)              Linux/etc.
+        │                      │                      │
+        └──────────────────────┼──────────────────────┘
+                               ▼
+                         Physical hardware
+```
+
+Cloud107 does not magically replace the underlying operating system, hypervisor, networking stack, storage system, or hardware.
+
+That separation is intentional.
+
+---
+
+## System Flow
+
+### 1. You make a request
+
+```text
+┌──────────────┐
+│ User / Admin │
+└──────┬───────┘
+       │
+       │ "Create / inspect / update workload"
+       ▼
+┌──────────────┐
+│ UI or c107   │
+│ CLI          │
+└──────┬───────┘
+       ▼
+```
+
+### 2. Cloud107 authenticates and validates it
+
+```text
+Request
+   │
+   ▼
+Authentication
+   │
+   ▼
+Authorization
+   │
+   ▼
+Validation
+   │
+   ├── rejected ──► error
+   │
+   └── accepted
+          │
+          ▼
+```
+
+### 3. The control plane decides what needs to happen
+
+```text
+             Accepted request
+                    │
+                    ▼
+             Control Plane
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+     Config      Runtime      State
+        │           │           │
+        └───────────┼───────────┘
+                    ▼
+             Infrastructure
+```
+
+### 4. Infrastructure performs the operation
+
+```text
+Cloud107
+   │
+   ├──────────────► Host / Agent
+   │                    │
+   │                    ├── CPU
+   │                    ├── Memory
+   │                    ├── Storage
+   │                    └── Network
+   │
+   └──────────────► Runtime / Hypervisor
+                        │
+                        ▼
+                   Workload
+```
+
+### 5. State comes back
+
+```text
+Workload
+   │
+   ▼
+Runtime / Host
+   │
+   ▼
+Cloud107
+   │
+   ├── logs
+   ├── status
+   ├── metrics
+   └── events
+   │
+   ▼
+UI / CLI
+```
+
+This is the basic loop:
+
+```text
+REQUEST
+   ↓
+AUTHENTICATE
+   ↓
+VALIDATE
+   ↓
+CONTROL
+   ↓
+EXECUTE
+   ↓
+OBSERVE
+   ↓
+REPORT
+```
+
+---
+
+## Key Features
+
+### Frontend
+
+- React 19
+- Vite
+- Tailwind CSS
+- Workspace-oriented interface
+- Responsive UI
+
+### Backend
+
+- Express.js
+- Modular services
+- REST API
+- WebSocket support
+- Security middleware
+
+### Data
+
+- PostgreSQL 15+
+- Drizzle ORM
+- Migration support
+- Persistent state
+
+### Authentication
+
+```text
+User
+ │
+ ▼
+WebAuthn / FIDO2
+ │
+ ▼
+Authenticated identity
+ │
+ ▼
+Authorized operation
+```
+
+Supported authentication methods depend on the platform and browser, including security keys and platform authenticators.
+
+### CLI
+
+The `c107` CLI provides a terminal-oriented path to the same control plane:
+
+```text
+Terminal
+   │
+   ▼
+c107
+   │
+   ▼
+Cloud107 API / services
+   │
+   ▼
+Infrastructure
+```
+
+---
+
+## System Requirements
+
+| Component | Minimum | Recommended |
+|---|---|---|
+| OS | Linux, macOS, or Windows + WSL2 | Linux server |
+| CPU | 2 cores | 8+ cores |
+| RAM | 4 GB | 16+ GB |
+| Disk | 20 GB | 100+ GB SSD |
+| Node.js | 22.x | Current Node.js 22 LTS |
+| npm | 10.x | Current compatible release |
+| PostgreSQL | 15+ | Current supported PostgreSQL release |
+
+---
+
+## Prerequisites
+
+Before installing, you need:
+
+```text
+Operating System
+      │
+      ├── Node.js + npm
+      │
+      ├── PostgreSQL
+      │
+      └── Git
+             │
+             ▼
+          Cloud107
+```
+
+Check your environment:
+
+```bash
+node --version
+npm --version
+psql --version
+git --version
+```
+
+If those commands work, continue to installation.
+
+---
+
+## Installation
+
+### Step 1 — Get the source
+
+```text
+GitHub
+  │
+  │ git clone
+  ▼
+Your machine
+  │
+  ▼
+Cloud107/
+```
+
+```bash
+git clone https://github.com/souravsviswajith/Cloud107.git
+cd Cloud107
+```
+
+### Step 2 — Install dependencies
+
+```text
+package.json
+     │
+     ▼
+   npm
+     │
+     ▼
+node_modules/
+```
+
+```bash
+npm install
+```
+
+### Step 3 — Configure the environment
+
+```text
+.env.example
+     │
+     │ copy
+     ▼
+   .env
+     │
+     ├── database
+     ├── authentication
+     ├── WebAuthn
+     └── application settings
+```
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with values appropriate for your environment.
+
+**Do not commit secrets.**
+
+### Step 4 — Prepare PostgreSQL
+
+```text
+Cloud107
+    │
+    │ SQL
+    ▼
+PostgreSQL
+    │
+    ├── database
+    ├── tables
+    └── persistent state
+```
+
+Create the database/user appropriate for your installation, then configure `DATABASE_URL`.
+
+### Step 5 — Run migrations
+
+```text
+Migration files
+      │
+      ▼
+PostgreSQL schema
+      │
+      ▼
+Cloud107 can store state
+```
+
+```bash
+npm run db:migrate
+```
+
+### Step 6 — Verify the installation
+
+```text
+Source
+  │
+  ├── tests ──► behavior
+  │
+  └── lint  ──► code quality
+```
+
+```bash
+npm run test
+npm run lint
+```
+
+---
+
+## Configuration
+
+Cloud107 is configured through environment variables and project configuration.
+
+### Basic flow
+
+```text
+.env
+ │
+ ▼
+Application startup
+ │
+ ▼
+Configuration loader
+ │
+ ├── database
+ ├── server
+ ├── authentication
+ └── optional services
+ │
+ ▼
+Running Cloud107
+```
+
+Example:
+
+```env
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=info
+
+DATABASE_URL=postgresql://user:password@localhost:5432/cloud107
+
+JWT_SECRET=replace_with_a_secure_secret
+SESSION_SECRET=replace_with_a_secure_secret
+
+WEBAUTHN_RP_ID=localhost
+WEBAUTHN_RP_NAME=Cloud107
+WEBAUTHN_ORIGIN=http://localhost:3000
+```
+
+Generate secrets rather than copying examples into production:
+
+```bash
+openssl rand -hex 32
+```
+
+---
+
+## Running Cloud107
+
+### Development
+
+```text
+Source code
+    │
+    ▼
+npm run dev
+    │
+    ▼
+Development server
+    │
+    ├── frontend
+    ├── API
+    └── live reload
+```
+
+```bash
+npm run dev
+```
+
+Then open the configured local address.
+
+### Production
+
+```text
+Source
+  │
+  ▼
+Build
+  │
+  ▼
+Production artifacts
+  │
+  ▼
+Node.js
+  │
+  ▼
+Cloud107
+```
+
+```bash
+npm run build
+npm run start
+```
+
+### Docker
+
+The conceptual path is:
+
+```text
+Cloud107 source
+      │
+      ▼
+ Docker build
+      │
+      ▼
+ Docker image
+      │
+      ▼
+ Docker container
+      │
+      ├──────────► PostgreSQL
+      │
+      └──────────► Cloud107
+```
+
+The exact production container topology should be adapted to the target environment rather than blindly copied from an example.
+
+---
+
+## CLI Usage
+
+The CLI is called `c107`.
+
+### Basic flow
+
+```text
+Your terminal
+     │
+     ▼
+    c107
+     │
+     ▼
+Cloud107 services
+     │
+     ▼
+Infrastructure
+```
+
+Examples:
+
+```bash
+npm run c107 -- --help
+npm run c107 -- --version
+npm run c107 -- list-commands
+npm run c107 -- health
+npm run c107 -- logs --tail 100
+```
+
+Update operations are intended to be cryptographically verified:
+
+```text
+Update request
+     │
+     ▼
+Manifest / metadata
+     │
+     ▼
+Verification
+     │
+   ┌─┴─┐
+   │   │
+ valid invalid
+   │     │
+   ▼     ▼
+apply   stop
+```
+
+---
+
+## Deployment
+
+Cloud107 can be deployed in different environments.
+
+```text
+                         Cloud107
+                            │
+          ┌─────────────────┼─────────────────┐
+          ▼                 ▼                 ▼
+       Local/VM           Docker          Cloud VM
+          │                 │                 │
+          ▼                 ▼                 ▼
+       Your host         Your host        Your cloud
+```
+
+The important distinction is that the deployment environment is yours to choose. Cloud107 does not require a single hosting provider.
+
+---
+
+## Architecture
+
+### High-level view
+
+```text
+┌─────────────────────────────────────────────────────┐
+│                    USER / OPERATOR                  │
+└───────────────────────┬─────────────────────────────┘
+                        │
+                ┌───────▼────────┐
+                │ UI / c107 CLI  │
+                └───────┬────────┘
+                        │
+                ┌───────▼────────┐
+                │  API / Control │
+                │     Plane      │
+                └───────┬────────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+      Identity       Workloads      State
+          │             │             │
+          └─────────────┼─────────────┘
+                        │
+                ┌───────▼────────┐
+                │ Runtime / Agent│
+                └───────┬────────┘
+                        │
+             ┌──────────┼──────────┐
+             ▼          ▼          ▼
+           Host       Network    Storage
+             │
+             ▼
+       VM / Container / Process
+```
+
+### Technology stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 |
+| Build | Vite |
+| Styling | Tailwind CSS |
+| Backend | Express.js |
+| Runtime | Node.js 22+ |
+| Database | PostgreSQL 15+ |
+| ORM | Drizzle |
+| Authentication | WebAuthn / FIDO2 |
+| CLI | `c107` |
+
+### Repository structure
+
+```text
+Cloud107/
+├── src/                  # Application source
+├── public/               # Static assets
+├── docs/                 # Documentation
+├── infra/                # Infrastructure definitions
+├── agents/               # Agent services
+├── desktop-agent/        # Desktop-side agent
+├── workspace-runtime/    # Workspace runtime
+├── scripts/              # Utility scripts
+├── .env.example          # Configuration template
+├── package.json          # Project dependencies
+└── README.md             # This document
+```
+
+---
+
+## Development
+
+The intended development loop is straightforward:
+
+```text
+┌─────────┐
+│ Change  │
+└────┬────┘
+     ▼
+┌─────────┐
+│ Test    │
+└────┬────┘
+     ▼
+┌─────────┐
+│ Lint    │
+└────┬────┘
+     ▼
+┌─────────┐
+│ Review  │
+└────┬────┘
+     ▼
+┌─────────┐
+│ Commit  │
+└────┬────┘
+     ▼
+┌─────────┐
+│   PR    │
+└─────────┘
+```
+
+Common commands:
+
+```bash
+npm run dev
+npm run test
+npm run lint
+npm run build
+npm start
+```
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+A useful contribution does not need to be large. Documentation improvements, bug reports, tests, security findings, architectural discussion, and small fixes can all be valuable.
+
+### Contribution path
+
+```text
+Idea / Bug
+    │
+    ▼
+Issue / Discussion
+    │
+    ▼
+Branch
+    │
+    ▼
+Change
+    │
+    ▼
+Test + Lint
+    │
+    ▼
+Pull Request
+    │
+    ▼
+Review
+```
+
+For security-sensitive issues, use the project's private security-reporting mechanism where available rather than publishing an exploitable vulnerability in a public issue.
+
+---
+
+## License
+
+Cloud107 is released under the **GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)**.
+
+See [LICENSE](LICENSE) for the complete license text.
+
+### Third-party components
+
+Cloud107 may integrate with third-party infrastructure software and libraries that have their own licenses.
+
+```text
+Cloud107
+   │
+   ├── first-party code
+   │      └── AGPL-3.0-or-later
+   │
+   └── third-party components
+          └── their respective licenses
+```
+
+A third-party license is not replaced simply because a component is used by Cloud107.
+
+When distributing a combined system, preserve the applicable copyright notices, license texts, source-code obligations, and architectural boundaries. Check the exact version and integration method of each dependency before making licensing assumptions.
+
+---
+
+## Troubleshooting
+
+Use the following flow before opening an issue:
+
+```text
+Something does not work
+          │
+          ▼
+Read the error
+          │
+          ▼
+Check configuration
+          │
+          ▼
+Check service status
+          │
+          ▼
+Check logs
+          │
+          ▼
+Reproduce
+          │
+          ▼
+Search existing issues
+          │
+          ▼
+Open a useful issue
+```
+
+A useful issue normally includes:
+
+- What you expected
+- What actually happened
+- Exact command/request
+- Relevant logs
+- OS and versions
+- Minimal reproduction steps
+
+Avoid posting secrets, tokens, passwords, private keys, or sensitive infrastructure details.
+
+---
+
+## A Small Note From the Maintainer
+
+Cloud107 is being built incrementally.
+
+The project does not claim that every abstraction is finished, every architecture decision is permanent, or every infrastructure problem has been solved. Some parts are experimental, some are under active development, and some documentation will inevitably lag behind the code.
+
+If something is confusing, that is useful feedback.
+
+In particular, you should not need prior knowledge of hypervisors, control planes, virtualization, or Cloud107-specific terminology just to understand what a component is supposed to do.
+
+The documentation will continue to use diagrams and concrete execution paths wherever possible.
+
+---
+
+## Quick Reference
+
+```text
+CLONE
+  │
+  ▼
+INSTALL
+  │
+  ▼
+CONFIGURE
+  │
+  ▼
+DATABASE
+  │
+  ▼
+MIGRATE
+  │
+  ▼
+TEST
+  │
+  ▼
+RUN
+  │
+  ▼
+MANAGE
+  │
+  ▼
+OBSERVE
+```
+
+### Most common commands
+
+```bash
+# Install
+npm install
+
+# Development
+npm run dev
+
+# Test
+npm run test
+
+# Lint
+npm run lint
+
+# Build
+npm run build
+
+# Production
+npm start
+
+# Database
+npm run db:migrate
+
+# CLI
+npm run c107 -- --help
+```
+
+---
+
+**Last Updated:** September 23, 2026
+
+**License:** AGPL-3.0-or-later
+
+**Status:** Active development
+
+> If you understand the code, infrastructure, or documentation better than the current implementation explains it, a correction is a contribution.
+
 
 - [Overview](#overview)
 - [Key Features](#key-features)
@@ -1033,17 +1987,15 @@ Open a PR on GitHub with:
 
 ## License
 
-Cloud107 is released under the **MIT License**. See [LICENSE](LICENSE) file for details.
+Cloud107 is released under the **GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)**. See [LICENSE](LICENSE) for the complete license text.
 
-```
-MIT License
+### License and Third-Party Components
 
-Copyright (c) 2024-2026 Cloud107 Contributors
+Cloud107 is a source-first project. The Cloud107 first-party code is licensed under AGPL-3.0-or-later unless a source file or directory explicitly states otherwise.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
+Cloud107 also integrates with third-party infrastructure components and libraries that retain their own licenses. In particular, components such as QEMU, FRRouting (FRR), and Open vSwitch (OVS) may carry GPL-family licensing terms. Their licenses are **not replaced by Cloud107's license** and must be respected when those components are distributed or used.
+
+When combining Cloud107 with third-party components, maintain the applicable license notices, copyright notices, source-code obligations, and any required license boundaries. Do not assume that all dependencies are licensed under AGPL-3.0-or-later.
 
 ---
 
