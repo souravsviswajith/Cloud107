@@ -1,0 +1,14 @@
+{
+  "id": "chk-1790128989167-1.0.7-to-1.1.0",
+  "currentVersion": "1.0.7",
+  "targetVersion": "1.1.0",
+  "timestamp": 1790128989167,
+  "backupPath": "C:\\Users\\LENOVO\\OneDrive - Sourav\\Projects Sourav\\cloud107-ui-adjusted\\.c107\\checkpoints\\chk-1790128989167-1.0.7-to-1.1.0\\backup",
+  "stagedPath": "C:\\Users\\LENOVO\\OneDrive - Sourav\\Projects Sourav\\cloud107-ui-adjusted\\.c107\\staged\\1.1.0",
+  "status": "committed",
+  "metadata": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.19.0"
+  }
+}
