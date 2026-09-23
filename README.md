@@ -1,6 +1,6 @@
 # Cloud107 — Sovereign Infrastructure Control Plane
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-22%2B-green.svg)](https://nodejs.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-336791.svg)](https://www.postgresql.org)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
@@ -1033,17 +1033,15 @@ Open a PR on GitHub with:
 
 ## License
 
-Cloud107 is released under the **MIT License**. See [LICENSE](LICENSE) file for details.
+Cloud107 is released under the **GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)**. See [LICENSE](LICENSE) for the complete license text.
 
-```
-MIT License
+### License and Third-Party Components
 
-Copyright (c) 2024-2026 Cloud107 Contributors
+Cloud107 is a source-first project. The Cloud107 first-party code is licensed under AGPL-3.0-or-later unless a source file or directory explicitly states otherwise.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
+Cloud107 also integrates with third-party infrastructure components and libraries that retain their own licenses. In particular, components such as QEMU, FRRouting (FRR), and Open vSwitch (OVS) may carry GPL-family licensing terms. Their licenses are **not replaced by Cloud107's license** and must be respected when those components are distributed or used.
+
+When combining Cloud107 with third-party components, maintain the applicable license notices, copyright notices, source-code obligations, and any required license boundaries. Do not assume that all dependencies are licensed under AGPL-3.0-or-later.
 
 ---
 
