@@ -49,6 +49,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [terminalInput, setTerminalInput] = useState('');
   const [terminalLines, setTerminalLines] = useState<string[]>(['Cloud107 terminal', 'Type a command to continue.']);
+  const [health, setHealth] = useState<'Healthy' | 'Degraded' | 'Offline'>('Offline');
 
   const refresh = async () => {
     try {
@@ -65,6 +66,30 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     refresh();
     const timer = setInterval(refresh, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const checkHealth = async () => {
+      try {
+        const response = await fetch('/api/v1/health');
+        if (!response.ok) {
+          if (active) setHealth('Degraded');
+          return;
+        }
+        const payload = await response.json();
+        if (!active) return;
+        setHealth(payload.success && payload.data?.status === 'ok' ? 'Healthy' : 'Degraded');
+      } catch {
+        if (active) setHealth('Offline');
+      }
+    };
+    checkHealth();
+    const timer = setInterval(checkHealth, 5000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
   }, []);
 
   const nodes = useMemo(() => workspaces.map(mapWorkspace), [workspaces]);
@@ -173,9 +198,17 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-16 shrink-0 flex items-center justify-between px-10 border-b border-white/5">
           <h1 className="text-lg font-medium capitalize">{activeView}</h1>
-          <span className="flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Healthy
+          <span className={`flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-full border backdrop-blur-lg ${
+            health === 'Healthy'
+              ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
+              : health === 'Degraded'
+                ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
+                : 'text-neutral-400 bg-white/5 border-white/10'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              health === 'Healthy' ? 'bg-emerald-400' : health === 'Degraded' ? 'bg-amber-400' : 'bg-neutral-500'
+            }`} />
+            {health}
           </span>
         </header>
 
