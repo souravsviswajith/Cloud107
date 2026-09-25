@@ -1,5 +1,7 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, serial, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from 'drizzle-orm/pg-core';
+import type { WorkloadRepresentation } from '../core/workload';
+import type { ExecutionPlan } from '../core/execution-plan';
 import { WorkspaceState } from '../types';
 
 export const users = pgTable('users', {
@@ -61,6 +63,59 @@ export const applicationSessions = pgTable('application_sessions', {
 
 export const applicationsRelations = relations(applications, ({ many }) => ({
   sessions: many(applicationSessions),
+}));
+
+export const workloads = pgTable('workloads', {
+  id: text('id').primaryKey(),
+  s1: jsonb('s1').$type<WorkloadRepresentation>().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const executionPlans = pgTable('execution_plans', {
+  id: text('id').primaryKey(),
+  workloadId: text('workload_id')
+    .notNull()
+    .references(() => workloads.id),
+  s2: jsonb('s2').$type<ExecutionPlan>().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const processExecutions = pgTable('process_executions', {
+  id: text('id').primaryKey(),
+  planId: text('plan_id')
+    .notNull()
+    .references(() => executionPlans.id),
+  s4: jsonb('s4').$type<{
+    pid: number;
+    exitCode: number | null;
+    signal: string | null;
+    stdout: string;
+    stderr: string;
+    duration: number;
+  }>().notNull(),
+  stdout: text('stdout'),
+  stderr: text('stderr'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const workloadsRelations = relations(workloads, ({ many }) => ({
+  executionPlans: many(executionPlans),
+}));
+
+export const executionPlansRelations = relations(executionPlans, ({ one, many }) => ({
+  workload: one(workloads, {
+    fields: [executionPlans.workloadId],
+    references: [workloads.id],
+  }),
+  processExecutions: many(processExecutions),
+}));
+
+export const processExecutionsRelations = relations(processExecutions, ({ one }) => ({
+  plan: one(executionPlans, {
+    fields: [processExecutions.planId],
+    references: [executionPlans.id],
+  }),
 }));
 
 export const applicationSessionsRelations = relations(applicationSessions, ({ one }) => ({
