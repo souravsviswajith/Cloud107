@@ -8,26 +8,32 @@ This page documents the environment inputs currently present in the Cloud107 rep
 
 ### 1. Environment architecture
 
-```text
-                         Cloud107
-                            │
-                            ▼
-                    Environment definition
-                            │
-             ┌──────────────┼──────────────┐
-             ▼              ▼              ▼
-         Toolchain      Dependencies    Runtime
-             │              │              │
-             └──────────────┼──────────────┘
-                            ▼
-                     Prepared environment
-                            │
-                            ▼
-                         Workload
-                            │
-                            ▼
-                       Validation
-```
+<table>
+<tr>
+<td colspan="4" align="center"><strong>CLOUD107 ENVIRONMENT</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>TOOLCHAIN</strong><br><sub>(TypeScript · C# · SQL · npm / build tools)</sub></td>
+<td align="center"><strong>DEPENDENCIES</strong><br><sub>(package-lock · application packages)</sub></td>
+<td align="center"><strong>RUNTIME</strong><br><sub>(Node.js · .NET · platform runtime)</sub></td>
+<td align="center"><strong>CONFIGURATION</strong><br><sub>(Environment values · platform settings)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>PREPARED ENVIRONMENT</strong><br><sub>(Validated toolchain + dependencies + runtime)</sub></td>
+<td align="center"><strong>DATABASE</strong><br><sub>(PostgreSQL · SQL · Drizzle)</sub></td>
+<td align="center"><strong>CONTAINERS</strong><br><sub>(Docker · Compose · OCI where applicable)</sub></td>
+<td align="center"><strong>PLATFORM</strong><br><sub>(POSIX / OS APIs · x86-64 · ARM64)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="4" align="center"><strong>WORKLOAD</strong><br><sub>(Application execution environment)</sub></td>
+</tr>
+</table>
 
 **Note:** An environment combines the tools, dependencies, runtime, and configuration required by a workload.
 
