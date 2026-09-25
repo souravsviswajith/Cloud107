@@ -151,7 +151,7 @@ async function main() {
     case 'help':
     default: {
       console.log(`
-Cloud107 Sovereign Cloud Workspace CLI (c107)
+Cloud107 CLI (c107)
 
 Usage:
   c107 <command> [options]
