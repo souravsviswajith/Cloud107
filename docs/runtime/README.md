@@ -2,6 +2,51 @@
 
 Cloud107 currently runs as a Node.js application with a web interface and API.
 
+## Runtime architecture
+
+```text
+                              Cloud107
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        ▼                         ▼                         ▼
+ Web Workspace               c107 CLI                 Core / Contracts
+ React / TypeScript          TypeScript / Node.js      C# / .NET
+ HTML / CSS / Vite           Git / shell tooling       .NET APIs
+        │                         │                         │
+        └─────────────────────────┼─────────────────────────┘
+                                  ▼
+                         Node.js Application
+                         TypeScript / Express
+                                  │
+                    HTTP / JSON / API boundary
+                                  │
+                 ┌────────────────┴───────────────┐
+                 ▼                                ▼
+          PostgreSQL                        Update System
+          SQL / Drizzle                    TypeScript / Node.js
+                 │                         Git / cryptography
+                 ▼                                │
+          Persistent state                       ▼
+                                      Verify → Stage → Activate
+                                      → Health → Rollback
+
+Platform boundary:
+OS / platform APIs → supported hardware / network interfaces
+```
+
+**Note:** The diagram shows the current runtime boundaries. Platform-native or lower-level components are added only where the repository implements or explicitly depends on them.
+
+### Runtime interfaces
+
+| Boundary | Current technology | Interface |
+|---|---|---|
+| Browser → application | React / TypeScript / Vite | HTTP |
+| Client → API | Node.js / Express / TypeScript | HTTP / JSON |
+| Application → database | Drizzle / PostgreSQL | SQL |
+| Update pipeline | TypeScript / Node.js | Git / cryptographic verification |
+| Process shutdown | Node.js | SIGTERM / SIGINT |
+
+**Note:** Protocol and standard names should be tied to the interface actually implemented. This page does not treat vendor products as standards.
 ## Application runtime
 
 The production server is started with:
