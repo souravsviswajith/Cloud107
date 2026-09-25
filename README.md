@@ -17,7 +17,7 @@ The workspace includes:
 
 - **Normal** — everyday applications and workloads
 - **Developer** — projects, environments, toolchains, and development tools
-- **Supercomputer** — high-resource and distributed workloads when those resources are available
+- **High-performance virtual computer** — high-resource and distributed workloads when those resources are available
 
 Common workspace areas:
 
@@ -35,55 +35,49 @@ Common workspace areas:
 
 This is the quick-reference blueprint for Cloud107. The diagram keeps the structure compact; the bracketed line on each module identifies its implementation stack and relevant industry references.
 
-```mermaid
-flowchart TB
-    U["User / AI Agent"]
-
-    subgraph C["Cloud107 Workspace"]
-        UI["Dashboard<br/><small>(React · TypeScript · Vite · HTML/CSS · Web Platform)</small>"]
-        CLI["c107<br/><small>(TypeScript · Node.js · Git · POSIX)</small>"]
-        API["API<br/><small>(TypeScript · Node.js · Express · HTTP · RFC 9110)</small>"]
-        APP["Applications<br/><small>(Application lifecycle · HTTP/JSON)</small>"]
-        ENV["Environments<br/><small>(Toolchains · dependencies · runtime · OCI)</small>"]
-        NODE["Machines / Nodes<br/><small>(x86-64 · ARM64 · OS APIs · POSIX)</small>"]
-        WORK["Workloads<br/><small>(Process · container · runtime)</small>"]
-        OPS["Operations<br/><small>(Health · logs · metrics)</small>"]
-        UP["Updates<br/><small>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</small>"]
-    end
-
-    subgraph I["Infrastructure"]
-        R["Runtime<br/><small>(C# · .NET · platform APIs)</small>"]
-        D["Containers<br/><small>(Docker · OCI)</small>"]
-        K["Orchestration<br/><small>(Kubernetes · OCI)</small>"]
-        H["Host OS<br/><small>(POSIX · OS APIs)</small>"]
-        HW["Hardware<br/><small>(x86-64 · ARM64)</small>"]
-    end
-
-    DB["PostgreSQL<br/><small>(SQL · Drizzle)"]
-    NET["Network<br/><small>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</small>"]
-
-    U --> UI
-    U --> CLI
-    UI --> API
-    CLI --> API
-    API --> APP
-    API --> ENV
-    API --> NODE
-    API --> WORK
-    API --> OPS
-    API --> UP
-    API --> DB
-    API --> NET
-    APP --> WORK
-    ENV --> WORK
-    NODE --> WORK
-    WORK --> R
-    R --> D
-    R --> K
-    D --> H
-    K --> H
-    H --> HW
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 WORKSPACE</strong><br><sub>(Web workspace · CLI · runtime/control)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>DASHBOARD</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
+<td align="center"><strong>c107</strong><br><sub>(TypeScript · Node.js · Git · POSIX)</sub></td>
+<td align="center"><strong>USER / AI AGENT</strong><br><sub>(Human or agent control)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>API / CONTROL LAYER</strong><br><sub>(TypeScript · Node.js · Express · HTTP · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>APPLICATIONS</strong><br><sub>(Lifecycle · HTTP/JSON)</sub></td>
+<td align="center"><strong>ENVIRONMENTS</strong><br><sub>(Toolchains · dependencies · runtime · OCI)</sub></td>
+<td align="center"><strong>NODES / WORKLOADS</strong><br><sub>(x86-64 · ARM64 · OS APIs · POSIX)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>OPERATIONS</strong><br><sub>(Health · logs · metrics)</sub></td>
+<td align="center"><strong>POSTGRESQL</strong><br><sub>(SQL · Drizzle)</sub></td>
+<td align="center"><strong>UPDATES</strong><br><sub>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>RUNTIME</strong><br><sub>(C# · .NET · platform APIs)</sub></td>
+<td align="center"><strong>CONTAINERS / ORCHESTRATION</strong><br><sub>(Docker · OCI · Kubernetes)</sub></td>
+<td align="center"><strong>NETWORK</strong><br><sub>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>HOST / HARDWARE</strong><br><sub>(POSIX · OS APIs · x86-64 · ARM64)</sub></td>
+</tr>
+</table>
 
 <details>
 <summary><strong>Technology and standards</strong></summary>
