@@ -26,5 +26,3 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" /v 
 
 Write-Host "Enabling Hardware Accelerated GPU Scheduling (HAGS)..."
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode /t REG_DWORD /d 2 /f
-
-Write-Host "Phase 4 Complete."
