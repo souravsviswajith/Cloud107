@@ -176,7 +176,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
   const handleCreate = async () => {
     setCreating(true);
-    const operationId = recordOperation('Create environment', `Workspace ${vms.length + 1}`);
+    const operationId = recordOperation('Create workspace', `Workspace ${vms.length + 1}`);
     try {
       await workspaceApi.createWorkspace(`Workspace ${vms.length + 1}`);
       await fetchWorkspaces();
@@ -191,7 +191,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
   const handleDelete = async (vm: VmInstance) => {
     setMenuOpenFor(null);
-    const operationId = recordOperation('Delete environment', vm.name);
+    const operationId = recordOperation('Delete workspace', vm.name);
     const previousVms = [...vms];
     setVms((prev) => prev.filter((v) => v.id !== vm.id));
     try {
@@ -212,7 +212,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   };
 
   const handleStop = async (vm: VmInstance) => {
-    const operationId = recordOperation('Stop environment', vm.name);
+    const operationId = recordOperation('Stop workspace', vm.name);
     setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.stopWorkspace(vm.id);
@@ -240,7 +240,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   }, [connectionPhase]);
 
   const handleConnect = (vm: VmInstance) => {
-    recordOperation('Open environment', vm.name, 'success');
+    recordOperation('Open workspace', vm.name, 'success');
     const config = getConfig(vm.id);
     setSelectedVm({
       ...vm,
@@ -252,7 +252,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   };
 
   const handleBoot = async (vm: VmInstance) => {
-    const operationId = recordOperation('Start environment', vm.name);
+    const operationId = recordOperation('Start workspace', vm.name);
     setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.startWorkspace(vm.id);
@@ -294,7 +294,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             </div>
             <div>
               <h1 className="font-semibold text-2xl tracking-tight text-white">Cloud 107</h1>
-              <p className="text-sm text-neutral-400 font-medium">Infrastructure Control Plane</p>
+              <p className="text-sm text-neutral-400 font-medium">Workspace</p>
             </div>
           </div>
 
@@ -309,7 +309,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               className="flex items-center gap-2 px-4 py-2.5 bg-white text-black text-sm font-semibold rounded-xl hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
               {creating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-              New Environment
+              New Workspace
             </button>
           </div>
         </header>
@@ -317,7 +317,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
         <main>
           <div className="flex items-center justify-between mb-8 mt-2">
             <div className="flex items-center gap-6 border-b border-white/10 w-full pb-4">
-              {([['overview', 'Overview'], ['nodes', 'Nodes'], ['operations', 'Operations']] as const).map(([tab, label]) => (
+              {([['overview', 'Overview'], ['nodes', 'Environments'], ['operations', 'Activity']] as const).map(([tab, label]) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -335,9 +335,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                 <div>
                   <div className="flex items-center gap-3">
                     <Activity size={18} className="text-blue-400" />
-                    <h2 className="text-lg font-semibold">Operations Stream</h2>
+                    <h2 className="text-lg font-semibold">Activity</h2>
                   </div>
-                  <p className="text-sm text-neutral-500 mt-1">Recent control-plane actions from this session.</p>
+                  <p className="text-sm text-neutral-500 mt-1">Recent workspace activity from this session.</p>
                 </div>
                 <span className="text-xs text-neutral-500">{operations.length} events</span>
               </div>
@@ -393,9 +393,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
             <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
               <Server size={48} className="mx-auto text-neutral-600 mb-4" />
-              <h3 className="text-xl font-medium mb-2">No Environments</h3>
+              <h3 className="text-xl font-medium mb-2">No Workspaces</h3>
               <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                Create an environment to begin.
+                Create a workspace to begin.
               </p>
               <button
                 onClick={handleCreate}
@@ -737,9 +737,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-neutral-900 border border-white/10 rounded-3xl p-6 shadow-2xl relative z-10 w-full max-w-sm overflow-hidden"
             >
-              <h3 className="text-xl font-semibold text-white mb-2">Delete Environment?</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">Delete Workspace?</h3>
               <p className="text-sm text-neutral-400 mb-6">
-                Are you sure you want to remove this environment? This action cannot be undone in
+                Are you sure you want to remove this workspace? This action cannot be undone in
                 the demo.
               </p>
               <div className="flex justify-end gap-3">
@@ -795,7 +795,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                     </h3>
                   </div>
                   <p className="text-sm text-neutral-400">
-                    Select an execution surface for this environment.
+                    Select an execution surface for this workspace.
                   </p>
                 </div>
 
