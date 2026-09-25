@@ -157,3 +157,22 @@ Windows Linux    IoT    Apple
 ```
 
 Artifact availability, signing, installer behavior, hardware compatibility, and runtime validation must be verified separately for each target. A package existing in the repository does not by itself establish support.
+
+
+## User interface targets
+
+Cloud107 does not require a graphical interface on every target.
+
+### IoT and microcontrollers
+
+IoT targets may run only the Cloud107 device/runtime components. Microcontrollers can operate without the Cloud107 graphical workspace.
+
+A device may instead expose its capabilities through the Cloud107 control plane or another supported management interface, depending on the device and its connectivity.
+
+The absence of a local UI is intentional for resource-constrained devices.
+
+### Other supported targets
+
+Windows, Linux, Apple, WSL, and the web experience use the same Cloud107 workspace model. The interface adapts to the platform while preserving the same core concepts and capabilities.
+
+The universal UI should not imply identical rendering or input behavior on every device. Desktop, mobile, browser, and platform-native experiences may use platform-appropriate layouts and controls while remaining consistent at the capability level.
