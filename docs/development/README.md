@@ -83,19 +83,7 @@ npm run db:migrate
 
 ### 6. Review a change
 
-```text
-Change
-  ↓
-Inspect affected boundary
-  ↓
-Implement smallest required change
-  ↓
-Run checks
-  ↓
-Review diff
-  ↓
-Commit
-```
+<table><tr><td align="center"><strong>Change</strong></td><td>→</td><td align="center"><strong>Inspect affected boundary</strong></td><td>→</td><td align="center"><strong>Implement smallest required change</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Run checks</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Review diff</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Commit</strong></td></tr></table>
 
 **Commands**
 
@@ -113,23 +101,7 @@ git diff --check
 
 ### 7. Languages and stack
 
-| Area | Current implementation |
-|---|---|
-| Web | React, TypeScript, Vite, HTML/CSS |
-| API | Node.js, Express, TypeScript |
-| CLI | TypeScript, Node.js |
-| Database | PostgreSQL, SQL, Drizzle |
-| Core | C#, .NET |
-| Scripts | Shell / repository tooling |
-
-```text
-Web ──────► React / TypeScript / Vite
-API ──────► Node.js / Express / TypeScript
-CLI ──────► Node.js / TypeScript
-Database ─► PostgreSQL / SQL / Drizzle
-Core ─────► C# / .NET
-Scripts ──► Shell / repository tooling
-```
+<table><tr><th>Area</th><th>Current implementation</th></tr><tr><td>Web</td><td>React · TypeScript · Vite · HTML/CSS</td></tr><tr><td>API</td><td>Node.js · Express · TypeScript</td></tr><tr><td>CLI</td><td>TypeScript · Node.js</td></tr><tr><td>Database</td><td>PostgreSQL · SQL · Drizzle</td></tr><tr><td>Core</td><td>C# · .NET</td></tr><tr><td>Scripts</td><td>Shell / repository tooling</td></tr></table>
 
 **Note:** A subsystem can use another language or runtime when its requirements justify it. The project does not require one language across every layer.
 
@@ -137,24 +109,7 @@ Scripts ──► Shell / repository tooling
 
 ## Repository workflow
 
-```text
-Issue / task
-    │
-    ▼
-Affected file / boundary
-    │
-    ▼
-Smallest implementation
-    │
-    ▼
-Checks
-    │
-    ▼
-Diff review
-    │
-    ▼
-Commit
-```
+<table><tr><td align="center"><strong>Issue / task</strong></td><td>→</td><td align="center"><strong>Affected file / boundary</strong></td><td>→</td><td align="center"><strong>Smallest implementation</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Checks</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Diff review</strong></td></tr><tr><td colspan="3" align="center">↓</td><td>→</td><td align="center"><strong>Commit</strong></td></tr></table>
 
 **Note:** Keep implementation changes small enough to review and verify as one unit.
 
@@ -162,15 +117,7 @@ Commit
 
 ## Standards and external technology
 
-```text
-Development tool
-      │
-      ├── Language / runtime
-      ├── Package manager
-      ├── Database
-      ├── Version control
-      └── OS / shell interface
-```
+<table><tr><td align="center"><strong>Development tool</strong></td><td>→</td><td align="center"><strong>Language / runtime</strong></td><td>·</td><td>Package manager</td><td>·</td><td>Database</td><td>·</td><td>Version control</td><td>·</td><td>OS / shell interface</td></tr></table>
 
 | Type | Current example |
 |---|---|
