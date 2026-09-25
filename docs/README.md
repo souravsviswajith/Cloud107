@@ -2,96 +2,49 @@
 
 Technical documentation for Cloud107.
 
-Cloud107 documentation is split by the part of the system being described. The root [README](../README.md) is the installation and everyday-use guide.
-
-## Product and source model
-
-Cloud107 is maintained as an open-source project and distributed as a usable product.
-
-<table>
-<tr><th>Layer</th><th>Purpose</th></tr>
-<tr><td><strong>Source</strong></td><td>Complete project source, documentation, development workflow, and architecture.</td></tr>
-<tr><td><strong>Release</strong></td><td>Validated, packaged, pre-configured artifacts for supported platforms.</td></tr>
-<tr><td><strong>Operation</strong></td><td>The installed Cloud107 system used through the workspace, <code>c107</code>, and supported interfaces.</td></tr>
-</table>
-
-<table>
-<tr><td align="center"><strong>Source repository</strong></td><td>→</td><td align="center"><strong>Build</strong></td><td>→</td><td align="center"><strong>Validation</strong></td><td>→</td><td align="center"><strong>Package</strong></td><td>→</td><td align="center"><strong>Pre-configuration</strong></td><td>→</td><td align="center"><strong>Release artifact</strong></td></tr>
-</table>
-
-**Note:** The source repository is the path for users who need to inspect, modify, test, or build Cloud107. The release artifact is the path for users who only need to install and operate the system.
-
-**Documentation rule:** Product-facing documentation should explain how to install and use the release. Technical documentation should explain the source, architecture, interfaces, validation, and operational behavior.
-
 ## Documentation map
 
-<table><tr><td colspan="4" align="center"><strong>Cloud107</strong></td></tr><tr><td align="center">Architecture<br>Design<br>Development<br>Runtime</td><td align="center">Deployment<br>Security<br>Updates<br>APIs</td><td align="center">CLI<br>Environments<br>Nodes<br>Workloads</td><td align="center">AI<br>Operations<br>Decisions<br>Research</td></tr></table>
+| Section | Scope |
+|---|---|
+| [Architecture](architecture/) | System structure, components and boundaries |
+| [Design](design/) | UI architecture and interaction structure |
+| [Development](development/) | Source workflow, languages and tooling |
+| [Runtime](runtime/) | Runtime components and execution boundaries |
+| [Deployment](deployment/) | Docker and Kubernetes deployment |
+| [Security](security/) | Trust boundaries and security controls |
+| [Updates](updates/) | Update verification, activation and rollback |
+| [APIs](APIs/) | HTTP API interfaces |
+| [CLI](CLI/) | c107 commands |
+| [Environments](environments/) | Toolchains, dependencies and reproducible environments |
+| [Nodes](nodes/) | Node registration, capabilities and connectivity |
+| [Workloads](workloads/) | Workload execution and lifecycle |
+| [AI](AI/) | AI interfaces and control boundaries |
+| [Operations](operations/) | Health, logging, recovery and diagnostics |
+| [Decisions](decisions/) | Accepted technical constraints |
+| [Research](research/) | External technical references and prior art |
+| [Phase 3](phase-3/) | Cloud107 OS, modular images and device runtime |
 
-| Section | Use it for | Guide |
-|---|---|---|
-| [Architecture](architecture/) | System structure, components, boundaries | Start here for architecture |
-| [Design](design/) | UI and interaction structure | Understand the workspace surface |
-| [Development](development/) | Source workflow and local development | Build from source |
-| [Runtime](runtime/) | Runtime behavior and interfaces | Follow execution flow |
-| [Deployment](deployment/) | Docker and Kubernetes deployment | Deploy Cloud107 |
-| [Security](security/) | Trust boundaries and controls | Review security behavior |
-| [Updates](updates/) | Update verification and activation | Follow the update path |
-| [APIs](APIs/) | HTTP API structure | Review API interfaces |
-| [CLI](CLI/) | `c107` commands and update flow | Use the terminal interface |
-| [Environments](environments/) | Toolchains and reproducibility | Prepare execution environments |
-| [Nodes](nodes/) | Nodes, capabilities, and connectivity | Understand resource registration |
-| [Workloads](workloads/) | Workload placement and lifecycle | Understand execution |
-| [AI](AI/) | LLM107, agents, and Cloud107 control | Review AI boundaries |
-| [Operations](operations/) | Health, logging, recovery, troubleshooting | Operate the system |
-| [Decisions](decisions/) | Accepted architecture decisions | Check constraints before changes |
-| [Research](research/) | External references and prior art | Study related implementations |
+## Page structure
 
-## How to use a page
+Each page documents one technical area.
 
-Each technical guide should answer one concrete question.
+**Description → Architecture / flow → Command or configuration → Expected result → Reference**
 
-<table><tr><td align="center"><strong>Description</strong></td><td>→</td><td align="center"><strong>Diagram</strong></td><td>→</td><td align="center"><strong>Command / configuration</strong></td><td>→</td><td align="center"><strong>Note</strong></td><td>→</td><td align="center"><strong>Expected result / next step</strong></td><td>→</td><td align="center"><strong>Relevant reference</strong></td></tr></table>
+### Description
+State the component, interface or operation being documented.
 
-### 1. Description
+### Architecture / flow
+Use rendered Markdown/HTML diagrams or tables. Identify relevant language, runtime, protocol, platform API, hardware/ISA, standard or reference implementation.
 
-State what the page covers and where it fits in Cloud107.
+### Command / configuration
+Use executable commands and actual configuration where applicable.
 
-**Note:** Keep the description short. The diagram should carry most of the structure.
+### Expected result
+State the observable result and next required operation.
 
-### 2. Diagram
+### Reference
 
-Show the components, interfaces, dependencies, or execution flow.
-
-**Note:** Label important parts with the actual language, runtime, framework, protocol, platform API, hardware/ISA, standard, or reference technology used by that part.
-
-### 3. Command / configuration
-
-Use the actual command or configuration needed for the documented operation.
-
-```bash
-# Example only
-command
-```
-
-**Note:** Do not replace an actual command with a conceptual description when the operation is executable.
-
-### 4. Note
-
-Explain only what the command, diagram, or result needs the reader to understand.
-
-**Note:** Use common language. Avoid marketing terminology and unnecessary theory.
-
-### 5. Expected result / next step
-
-State what the user should see or what to do next.
-
-<table><tr><td align="center"><strong>Command</strong></td><td>→</td><td align="center"><strong>Expected result</strong></td><td>→</td><td align="center"><strong>Next guide</strong></td></tr></table>
-
-### 6. Relevant reference
-
-Link to the original documentation for the technology being used.
-
-| Reference type | Example |
+| Type | Reference |
 |---|---|
 | Language | [TypeScript](https://www.typescriptlang.org/docs/) |
 | Runtime | [Node.js](https://nodejs.org/docs/latest/api/) |
@@ -99,29 +52,35 @@ Link to the original documentation for the technology being used.
 | Database | [PostgreSQL](https://www.postgresql.org/docs/) |
 | Container | [Docker](https://docs.docker.com/) |
 | Orchestration | [Kubernetes](https://kubernetes.io/docs/) |
-| Standard/specification | [IETF RFCs](https://www.rfc-editor.org/) |
+| Standards | [RFC Editor](https://www.rfc-editor.org/) |
 
-**Note:** Link the technology actually used by the page. Do not add references only to make the page look comprehensive.
-
-## Documentation state
-
-Documentation describes the system as it exists unless a section is explicitly marked otherwise.
+## Documentation states
 
 | State | Meaning |
 |---|---|
-| Implemented | Exists in the current source |
-| Planned | Intended future work |
-| Experimental | Being tested and may change |
-| Research | External material or prior art |
-| Decision | Accepted architectural constraint |
+| Implemented | Present in the current source |
+| Planned | Intended future implementation |
+| Experimental | Under active testing |
+| Research | External technical material |
+| Decision | Accepted technical constraint |
 
-**Note:** Keep planned work, experiments, research, and accepted decisions distinguishable from implemented behavior.
+Implementation state must be explicit when a page describes functionality that is not implemented.
 
-## Related
+## Technical scope
 
-- [Cloud107 source README](../README.md)
-- [Architecture](architecture/)
-- [Development](development/)
-- [Deployment](deployment/)
-- [Research](research/)
-- [Decisions](decisions/)
+Documentation contains technical system information:
+
+- Architecture
+- APIs and interfaces
+- Commands
+- Configuration
+- Runtime behavior
+- Supported hardware and platforms
+- Dependencies
+- Protocols and standards
+- Security controls
+- Deployment
+- Validation
+- Diagnostics
+- Compatibility
+- Technical references
