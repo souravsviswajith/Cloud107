@@ -5,6 +5,7 @@ import { workspacesRouter } from './workspaces';
 import { applicationsRouter } from './applications';
 import { nodesRouter } from './nodes';
 import { workloadsRouter } from './workloads';
+import { schedulingRouter } from './scheduling';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/workspaces', workspacesRouter);
 router.use('/applications', applicationsRouter);
 router.use('/nodes', nodesRouter);
 router.use('/workloads', workloadsRouter);
+router.use('/execution', schedulingRouter);
 
 export default router;
