@@ -14,6 +14,11 @@ import {
   LayoutGrid,
   Clock,
   ChevronRight,
+  Activity,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Circle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { VmInstance, WorkspaceState, Workspace } from '../types';
@@ -29,6 +34,16 @@ interface DashboardProps {
   onLaunchDesktop: (vm: VmInstance) => void;
   onLaunchAppLibrary: (vm: VmInstance) => void;
 }
+
+type DashboardTab = 'overview' | 'nodes' | 'operations';
+
+type OperationEvent = {
+  id: string;
+  time: string;
+  action: string;
+  target: string;
+  status: 'running' | 'success' | 'error';
+};
 
 type WorkspaceConfig = {
   cpuClass: string;
@@ -89,6 +104,18 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [deletingVm, setDeletingVm] = useState<VmInstance | null>(null);
   const [configs, setConfigs] = useState<Record<string, WorkspaceConfig>>({});
   const [monitoredVmId, setMonitoredVmId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
+  const [operations, setOperations] = useState<OperationEvent[]>([]);
+
+  const recordOperation = (action: string, target: string, status: OperationEvent['status'] = 'running') => {
+    const event = { id: crypto.randomUUID(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), action, target, status };
+    setOperations((prev) => [event, ...prev].slice(0, 30));
+    return event.id;
+  };
+
+  const finishOperation = (id: string, status: 'success' | 'error') => {
+    setOperations((prev) => prev.map((event) => (event.id === id ? { ...event, status } : event)));
+  };
 
   const monitoredVm =
     vms.find((v) => v.id === monitoredVmId) ||
@@ -150,11 +177,14 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
   const handleCreate = async () => {
     setCreating(true);
+    const operationId = recordOperation('Create environment', `Workspace ${vms.length + 1}`);
     try {
       await workspaceApi.createWorkspace(`Workspace ${vms.length + 1}`);
       await fetchWorkspaces();
+      finishOperation(operationId, 'success');
     } catch (e) {
       console.error('Failed to create workspace', e);
+      finishOperation(operationId, 'error');
     } finally {
       setCreating(false);
     }
@@ -162,11 +192,13 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
   const handleDelete = async (vm: VmInstance) => {
     setMenuOpenFor(null);
+    const operationId = recordOperation('Delete environment', vm.name);
     const previousVms = [...vms];
     setVms((prev) => prev.filter((v) => v.id !== vm.id));
     try {
       await workspaceApi.deleteWorkspace(vm.id);
       fetchWorkspaces();
+      finishOperation(operationId, 'success');
     } catch (e) {
       console.error('Failed to delete workspace', e);
       addNotification({
@@ -176,17 +208,21 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       });
       setVms(previousVms);
       fetchWorkspaces();
+      finishOperation(operationId, 'error');
     }
   };
 
   const handleStop = async (vm: VmInstance) => {
+    const operationId = recordOperation('Stop environment', vm.name);
     setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.stopWorkspace(vm.id);
       fetchWorkspaces();
+      finishOperation(operationId, 'success');
     } catch (e) {
       console.error('Failed to stop workspace', e);
       fetchWorkspaces();
+      finishOperation(operationId, 'error');
     }
   };
 
@@ -216,13 +252,16 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   };
 
   const handleBoot = async (vm: VmInstance) => {
+    const operationId = recordOperation('Start environment', vm.name);
     setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
     try {
       await workspaceApi.startWorkspace(vm.id);
       fetchWorkspaces();
+      finishOperation(operationId, 'success');
     } catch (e) {
       console.error('Failed to start workspace', e);
       fetchWorkspaces();
+      finishOperation(operationId, 'error');
     }
   };
 
@@ -278,19 +317,82 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
         <main>
           <div className="flex items-center justify-between mb-8 mt-2">
             <div className="flex items-center gap-6 border-b border-white/10 w-full pb-4">
-              <button className="text-sm font-medium text-white pb-4 mb-[-17px] border-b-2 border-white">
-                Environments
-              </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
-                Nodes
-              </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
-                Operations
-              </button>
+              {([['overview', 'Overview'], ['nodes', 'Nodes'], ['operations', 'Operations']] as const).map(([tab, label]) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-sm font-medium pb-4 mb-[-17px] border-b-2 transition-colors ${activeTab === tab ? 'text-white border-white' : 'text-neutral-500 hover:text-neutral-300 border-transparent'}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
 
+          {activeTab === 'operations' && (
+            <section className="rounded-3xl border border-white/10 bg-neutral-900/40 backdrop-blur-xl overflow-hidden">
+              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <Activity size={18} className="text-blue-400" />
+                    <h2 className="text-lg font-semibold">Operations Stream</h2>
+                  </div>
+                  <p className="text-sm text-neutral-500 mt-1">Recent control-plane actions from this session.</p>
+                </div>
+                <span className="text-xs text-neutral-500">{operations.length} events</span>
+              </div>
+              {operations.length === 0 ? (
+                <div className="py-20 text-center text-neutral-500">
+                  <Circle size={28} className="mx-auto mb-3 text-neutral-700" />
+                  No operations recorded yet.
+                </div>
+              ) : (
+                <div className="divide-y divide-white/5">
+                  {operations.map((event) => (
+                    <div key={event.id} className="px-6 py-4 flex items-center gap-4">
+                      <div className="shrink-0">
+                        {event.status === 'running' && <Loader2 size={18} className="animate-spin text-amber-400" />}
+                        {event.status === 'success' && <CheckCircle2 size={18} className="text-emerald-400" />}
+                        {event.status === 'error' && <XCircle size={18} className="text-red-400" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium text-neutral-200">{event.action}</div>
+                        <div className="text-xs text-neutral-500 truncate">{event.target}</div>
+                      </div>
+                      <div className="text-xs text-neutral-600 font-mono">{event.time}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {activeTab === 'nodes' && (
+            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {vms.map((vm) => (
+                <div key={vm.id} className="rounded-2xl border border-white/10 bg-neutral-900/40 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <Server size={18} className="text-neutral-400" />
+                      <span className="font-medium">{vm.name}</span>
+                    </div>
+                    <span className="text-xs text-neutral-500 uppercase">{vm.status}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 text-xs">
+                    <div><div className="text-neutral-600">CPU</div><div className="text-neutral-300 mt-1">{getConfig(vm.id).cpuCores} vCPU</div></div>
+                    <div><div className="text-neutral-600">Memory</div><div className="text-neutral-300 mt-1">{getConfig(vm.id).ram}</div></div>
+                    <div><div className="text-neutral-600">GPU</div><div className="text-neutral-300 mt-1 truncate">{getConfig(vm.id).gpu}</div></div>
+                  </div>
+                </div>
+              ))}
+              {vms.length === 0 && <div className="md:col-span-2 xl:col-span-3 py-20 text-center text-neutral-500 border border-white/5 rounded-3xl">No environments are available to inspect.</div>}
+            </section>
+          )}
+
+          {activeTab === 'overview' && (
+
           {vms.length === 0 && !loading && (
+
             <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
               <Server size={48} className="mx-auto text-neutral-600 mb-4" />
               <h3 className="text-xl font-medium mb-2">No Environments</h3>
@@ -307,7 +409,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {activeTab === 'overview' && <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {vms.map((vm) => (
               <motion.div
                 key={vm.id}
@@ -601,9 +703,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                 </div>
               </motion.div>
             ))}
-          </div>
+          </div>}
 
-          {vms.length > 0 && (
+          {activeTab === 'overview' && vms.length > 0 && (
             <div className="mt-12">
               <ResourceMonitoringPanel
                 vm={monitoredVm}
@@ -614,9 +716,9 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             </div>
           )}
 
-          <div className="mt-16">
+          {activeTab === 'overview' && <div className="mt-16">
             <WorkspaceSetup />
-          </div>
+          </div>}
         </main>
       </div>
 
