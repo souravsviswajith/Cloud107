@@ -50,11 +50,25 @@ Shutdown closes the HTTP server before the process exits.
 
 ## Database runtime
 
-Cloud107 uses PostgreSQL for persistent application state. Database schema changes are applied with:
+```text
+Cloud107
+   │
+   ▼
+PostgreSQL
+   ▲
+   │
+npm run db:migrate
+```
+
+Cloud107 uses PostgreSQL for persistent application state.
+
+**Command**
 
 ```bash
 npm run db:migrate
 ```
+
+**Note:** Apply the database migrations required by the current source version.
 
 In the Docker Compose deployment, the migration service completes before the application service starts.
 
