@@ -20,6 +20,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/drizzle ./drizzle
+COPY --from=build /app/src/db/drizzle.config.ts ./src/db/drizzle.config.ts
+COPY --from=build /app/src/db/schema.ts ./src/db/schema.ts
+COPY --from=build /app/src/types.ts ./src/types.ts
 
 EXPOSE 3000
 
