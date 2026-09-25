@@ -101,11 +101,22 @@ git diff --check
 
 ### 7. Languages and stack
 
-<table><tr><th>Area</th><th>Current implementation</th></tr><tr><td>Web</td><td>React · TypeScript · Vite · HTML/CSS</td></tr><tr><td>API</td><td>Node.js · Express · TypeScript</td></tr><tr><td>CLI</td><td>TypeScript · Node.js</td></tr><tr><td>Database</td><td>PostgreSQL · SQL · Drizzle</td></tr><tr><td>Core</td><td>C# · .NET</td></tr><tr><td>Scripts</td><td>Shell / repository tooling</td></tr></table>
+<table><tr><th>Area</th><th>Current implementation</th></tr><tr><td>Web</td><td>React · TypeScript · Vite · HTML/CSS</td></tr><tr><td>API</td><td>Node.js · Express · TypeScript</td></tr><tr><td>CLI</td><td>TypeScript · Node.js</td></tr><tr><td>Database</td><td>PostgreSQL · SQL · Drizzle</td></tr><tr><td>Core</td><td>C# · .NET</td></tr><tr><td>Scripts</td><td>POSIX shell / repository tooling</td></tr></table>
 
 **Note:** A subsystem can use another language or runtime when its requirements justify it. The project does not require one language across every layer.
 
-**Reference:** [React](https://react.dev/learn) · [TypeScript](https://www.typescriptlang.org/docs/) · [Node.js](https://nodejs.org/docs/latest/api/) · [.NET](https://learn.microsoft.com/en-us/dotnet/) · [PostgreSQL](https://www.postgresql.org/docs/)
+#### Language and format baseline
+
+| Category | Technologies | Use |
+|---|---|---|
+| Programming languages | C · C++ · C# · Rust · Go · Java · JavaScript · TypeScript · Python · Assembly | Selected by subsystem requirements |
+| Query / data | SQL · GraphQL | Database and API data interfaces where required |
+| Configuration / serialization | JSON · YAML · TOML · XML · HCL · Protocol Buffers | Configuration, manifests, schemas, and data exchange where required |
+| Shell / build | POSIX Shell · PowerShell · Make · CMake · MSBuild | Build, packaging, deployment, and platform operations where required |
+
+**Note:** This is the project language and tooling baseline, not a requirement to use every language in every subsystem. Current implementation status is documented separately for each subsystem.
+
+**Reference:** [React](https://react.dev/learn) · [TypeScript](https://www.typescriptlang.org/docs/) · [Node.js](https://nodejs.org/docs/latest/api/) · [.NET](https://learn.microsoft.com/en-us/dotnet/) · [PostgreSQL](https://www.postgresql.org/docs/) · [CMake](https://cmake.org/documentation/) · [MSBuild](https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild)
 
 ## Repository workflow
 
