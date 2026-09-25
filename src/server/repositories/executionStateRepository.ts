@@ -26,6 +26,16 @@ export class ExecutionStateRepository {
     return record[0].s2 as ExecutionPlan;
   }
 
+  async findPlanById(id: string): Promise<ExecutionPlan | null> {
+    const records = await db
+      .select({ s2: executionPlans.s2 })
+      .from(executionPlans)
+      .where(eq(executionPlans.id, id))
+      .limit(1);
+
+    return records.length > 0 ? (records[0].s2 as ExecutionPlan) : null;
+  }
+
   async createProcessExecution(
     planId: string,
     result: StoredProcessExecution,
