@@ -84,10 +84,47 @@ node dist/server.cjs
 
 ## Local deployment
 
+```text
+.env
+ │
+ ▼
+docker compose up -d
+ │
+ ├── PostgreSQL
+ ├── migration
+ └── Cloud107 :3000
+```
+
+### 1. Configure
+
+**Command**
+
 ```bash
 cp .env.example .env
+```
+
+**Note:** Create the local environment file and set the required database and application values.
+
+### 2. Start
+
+**Command**
+
+```bash
 docker compose up -d
 ```
+
+**Note:** Start PostgreSQL, run the migration, and then start Cloud107.
+
+### 3. Check the deployment
+
+**Commands**
+
+```bash
+docker compose ps
+docker compose logs -f cloud107
+```
+
+**Note:** Confirm that the containers are running and inspect the Cloud107 service log.
 
 Check the services:
 
