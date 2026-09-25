@@ -77,7 +77,20 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **UI reference:** Uploaded Google Stitch Cloud107 screens and the existing repository implementation.
 
-### 3. UX principles
+### Notepad
+
+| Function | Requirement |
+|---|---|
+| Text editing | Plain-text editing without requiring an IDE |
+| Language support | Syntax highlighting and language-aware editing for the supported programming/configuration languages |
+| Formats | Source code, JSON, YAML, TOML, XML, HCL, Markdown, SQL, shell scripts, and other text formats used by the project |
+| File access | Open and edit files available to the current workspace or project |
+| Integration | Open from projects, terminal output, diagnostics, and file references where applicable |
+| Scope | Lightweight editing; full development workflows remain available through Visual Studio Code and the terminal |
+
+**Note:** Notepad is intended to remove the need to open a full IDE for small edits, configuration changes, logs, scripts, and documentation. It is not a replacement for Visual Studio Code.
+
+### 4. UX principles
 
 <table>
 <tr><th>Principle</th><th>Rule</th></tr>
@@ -113,7 +126,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **Reference:** [Web Content Accessibility Guidelines](https://www.w3.org/TR/WCAG/) · [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
 
-### 4. Workspace model
+### 5. Workspace model
 
 | Surface | Purpose | Technical boundary |
 |---|---|---|
@@ -123,17 +136,19 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 | **Operations** | Current and recent operations | Runtime state |
 | **Terminal** | Direct local and remote command-line interaction | c107 / shell / connected node |
 | **Settings** | Configuration and controls | Application configuration |
+| **Notepad** | Edit source, configuration, markup, scripts, and other text files | Local/project file access |
 
 <table>
 <tr><td><strong>Overview</strong></td><td>Projects</td><td>Nodes</td></tr>
-<tr><td>Operations</td><td>Terminal</td><td>Settings</td></tr>
+<tr><td>Operations</td><td>Terminal</td><td>Notepad</td></tr>
+<tr><td>Settings</td><td colspan="2">System configuration</td></tr>
 </table>
 
 **Note:** These surfaces are UI boundaries. Their displayed state should come from the corresponding application or runtime source.
 
 **Reference:** [Runtime](../runtime/) · [Nodes](../nodes/) · [Operations](../operations/)
 
-### 5. Interaction flow
+### 6. Interaction flow
 
 <table>
 <tr><th>Stage</th><th>Boundary</th></tr>
@@ -150,7 +165,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **Reference:** [APIs](../APIs/) · [Operations](../operations/)
 
-### 6. UI technology lock
+### 7. UI technology lock
 
 | Layer | Locked baseline |
 |---|---|
@@ -171,7 +186,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **Reference:** [React](https://react.dev/learn) · [Vite](https://vite.dev/guide/) · [TypeScript](https://www.typescriptlang.org/docs/) · [Tailwind CSS](https://tailwindcss.com/docs) · [HTML Living Standard](https://html.spec.whatwg.org/) · [CSS specifications](https://www.w3.org/Style/CSS/)
 
-### 7. Platform boundary
+### 8. Platform boundary
 
 <table>
 <tr><th>Platform</th><th>Interface</th><th>State</th></tr>
@@ -187,7 +202,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **Reference:** [HTML](https://html.spec.whatwg.org/) · [Web APIs — MDN](https://developer.mozilla.org/en-US/docs/Web/API)
 
-### 8. Local Flutter reference
+### 9. Local Flutter reference
 
 <table>
 <tr><th>Reference project</th><th>Relevant organization</th></tr>
@@ -200,7 +215,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 
 **Reference:** [BusPass Management System using Flutter Template](https://github.com/souravsviswajith/BusPass-Management-System-using-flutter-Template) · [Flutter documentation](https://docs.flutter.dev/)
 
-### 9. Design validation
+### 10. Design validation
 
 <table>
 <tr><th>Validation area</th><th>Check</th></tr>
