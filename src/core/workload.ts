@@ -94,6 +94,7 @@ export const authorizationRequirementSchema = z
 export const workloadRepresentationSchema = z
   .object({
     identity: workloadIdentitySchema,
+    artifact: artifactReferenceSchema.optional(),
     operation: workloadOperationSchema,
     resources: resourceRequirementSchema,
     capabilities: capabilityRequirementSchema,
