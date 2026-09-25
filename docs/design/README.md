@@ -2,7 +2,7 @@
 
 UI, workspace structure, interaction patterns, and design decisions.
 
-The design keeps the main user actions visible while allowing technical details to appear when the user needs them.
+The design uses a macOS-style glass workspace: translucent surfaces, depth, spacing, system controls, and progressive disclosure. The interface keeps common actions visible while allowing technical details to appear when needed. The uploaded Stitch UI references are the visual source for this direction.
 
 ## Guide
 
@@ -62,6 +62,21 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Note:** This table describes the current repository implementation. A platform target is not proof that its implementation is complete.
 
+### 3. Current interface model
+
+| Surface | Direction |
+|---|---|
+| Main workspace | macOS-style glass interface rather than a uniformly dark dashboard |
+| Settings | System-settings organization similar to macOS and GNU desktop environments |
+| Terminal | Universal terminal and remote-control surface for local and connected systems |
+| Code / text editor | Lightweight Notepad application with syntax support for multiple languages and common text/configuration formats |
+| Knowledge / documentation | Obsidian remains the external knowledge-management and project-notes tool |
+| Development IDE | Visual Studio Code is the development IDE reference; Antigravity is not part of the current Cloud107 interface definition |
+
+**Note:** The glass treatment is a UI implementation characteristic, not a requirement that every screen use the same background, color, or density. Settings should follow familiar system-configuration patterns. Terminal access remains available when the user needs direct control.
+
+**UI reference:** Uploaded Google Stitch Cloud107 screens and the existing repository implementation.
+
 ### 3. UX principles
 
 <table>
@@ -70,6 +85,8 @@ The design keeps the main user actions visible while allowing technical details 
 <tr><td><strong>Progressive disclosure</strong></td><td>Keep the primary workflow visible; expose diagnostics, runtime details, logs, and advanced controls when needed.</td></tr>
 <tr><td><strong>State authority</strong></td><td>Displayed status, health, resources, operations, and billing data must come from authoritative application/runtime sources.</td></tr>
 <tr><td><strong>Technical access</strong></td><td>The UI must not hide the underlying technical controls. Terminal, diagnostics, operations, and configuration remain reachable.</td></tr>
+<tr><td><strong>Familiar system patterns</strong></td><td>Settings and configuration use established desktop conventions so users can locate controls without learning a Cloud107-specific interaction model.</td></tr>
+<tr><td><strong>Direct control</strong></td><td>The universal terminal remains available for direct local or remote operations through the supported Cloud107 command interface.</td></tr>
 <tr><td><strong>Context preservation</strong></td><td>Moving between workspace surfaces should preserve the selected project, node, workload, application, or operation context where applicable.</td></tr>
 <tr><td><strong>Feedback</strong></td><td>Actions expose a clear pending, success, failure, or unavailable state. Silent state changes are avoided.</td></tr>
 <tr><td><strong>Recovery</strong></td><td>Failed operations expose the recorded error and the available recovery path rather than masking the failure.</td></tr>
@@ -104,7 +121,7 @@ The design keeps the main user actions visible while allowing technical details 
 | **Projects** | Project/workload organization | Project data |
 | **Nodes** | Connected execution/resource endpoints | Node state |
 | **Operations** | Current and recent operations | Runtime state |
-| **Terminal** | Direct command-line interaction | c107 / shell |
+| **Terminal** | Direct local and remote command-line interaction | c107 / shell / connected node |
 | **Settings** | Configuration and controls | Application configuration |
 
 <table>
