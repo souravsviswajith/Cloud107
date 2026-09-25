@@ -73,7 +73,7 @@ Release path:
 | CLI | TypeScript | Node.js | Terminal / API | Current |
 | Updates | TypeScript · shell | Node.js · Git | SHA-256 · Ed25519 | Current |
 | Containers | — | Docker Engine / Compose | OCI containers | Current |
-| Orchestration | — | Kubernetes | Container orchestration | Current / Phase 2 |
+| Orchestration | — | Kubernetes | Container orchestration | Current / Planned |
 | Native/runtime | C · C++ · Rust · Assembly | Platform-native | OS/platform interfaces | As required |
 | Hardware | — | x86-64 · ARM64 | ISA/platform boundary | Supported / target-dependent |
 
