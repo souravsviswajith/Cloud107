@@ -125,6 +125,53 @@ npm run build
 
 **Reference:** [Vitest](https://vitest.dev/) · [ESLint](https://eslint.org/docs/latest/)
 
+## Docker-style command model
+
+The installed CLI is intended to use `c107` directly. Commands are grouped by Cloud107 resource, similar to the command hierarchy used by Docker.
+
+### Top-level commands
+
+| Command | Purpose |
+|---|---|
+| `c107 --help` | Display CLI help |
+| `c107 --version` | Display CLI version |
+| `c107 info` | Show installation and runtime information |
+| `c107 status` | Show overall Cloud107 state |
+| `c107 health` | Check API/runtime health |
+| `c107 stats` | Show runtime/resource statistics |
+| `c107 logs` | Show Cloud107 logs |
+| `c107 events` | Show runtime and operation events |
+| `c107 diagnostics` | Run the combined read-only diagnostic path |
+| `c107 update` | Run the update operation |
+
+### Resource commands
+
+| Resource | Commands |
+|---|---|
+| Node | `c107 node ls`, `c107 node inspect <node>`, `c107 node logs <node>` |
+| Workload | `c107 workload ls`, `c107 workload inspect <workload>`, `c107 workload logs <workload>` |
+| Application | `c107 application ls`, `c107 application inspect <application>`, `c107 application logs <application>` |
+| Environment | `c107 environment ls`, `c107 environment inspect <environment>` |
+| Operation | `c107 operation ls`, `c107 operation inspect <operation>` |
+
+### Diagnosis flow
+
+<table>
+<tr><th>Step</th><th>Command</th><th>Purpose</th></tr>
+<tr><td>1</td><td><code>c107 status</code></td><td>Check whether Cloud107 is responding.</td></tr>
+<tr><td>2</td><td><code>c107 health</code></td><td>Check API/runtime health.</td></tr>
+<tr><td>3</td><td><code>c107 node ls</code></td><td>Find connected nodes.</td></tr>
+<tr><td>4</td><td><code>c107 node inspect &lt;node&gt;</code></td><td>Inspect a node's reported state and capabilities.</td></tr>
+<tr><td>5</td><td><code>c107 workload ls</code></td><td>Find workloads and their state.</td></tr>
+<tr><td>6</td><td><code>c107 workload inspect &lt;workload&gt;</code></td><td>Inspect workload state and placement.</td></tr>
+<tr><td>7</td><td><code>c107 operation ls</code></td><td>Find current and recent operations.</td></tr>
+<tr><td>8</td><td><code>c107 operation inspect &lt;operation&gt;</code></td><td>Inspect an operation and its reported state.</td></tr>
+<tr><td>9</td><td><code>c107 logs</code></td><td>Review recorded evidence.</td></tr>
+<tr><td>10</td><td><code>c107 diagnostics</code></td><td>Run the combined diagnostic check.</td></tr>
+</table>
+
+**Note:** The commands above define the intended CLI model. They are not claims that every command is implemented today.
+
 ## Current command surface
 
 | Command | Purpose |
