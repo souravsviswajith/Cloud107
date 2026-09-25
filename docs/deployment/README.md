@@ -133,6 +133,8 @@ Phase 2 targets distributable artifacts and runtime packages across the supporte
 | Linux | `.deb` | x86_64, ARM64 |
 | IoT | device-specific image/package | ARM and x86 where the target supports them |
 | Apple | native application/package | Apple Silicon ARM64 and Intel x86_64 |
+| Web | GitHub Pages-hosted website | Browser architecture |
+| WSL | Microsoft Store distribution | x86_64, ARM64 where the WSL distribution/runtime supports it |
 
 These are **Phase 2 targets**, not claims that every artifact is already built or validated.
 
