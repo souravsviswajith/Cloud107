@@ -6,39 +6,36 @@ This page documents security controls that are present in the repository. A conf
 
 ## Guide
 
-### 1. Security model
+### 1. Security architecture
 
-```text
-User / Client
-     │
-     ▼
-HTTP boundary
-     │
-     ├── Correlation / request IDs
-     ├── Helmet
-     ├── CORS
-     ├── JSON parsing
-     └── Error handling
-     │
-     ▼
-API boundary
-     │
-     ├── Authentication / authorization
-     ├── Application operations
-     └── External providers / nodes / workloads
+<table>
+<tr>
+<td colspan="4" align="center"><strong>CLOUD107 SECURITY BOUNDARIES</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>USER / CLIENT</strong><br><sub>(HTTP · user input)</sub></td>
+<td align="center"><strong>HTTP BOUNDARY</strong><br><sub>(Helmet · CORS · JSON · RFCs)</sub></td>
+<td align="center"><strong>API BOUNDARY</strong><br><sub>(TypeScript · Node.js · Express)</sub></td>
+<td align="center"><strong>EXTERNAL RESOURCES</strong><br><sub>(Providers · Nodes · Workloads)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>REQUEST CONTEXT</strong><br><sub>(Correlation ID · Request ID · logging)</sub></td>
+<td align="center"><strong>ERROR HANDLING</strong><br><sub>(HTTP status · API errors)</sub></td>
+<td align="center"><strong>AUTH / AUTHZ</strong><br><sub>(Implemented controls only)</sub></td>
+<td align="center"><strong>SECRETS</strong><br><sub>(Environment configuration)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="4" align="center"><strong>UPDATE TRUST BOUNDARY</strong><br><sub>(Git · provenance · Ed25519 · RFC 8032 · SHA-256 · FIPS 180-4 · compatibility · validation · health · rollback)</sub></td>
+</tr>
+</table>
 
-Update source
-     │
-     ▼
-Provenance → Ed25519 → SHA-256 → Compatibility
-     │
-     ▼
-Checkpoint → Validation → Health → Activation
-     │
-     └────────────── failure → rollback
-```
-
-**Note:** Security controls are applied at request, API, update, and configuration boundaries.
+**Note:** Security controls are applied at request, API, update, and configuration boundaries. External providers, connected nodes, workloads, update artifacts, and user input remain separate trust boundaries.
 
 **Reference:** [Architecture](../architecture/) · [OWASP](https://owasp.org/www-project-web-security-testing-guide/)
 
