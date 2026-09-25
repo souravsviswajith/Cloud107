@@ -145,7 +145,30 @@ Existing authentication, authorization, node identity, and encrypted transport r
 - **Cloud107 lesson:** Study inventory, idempotent configuration, playbooks, remote execution, role structure, and repeatable machine configuration.
 - **Cloud107 boundary:** Ansible can be used as a supported automation tool for appropriate node/environment operations. It does not replace the Cloud107 node, workload, or operation model.
 
-## 8. Infrastructure Administration & Provisioning
+## 8. CI/CD & Telemetry Standards
+
+### Jenkins
+
+- **Project:** [jenkinsci/jenkins](https://github.com/jenkinsci/jenkins)
+- **Relevance:** Open-source automation server for building, testing, delivering, and deploying software. citeturn0search5
+- **Cloud107 lesson:** Study pipeline execution, build/test stages, artifact handling, deployment automation, and extensible automation through plugins.
+- **Cloud107 boundary:** Jenkins is a supported CI/CD ecosystem reference; Cloud107 does not require Jenkins for normal operation.
+
+### OpenTelemetry
+
+- **Project:** [open-telemetry/opentelemetry-collector](https://github.com/open-telemetry/opentelemetry-collector)
+- **Relevance:** Vendor-neutral open-source observability framework for generating, collecting, and exporting telemetry such as traces, metrics, and logs. citeturn0search0turn0search3
+- **Cloud107 lesson:** Study common telemetry instrumentation, correlation of metrics/logs/traces, collector pipelines, and backend-neutral observability.
+- **Cloud107 boundary:** OpenTelemetry is an observability instrumentation/collection reference. It is not itself Cloud107's telemetry backend.
+
+### Grafana Loki
+
+- **Project:** [grafana/loki](https://github.com/grafana/loki)
+- **Relevance:** Open-source log aggregation system designed to collect and query infrastructure and application logs; it integrates with Grafana and uses a label-based model related to Prometheus. citeturn0search1turn0search8
+- **Cloud107 lesson:** Study structured log streams, labels, log querying, live log access, and correlation of logs with metrics and traces.
+- **Cloud107 boundary:** Loki is an optional logging backend/reference. Cloud107's own operation and diagnostic interfaces remain authoritative for Cloud107 state.
+
+## 9. Infrastructure Administration & Provisioning
 
 Additional references for the Cloud107 product model: a simple user-facing administration surface backed by direct system interfaces and declarative infrastructure tooling.
 
@@ -170,7 +193,7 @@ Additional references for the Cloud107 product model: a simple user-facing admin
 - **Cloud107 lesson:** Study explicit plans, dependency graphs, state tracking, and controlled infrastructure changes.
 - **Cloud107 boundary:** OpenTofu is an infrastructure-management reference; Cloud107 does not require all infrastructure operations to be represented as OpenTofu configurations.
 
-## 9. Infrastructure Platforms & Product Distribution
+## 10. Infrastructure Platforms & Product Distribution
 
 How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
 
@@ -216,7 +239,7 @@ How established open-source infrastructure projects separate source, packaged re
 - **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
 - **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
 
-## 10. Reference-to-Implementation Mapping
+## 11. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -235,11 +258,14 @@ The prior-art references should feed implementation decisions through explicit s
 | Declarative provisioning | OpenTofu | How are desired state, execution plans, dependencies, state, and controlled changes represented? |
 | Observability | Prometheus, Grafana | How are metrics collected, queried, visualized, and connected to operational state? |
 | Configuration management | Ansible | How are heterogeneous nodes configured, provisioned, and maintained repeatably? |
+| CI/CD | Jenkins | How are source changes built, tested, packaged, and delivered through repeatable automation? |
+| Telemetry | OpenTelemetry | How are metrics, logs, and traces generated, collected, correlated, and exported? |
+| Log aggregation | Grafana Loki | How are operational logs collected, labeled, queried, and correlated with metrics and traces? |
 | Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 11. Phase 2 Use
+## 12. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -288,7 +314,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 12. Authority Model for AI-Mediated Operations
+## 13. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -347,7 +373,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 13. Scope
+## 14. Scope
 
 This matrix is a research and implementation reference.
 
