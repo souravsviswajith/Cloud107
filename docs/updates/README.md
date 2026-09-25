@@ -8,41 +8,38 @@ This page describes the current update implementation. Development/test manifest
 
 ### 1. Update architecture
 
-```text
-                     Update source
-                          │
-                          ▼
-                    Update manifest
-        version / revision / target / schema
-        hashes / signing key / signature
-                          │
-                          ▼
-                 Verification boundary
-             ┌────────────┼────────────┐
-             ▼            ▼            ▼
-         Provenance     Ed25519      SHA-256
-             │            │            │
-             └────────────┼────────────┘
-                          ▼
-                    Compatibility
-             version / platform / arch / schema
-                          │
-                          ▼
-                      Checkpoint
-                          │
-                          ▼
-                    Stage → Build
-                          │
-                          ▼
-                     Validate
-                          │
-                          ▼
-                  Health → Activate
-                          │
-                 ┌────────┴────────┐
-                 ▼                 ▼
-              Commit            Rollback
-```
+<table>
+<tr>
+<td colspan="4" align="center"><strong>CLOUD107 UPDATE SYSTEM</strong></td>
+</tr>
+<tr>
+<td colspan="4" align="center"><strong>UPDATE MANIFEST</strong><br><sub>(Version · revision · target · schema · hashes · key ID · signature · JSON)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>PROVENANCE</strong><br><sub>(Git / source revision)</sub></td>
+<td align="center"><strong>SIGNATURE</strong><br><sub>(Ed25519 · RFC 8032)</sub></td>
+<td align="center"><strong>HASH</strong><br><sub>(SHA-256 · FIPS 180-4)</sub></td>
+<td align="center"><strong>COMPATIBILITY</strong><br><sub>(Version · platform · architecture · schema)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>CHECKPOINT</strong><br><sub>(Recovery state)</sub></td>
+<td align="center"><strong>STAGE</strong><br><sub>(Artifact preparation)</sub></td>
+<td align="center"><strong>BUILD</strong><br><sub>(Node.js / project build)</sub></td>
+<td align="center"><strong>VALIDATE</strong><br><sub>(Configured checks)</sub></td>
+</tr>
+<tr>
+<td colspan="4" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>HEALTH</strong><br><sub>(Runtime verification)</sub></td>
+<td align="center"><strong>ACTIVATE</strong><br><sub>(Atomic activation)</sub></td>
+<td align="center"><strong>COMMIT</strong><br><sub>(Accepted state)</sub></td>
+<td align="center"><strong>ROLLBACK</strong><br><sub>(Previous checkpoint)</sub></td>
+</tr>
+</table>
 
 **Note:** The update path verifies source and artifact information before activation, then uses a checkpoint so a failed update can return to the previous state.
 
