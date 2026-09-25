@@ -16,7 +16,7 @@ This page describes the current architecture and the boundaries between its impl
 <td colspan="3" align="center">↓</td>
 </tr>
 <tr>
-<td align="center"><strong>WEB WORKSPACE</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
+<td align="center"><strong>WEB WORKSPACE</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub><br><small>Overview · Projects · Nodes · Operations · Terminal · Notepad · Settings</small></td>
 <td align="center"><strong>c107 CLI</strong><br><sub>(TypeScript · Node.js · Git · POSIX)</sub></td>
 <td align="center"><strong>Connected Interfaces</strong><br><sub>(HTTP · JSON · platform APIs)</sub></td>
 </tr>
@@ -207,6 +207,7 @@ Overview
    ├── Nodes
    ├── Operations
    ├── Terminal
+   ├── Notepad
    └── Settings
 ```
 
@@ -214,7 +215,19 @@ Workspace and application state is exposed through the API rather than being tre
 
 **Note:** Deeper node and runtime information is progressively disclosed after the user selects the relevant resource.
 
-**Reference:** [React documentation](https://react.dev/learn)
+**Reference:** [React documentation](https://react.dev/learn) · [Notepad++ documentation](https://notepad-plus-plus.org/)
+
+
+### Notepad boundary
+
+| Surface | Role | Boundary |
+|---|---|---|
+| **Notepad** | Lightweight open-source text/source editor | Workspace/project files |
+| **Visual Studio Code** | Full development IDE reference | Development workflow |
+| **Terminal** | Direct command-line control | c107 / shell / connected node |
+| **Obsidian** | External knowledge and project notes | Documentation / knowledge workflow |
+
+**Note:** Cloud107 Notepad is not the Windows Notepad application. It is a cross-platform open-source editor with a feature model comparable to Notepad++, while remaining separate from Visual Studio Code and Obsidian.
 
 ### 7. Runtime and resources
 
