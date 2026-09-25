@@ -121,7 +121,54 @@ Existing authentication, authorization, node identity, and encrypted transport r
 - **Cloud107 lesson:** Study reproducible environments, immutable-style generations, dependency resolution, rollback, and controlled system transitions.
 - **Cloud107 relation:** These concepts are relevant to the design of Cloud107's source-first update and rollback model, but Cloud107 does not depend on NixOS.
 
-## 7. Reference-to-Implementation Mapping
+
+## 7. Infrastructure Platforms & Product Distribution
+
+How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
+
+### OpenStack
+
+- **Project:** [OpenStack](https://github.com/openstack/openstack)
+- **Relevance:** Open-source cloud infrastructure composed of services that manage compute, storage, and networking through APIs and dashboards.
+- **Cloud107 lesson:** Study API-first infrastructure management, service boundaries, dashboard/CLI access, resource abstractions, and operational documentation.
+- **Cloud107 boundary:** Cloud107 is not an OpenStack distribution and does not reproduce the OpenStack service model wholesale.
+
+### OpenNebula
+
+- **Project:** [OpenNebula](https://github.com/OpenNebula/one)
+- **Relevance:** Open-source cloud and edge management platform with web UI, CLI, REST API, Terraform integration, VM, Kubernetes, and GPU workload management.
+- **Cloud107 lesson:** Study unified management of heterogeneous compute resources and multiple operator interfaces.
+- **Cloud107 boundary:** Reference only; Cloud107 keeps its own node, workload, environment, and operation model.
+
+### Proxmox Virtual Environment
+
+- **Project:** [Proxmox VE](https://github.com/proxmox)
+- **Relevance:** Open-source virtualization platform with a web interface for VMs, containers, storage, networking, and clustering.
+- **Cloud107 lesson:** Study how complex infrastructure can be exposed through a single administration surface while retaining direct technical controls.
+- **Cloud107 boundary:** Cloud107 may use virtualization technologies as execution infrastructure but does not depend on the Proxmox product.
+
+### Portainer
+
+- **Project:** [Portainer](https://github.com/portainer/portainer)
+- **Relevance:** Web-based management of Docker, Kubernetes, Podman, and related container environments.
+- **Cloud107 lesson:** Study progressive disclosure between a graphical management surface and underlying container operations, plus the relationship between UI and CLI workflows.
+- **Cloud107 boundary:** Portainer is a reference for management UX and container operations, not a Cloud107 dependency.
+
+### Incus
+
+- **Project:** [Incus](https://github.com/lxc/incus)
+- **Relevance:** Open-source system container and virtual-machine manager with a REST API, supporting single-node and clustered operation.
+- **Cloud107 lesson:** Study a unified API for system containers and VMs, image handling, node/resource management, and cluster boundaries.
+- **Cloud107 boundary:** Incus is a reference for workload/resource management; Cloud107 retains its own workload abstraction.
+
+### Firecracker
+
+- **Project:** [Firecracker](https://github.com/firecracker-microvm/firecracker)
+- **Relevance:** Open-source microVM technology designed for secure, low-overhead isolated execution of container and function workloads.
+- **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
+- **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
+
+## 8. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -135,8 +182,11 @@ The prior-art references should feed implementation decisions through explicit s
 | Device connectivity | OS/device APIs | How does Cloud107 discover and use available Wi-Fi, Bluetooth/BLE, NFC, and related device capabilities? |
 | Home integration | Google Home, Apple Home, Amazon Alexa | Which Cloud107 capabilities can be exposed safely through each ecosystem without making them core dependencies? |
 | Updates / environments | NixOS / Nix | How are versions, dependencies, checkpoints, activation, rollback, and reproducibility controlled? |
+| Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
+| Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
+| Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 8. Phase 2 Use
+## 9. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -185,7 +235,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 9. Authority Model for AI-Mediated Operations
+## 10. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -244,7 +294,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 10. Scope
+## 11. Scope
 
 This matrix is a research and implementation reference.
 
