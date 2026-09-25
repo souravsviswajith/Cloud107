@@ -47,6 +47,8 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [operations, setOperations] = useState<OperationEvent[]>([]);
   const [settingsSection, setSettingsSection] = useState('General');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalLines, setTerminalLines] = useState<string[]>(['Cloud107 terminal', 'Type a command to continue.']);
 
   const refresh = async () => {
     try {
@@ -326,9 +328,26 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             {activeView === 'terminal' && (
               <section>
                 <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Terminal</h2>
-                <p className="text-sm text-neutral-500 mb-6">Open the terminal through an available workspace.</p>
                 {readyNode ? (
-                  <button onClick={() => openWorkspace(readyNode, 'app')} className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-md">Open Terminal</button>
+                  <div className="border border-white/5 bg-black/40 rounded-md overflow-hidden">
+                    <div className="px-4 py-2 border-b border-white/5 text-xs text-neutral-500">{readyNode.name}</div>
+                    <div className="p-4 h-72 overflow-y-auto font-mono text-xs text-neutral-300 space-y-1">
+                      {terminalLines.map((line, index) => <div key={index}>{line}</div>)}
+                    </div>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const command = terminalInput.trim();
+                        if (!command) return;
+                        setTerminalLines((lines) => [...lines, `$ ${command}`, command === 'clear' ? '' : `Command queued: ${command}`].slice(-100));
+                        setTerminalInput('');
+                      }}
+                      className="border-t border-white/5 flex items-center px-4"
+                    >
+                      <span className="text-neutral-600 font-mono text-xs mr-2">$</span>
+                      <input value={terminalInput} onChange={(event) => setTerminalInput(event.target.value)} placeholder="command" className="flex-1 bg-transparent py-3 outline-none font-mono text-xs text-white placeholder:text-neutral-700" />
+                    </form>
+                  </div>
                 ) : (
                   <p className="text-sm text-neutral-600">No online node is available.</p>
                 )}
