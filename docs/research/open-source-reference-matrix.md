@@ -168,7 +168,32 @@ Existing authentication, authorization, node identity, and encrypted transport r
 - **Cloud107 lesson:** Study structured log streams, labels, log querying, live log access, and correlation of logs with metrics and traces.
 - **Cloud107 boundary:** Loki is an optional logging backend/reference. Cloud107's own operation and diagnostic interfaces remain authoritative for Cloud107 state.
 
-## 9. Infrastructure Administration & Provisioning
+## 9. Data Processing & Database Compatibility
+
+### Apache Spark
+
+- **Project:** [apache/spark](https://github.com/apache/spark)
+- **Relevance:** Open-source distributed data processing engine for large-scale analytics and batch/stream workloads.
+- **Cloud107 lesson:** Study distributed job execution, resource-aware workloads, cluster execution, data locality, scheduling, and integration with existing storage/data systems.
+- **Cloud107 boundary:** Spark is a supported workload/runtime reference for data-processing workloads. It does not replace Cloud107's workload and node abstraction.
+
+### Oracle Database
+
+- **Technology:** [Oracle Database](https://www.oracle.com/database/)
+- **Relevance:** Enterprise relational database platform and an important compatibility target for applications that cannot use PostgreSQL as their database backend.
+- **Cloud107 lesson:** Study relational database portability, SQL compatibility, connection management, migrations, transaction behavior, authentication, and deployment boundaries.
+- **Cloud107 boundary:** Oracle Database is a compatibility target/integration option, not a replacement for the current PostgreSQL baseline.
+
+### MongoDB
+
+- **Project:** [mongodb/mongo](https://github.com/mongodb/mongo)
+- **Relevance:** Document-oriented database platform for workloads whose data model is not naturally relational.
+- **Cloud107 lesson:** Study document storage, collections, indexing, aggregation, connection management, and workload-specific database selection.
+- **Cloud107 boundary:** MongoDB compatibility should exist at the application/workload integration boundary. It does not replace PostgreSQL for Cloud107's own relational application state.
+
+**Compatibility rule:** Cloud107 should distinguish between its **internal system database** and **databases used by user applications/workloads**. PostgreSQL remains the current Cloud107 application-state baseline; Oracle Database and MongoDB are compatibility/integration targets for appropriate workloads.
+ 
+## 10. Infrastructure Administration & Provisioning
 
 Additional references for the Cloud107 product model: a simple user-facing administration surface backed by direct system interfaces and declarative infrastructure tooling.
 
@@ -193,7 +218,7 @@ Additional references for the Cloud107 product model: a simple user-facing admin
 - **Cloud107 lesson:** Study explicit plans, dependency graphs, state tracking, and controlled infrastructure changes.
 - **Cloud107 boundary:** OpenTofu is an infrastructure-management reference; Cloud107 does not require all infrastructure operations to be represented as OpenTofu configurations.
 
-## 10. Infrastructure Platforms & Product Distribution
+## 11. Infrastructure Platforms & Product Distribution
 
 How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
 
@@ -239,7 +264,7 @@ How established open-source infrastructure projects separate source, packaged re
 - **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
 - **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
 
-## 11. Reference-to-Implementation Mapping
+## 12. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -261,11 +286,14 @@ The prior-art references should feed implementation decisions through explicit s
 | CI/CD | Jenkins | How are source changes built, tested, packaged, and delivered through repeatable automation? |
 | Telemetry | OpenTelemetry | How are metrics, logs, and traces generated, collected, correlated, and exported? |
 | Log aggregation | Grafana Loki | How are operational logs collected, labeled, queried, and correlated with metrics and traces? |
+| Data processing | Apache Spark | How are distributed data-processing workloads scheduled, executed, and connected to Cloud107 resources? |
+| Relational database compatibility | Oracle Database | How are applications requiring Oracle supported without changing Cloud107's PostgreSQL baseline? |
+| Document database compatibility | MongoDB | How are document-oriented workloads connected while keeping Cloud107's internal relational state separate? |
 | Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 12. Phase 2 Use
+## 13. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -314,7 +342,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 13. Authority Model for AI-Mediated Operations
+## 14. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -373,7 +401,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 14. Scope
+## 15. Scope
 
 This matrix is a research and implementation reference.
 
