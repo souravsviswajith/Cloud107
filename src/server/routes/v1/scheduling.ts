@@ -6,10 +6,13 @@ import { InMemoryNodeRegistry, type NodeRegistry } from '../../../core/node-regi
 import { toPlannerNode } from '../../../core/node-capability-adapter';
 import { WorkloadStateRepository } from '../../repositories/workloadStateRepository';
 import { ExecutionStateRepository } from '../../repositories/executionStateRepository';
+import { FileSystemArtifactStore } from '../../../core/artifact-store';
+import { ensureArtifact } from '../../../core/artifact-distributor';
 
 export interface SchedulingState {
   workloads: WorkloadStateRepository;
   executions: ExecutionStateRepository;
+  artifacts?: FileSystemArtifactStore;
 }
 
 export function createSchedulingRouter(
@@ -51,6 +54,33 @@ export function createSchedulingRouter(
         plannerEndpoint,
       );
 
+      if (workload.artifact) {
+        if (!state?.artifacts) {
+          throw new Error('Artifact store is not configured');
+        }
+
+        const artifact = await ensureArtifact(
+          workload.artifact,
+          result.selected,
+          state.artifacts,
+        );
+
+        plan.artifact = {
+          reference: workload.artifact,
+          available: artifact.available,
+          distributed: artifact.distributed,
+          path: artifact.path,
+        };
+
+        if (plan.execution) {
+          plan.execution = {
+            ...plan.execution,
+            executablePath: artifact.path,
+            arguments: [artifact.path, ...plan.execution.arguments.slice(1)],
+          };
+        }
+      }
+
       if (state) {
         await state.executions.createPlan(plan);
       }
@@ -73,5 +103,8 @@ export const schedulingRouter = createSchedulingRouter(
   {
     workloads: new WorkloadStateRepository(),
     executions: new ExecutionStateRepository(),
+    artifacts: new FileSystemArtifactStore(
+      process.env.C107_ARTIFACT_STORE ?? './.cloud107/artifacts',
+    ),
   },
 );
