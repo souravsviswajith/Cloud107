@@ -6,30 +6,18 @@ These references are inputs to engineering decisions. They are not evidence that
 
 ## Research map
 
-```text
-Cloud107 engineering question
-            │
-            ▼
-      Research reference
-            │
-     ┌──────┼──────┐
-     ▼      ▼      ▼
- Project  Spec   Paper
-     │      │      │
-     └──────┼──────┘
-            ▼
-       Extract concept
-            │
-            ▼
-  Check scope / cost / security
-            │
-            ▼
-       Cloud107 decision
-            │
-      ┌─────┴─────┐
-      ▼           ▼
- Adopt       Do not adopt
-```
+<table>
+<tr><td align="center"><strong>Cloud107 engineering question</strong></td><td>→</td><td align="center"><strong>Research reference</strong></td></tr>
+<tr><td colspan="3" align="center">↓</td></tr>
+<tr><td align="center"><strong>Project</strong></td><td align="center"><strong>Spec</strong></td><td align="center"><strong>Paper</strong></td></tr>
+<tr><td colspan="3" align="center">↓</td></tr>
+<tr><td colspan="3" align="center"><strong>Extract concept</strong></td></tr>
+<tr><td colspan="3" align="center">↓</td></tr>
+<tr><td colspan="3" align="center"><strong>Check scope / cost / security</strong></td></tr>
+<tr><td colspan="3" align="center">↓</td></tr>
+<tr><td colspan="3" align="center"><strong>Cloud107 decision</strong></td></tr>
+<tr><td align="center"><strong>Adopt</strong></td><td>or</td><td align="center"><strong>Do not adopt</strong></td></tr>
+</table>
 
 **Note:** Research documents explain what an external reference is useful for. They do not establish that Cloud107 implements that project, standard, or research result.
 
@@ -251,17 +239,17 @@ https://arxiv.org/abs/1903.09575
 
 This is relevant to the Cloud107 abstraction:
 
-```text
-Workload
-  ↓
-Programming model
-  ↓
-Compiler / toolchain
-  ↓
-Target representation
-  ↓
-Hardware-specific execution
-```
+<table>
+<tr><td align="center"><strong>Workload</strong></td></tr>
+<tr><td align="center">↓</td></tr>
+<tr><td align="center"><strong>Programming model</strong></td></tr>
+<tr><td align="center">↓</td></tr>
+<tr><td align="center"><strong>Compiler / toolchain</strong></td></tr>
+<tr><td align="center">↓</td></tr>
+<tr><td align="center"><strong>Target representation</strong></td></tr>
+<tr><td align="center">↓</td></tr>
+<tr><td align="center"><strong>Hardware-specific execution</strong></td></tr>
+</table>
 
 **Cross et al. (2022), “OpenQASM 3: A broader and deeper quantum assembly language.”**
 
