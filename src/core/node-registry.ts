@@ -14,6 +14,7 @@ export interface NodeCapability {
     devices: string[];
   };
   status: 'online' | 'offline' | 'degraded';
+  artifactRoot?: string;
 }
 
 export interface NodeRegistry {
