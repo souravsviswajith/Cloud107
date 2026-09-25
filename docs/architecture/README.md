@@ -2,7 +2,11 @@
 
 Cloud107 is organized around a web workspace, an API layer, persistent state, and connected workloads and resources.
 
-## Architecture flow
+This page describes the current architecture and the boundaries between its implemented components.
+
+## Guide
+
+### 1. Architecture flow
 
 ```text
 User
@@ -18,10 +22,11 @@ API / CLI operations
   └── updates ─────────────► Update pipeline
 ```
 
-**Note:** The diagram shows the main control paths. Components below the application boundary are only represented where the repository currently implements or connects them.
+**Note:** The diagram shows the main control paths. Components below the application boundary are shown only where the repository currently implements or connects them.
 
+**Reference:** [Cloud107 development documentation](../development/) · [Cloud107 runtime documentation](../runtime/)
 
-## Implementation and standards map
+### 2. Implementation and standards map
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -58,52 +63,36 @@ API / CLI operations
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Note:** Language, runtime, protocol, standard, and platform information is shown at the boundary where it applies. A language or platform listed here is not a claim that every component is implemented in that technology.
+**Note:** A language, runtime, protocol, standard, or platform shown here applies only to the boundary where it is used. It does not mean every component uses every technology.
 
-### Standards and external technology
+### 3. Verify the application boundary
 
 ```text
-Cloud107 component
-       │
-       ├── Language / runtime
-       ├── Protocol / interface
-       ├── Standard / specification
-       ├── Platform API
-       └── External implementation / vendor
+Browser / client
+      │
+      ▼
+Cloud107 server
+      │
+      ▼
+/api/v1/health
+      │
+      ▼
+Health response
 ```
 
-Standards organizations and specifications are documented separately from vendor technologies and reference implementations. For example, IEEE and IETF publish standards/specifications; Cisco and Palo Alto Networks are technology vendors. A specific standard or vendor dependency should be listed only where the implementation or architecture actually uses it.
+**Command**
 
-## Component reference table
+```bash
+curl http://localhost:3000/api/v1/health
+```
 
-| Component | Language | Runtime / stack | Interface | State / role |
-|---|---|---|---|---|
-| Web workspace | TypeScript / HTML / CSS | React / Vite | Browser / HTTP | User interface |
-| API | TypeScript | Node.js / Express | HTTP / JSON | Application control |
-| Core | C# | .NET | Application/core boundary | Core contracts |
-| Database | SQL | PostgreSQL / Drizzle | SQL | Persistent state |
-| CLI | TypeScript | Node.js | Terminal / HTTP | Command-line control |
-| Update system | TypeScript / shell | Node.js / Git / cryptography | Update pipeline | Release/update control |
+**Note:** When Cloud107 is running locally, the health endpoint provides a direct check of the application boundary.
 
-**Note:** This table describes the current documented architecture. Target-only components must be marked as planned or target rather than presented as implemented.
+**Expected result:** An HTTP response from the Cloud107 health endpoint.
 
-## Reference links
+**Reference:** [HTTP overview — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
 
-| Area | Primary reference |
-|---|---|
-| React | [React documentation](https://react.dev/learn) |
-| TypeScript | [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/) |
-| Node.js | [Node.js documentation](https://nodejs.org/docs/latest/api/) |
-| Express | [Express documentation](https://expressjs.com/) |
-| Vite | [Vite documentation](https://vite.dev/guide/) |
-| PostgreSQL | [PostgreSQL documentation](https://www.postgresql.org/docs/) |
-| .NET | [.NET documentation](https://learn.microsoft.com/en-us/dotnet/) |
-| Docker | [Docker documentation](https://docs.docker.com/) |
-| Kubernetes | [Kubernetes documentation](https://kubernetes.io/docs/) |
-
-**Note:** Upstream documentation is the primary technical reference for a stack. Cloud107 documentation describes how the project uses that stack.
-
-## Current application structure
+### 4. Current application structure
 
 ```text
 Browser
@@ -126,7 +115,11 @@ PostgreSQL
 
 The CLI provides a separate command-line interface to Cloud107 and includes the update pipeline.
 
-## Request flow
+**Note:** The route list represents the current documented API surface, not a promise that every future service will use the same structure.
+
+**Reference:** [Express documentation](https://expressjs.com/) · [PostgreSQL documentation](https://www.postgresql.org/docs/)
+
+### 5. Request flow
 
 ```text
 Client
@@ -150,48 +143,123 @@ Application services / persistence
 
 The frontend is served through the same application boundary. During development, Vite middleware provides the frontend. Production serves the built frontend.
 
-## Workspace model
+**Note:** Middleware is part of the request boundary before requests reach the API routes.
 
-The UI organizes the operator experience around:
+**Reference:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html) · [Vite](https://vite.dev/guide/)
+
+### 6. Workspace model
 
 ```text
 Overview
-Projects
-Nodes
-Operations
-Terminal
-Settings
+   │
+   ├── Projects
+   ├── Nodes
+   ├── Operations
+   ├── Terminal
+   └── Settings
 ```
 
 Workspace and application state is exposed through the API rather than being treated as static UI data.
 
-The interface is progressively disclosed: deeper node and runtime information is shown after the user selects the relevant resource.
+**Note:** Deeper node and runtime information is progressively disclosed after the user selects the relevant resource.
 
-## Runtime and resources
+**Reference:** [React documentation](https://react.dev/learn)
+
+### 7. Runtime and resources
+
+```text
+Hardware
+   │
+   ▼
+ISA / OS
+   │
+   ▼
+Toolchain
+   │
+   ▼
+Runtime
+   │
+   ▼
+Workload
+```
 
 Cloud107 contains workspace/runtime-related components for executing workloads and interacting with resources. The repository currently exposes only the portions that are implemented and connected to the application.
 
-Resource state presented to users should come from the runtime or connected provider. The interface must not fabricate health, utilization, billing, or execution state.
+**Note:** Resource state shown to users must come from the runtime or connected provider. The interface must not fabricate health, utilization, billing, or execution state.
 
-## Update boundary
+**Reference:** [Runtime documentation](../runtime/) · [Workload documentation](../workloads/) · [Node documentation](../nodes/)
 
-Universal Update Management is implemented separately from the HTTP request path in the CLI update subsystem.
+### 8. Update boundary
 
-Its responsibilities include:
+```text
+c107
+ │
+ ▼
+Update pipeline
+ │
+ ├── provenance
+ ├── signature
+ ├── hash
+ ├── compatibility
+ ├── checkpoint
+ ├── staging
+ ├── validation
+ ├── health
+ ├── activation
+ ├── post-verification
+ └── rollback
+```
 
-- provenance verification
-- release signature verification
-- artifact hash verification
-- compatibility checking
-- checkpoint creation
-- staged update
-- validation
-- health checking
-- atomic activation
-- post-activation verification
-- rollback on failure
+**Command**
 
-See the update documentation for the update-specific implementation.
+```bash
+npm run c107:update
+```
+
+**Note:** Universal Update Management is implemented separately from the normal HTTP request path in the CLI update subsystem.
+
+**Expected result:** The update pipeline performs its configured verification and activation stages; a failed validation can trigger rollback.
+
+**Reference:** [Update documentation](../updates/) · [The Update Framework (TUF)](https://theupdateframework.io/)
+
+## Standards and external technology
+
+```text
+Cloud107 component
+       │
+       ├── Language / runtime
+       ├── Protocol / interface
+       ├── Standard / specification
+       ├── Platform API
+       └── External implementation / vendor
+```
+
+| Type | Example |
+|---|---|
+| Language | C, C++, C#, Rust, TypeScript |
+| Runtime / framework | .NET, Node.js, React, Vite |
+| Protocol | HTTP, TCP/IP, MQTT |
+| Standards body | IEEE, IETF, ISO/IEC |
+| Specification | IEEE 802.3, IEEE 802.11, RFCs |
+| Vendor technology | Cisco, Palo Alto Networks |
+| Reference implementation | Kubernetes, LLVM, PostgreSQL |
+| Platform API | Win32, POSIX, Android SDK, Apple APIs |
+| Hardware / ISA | ARM64, x86-64, RISC-V |
+
+**Note:** A vendor is not a standards body. A technology should be listed only when Cloud107 actually uses it or its architecture explicitly depends on it.
+
+## Component reference
+
+| Component | Language | Runtime / stack | Interface | Role |
+|---|---|---|---|---|
+| Web workspace | TypeScript / HTML / CSS | React / Vite | Browser / HTTP | User interface |
+| API | TypeScript | Node.js / Express | HTTP / JSON | Application control |
+| Core | C# | .NET | Application/core boundary | Core contracts |
+| Database | SQL | PostgreSQL / Drizzle | SQL | Persistent state |
+| CLI | TypeScript | Node.js | Terminal / HTTP | Command-line control |
+| Update system | TypeScript / shell | Node.js / Git / cryptography | Update pipeline | Release/update control |
+
+**Note:** Target-only components must be marked as planned or target rather than presented as implemented.
 
 ## Architecture boundaries
 
@@ -202,10 +270,21 @@ See the update documentation for the update-specific implementation.
 - **Runtime/workload components** — execute or manage workloads where implemented.
 - **Connected providers** — supply external resource capabilities such as billing when configured.
 
-These boundaries should be extended only when the corresponding implementation exists.
+**Note:** Extend a boundary only when the corresponding implementation exists.
 
 ## Source of truth
 
-Current infrastructure state comes from Cloud107 and its connected resources.
+```text
+Cloud107
+   │
+   ├── runtime state
+   ├── connected resource state
+   └── application state
+          │
+          ▼
+      Current state
+```
 
 Documentation and external knowledge systems may describe decisions, procedures, and history, but they do not replace runtime state as the authority for what is currently running.
+
+**Reference:** [Operations](../operations/) · [Decisions](../decisions/) · [Research](../research/)
