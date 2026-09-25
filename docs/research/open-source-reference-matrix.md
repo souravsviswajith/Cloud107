@@ -347,9 +347,9 @@ The prior-art references should feed implementation decisions through explicit s
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 14. Phase 2 Use
+## 14. Implementation & Integration
 
-These references belong to the **Implementation & Integration** portion of Phase 2.
+These references belong to the **Implementation & Integration** scope.
 
 The intended progression is:
 
