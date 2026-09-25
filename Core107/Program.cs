@@ -1,6 +1,7 @@
 using Core107.Workload;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<ExecutionPlanner>();
 builder.WebHost.UseUrls("http://0.0.0.0:5107");
 
 var app = builder.Build();
