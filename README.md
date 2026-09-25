@@ -6,12 +6,12 @@ It is open source and can be run on infrastructure you control.
 
 ## Start here
 
-You can use Cloud107 through:
-
-- Web workspace
-- `c107` CLI
-- Chrome / Chromium
-- Firefox
+| Interface | Purpose |
+|---|---|
+| Web workspace | Main Cloud107 interface |
+| `c107` | Terminal control |
+| Chrome / Chromium | Browser workspace |
+| Firefox | Browser workspace |
 
 The workspace includes:
 
@@ -19,13 +19,17 @@ The workspace includes:
 - **Developer** — projects, environments, toolchains, and development tools
 - **Supercomputer** — high-resource and distributed workloads when those resources are available
 
-Common workspace areas include:
+Common workspace areas:
 
-- Projects
-- Nodes
-- Operations
-- Terminal
-- Settings
+| Area | Purpose |
+|---|---|
+| Projects | Projects and workloads |
+| Nodes | Connected resources |
+| Operations | Runtime activity |
+| Terminal | Direct command-line access |
+| Settings | Configuration |
+
+> **Note:** This README is the shortest path from an installed repository to a working Cloud107 instance. Detailed implementation information is in [docs/](docs/).
 
 ## Quick start with Docker
 
@@ -46,7 +50,7 @@ Docker
 - Docker
 - Docker Compose
 
-Install Docker and Docker Compose using the instructions for your operating system.
+**Reference:** [Docker Get Started](https://docs.docker.com/get-started/) · [Docker Compose documentation](https://docs.docker.com/compose/)
 
 **Note:** Docker runs Cloud107 and its PostgreSQL dependency as containers.
 
@@ -68,7 +72,7 @@ Cloud107 configuration
 cp .env.example .env
 ```
 
-Set the required values in `.env`:
+Set the required values:
 
 ```env
 SQL_ADMIN_PASSWORD=change-this
@@ -76,7 +80,9 @@ SQL_PASSWORD=change-this
 C107_AUTH_SECRET=change-this
 ```
 
-**Note:** Create the local configuration file and replace the example secrets with your own values.
+**Reference:** [Docker environment variables](https://docs.docker.com/compose/how-tos/environment-variables/)
+
+**Note:** Create the local configuration file and replace example secrets with your own values.
 
 ### 3. Start Cloud107
 
@@ -98,9 +104,9 @@ docker compose up
 docker compose up -d
 ```
 
-The database migration runs before the Cloud107 application starts.
+**Reference:** [Docker Compose](https://docs.docker.com/compose/)
 
-**Note:** Start the database, apply its schema, and then start Cloud107.
+**Note:** The database starts first, the migration runs, and Cloud107 starts afterward.
 
 ### 4. Open the workspace
 
@@ -119,6 +125,8 @@ Web browser
 ```text
 http://localhost:3000
 ```
+
+**Reference:** [MDN HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
 
 **Note:** Open the local Cloud107 workspace in your browser.
 
@@ -140,9 +148,9 @@ Containers stopped
 docker compose down
 ```
 
-The PostgreSQL data remains in the `cloud107-postgres` volume.
+**Reference:** [docker compose down](https://docs.docker.com/reference/cli/docker/compose/down/)
 
-**Note:** Stop the containers without deleting the stored database volume.
+**Note:** The PostgreSQL volume remains unless it is explicitly removed.
 
 ## Run from source
 
@@ -155,13 +163,13 @@ Git + Node.js 22+ + PostgreSQL 15+
           Cloud107 source
 ```
 
-**Requirements**
+| Requirement | Reference |
+|---|---|
+| Git | [Git documentation](https://git-scm.com/doc) |
+| Node.js | [Node.js documentation](https://nodejs.org/docs/latest/api/) |
+| PostgreSQL | [PostgreSQL documentation](https://www.postgresql.org/docs/) |
 
-- Node.js 22+
-- PostgreSQL 15+
-- Git
-
-**Note:** These tools provide the source-control, JavaScript runtime, and database environment required by the source installation.
+**Note:** These provide source control, the application runtime, and the database environment.
 
 ### 2. Get the source and install dependencies
 
@@ -183,7 +191,9 @@ cd Cloud107
 npm ci
 ```
 
-**Note:** Download the repository and install the dependency versions recorded by the project lockfile.
+**Reference:** [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci) · [Git clone](https://git-scm.com/docs/git-clone)
+
+**Note:** Install the dependency versions recorded by the lockfile.
 
 ### 3. Configure the environment
 
@@ -203,9 +213,9 @@ Application configuration
 cp .env.example .env
 ```
 
-Set the required environment values before starting the application.
+**Reference:** [Node.js environment variables](https://nodejs.org/api/environment_variables.html)
 
-**Note:** Give Cloud107 the local configuration it needs to connect to its services.
+**Note:** Set the local values required by Cloud107 before starting it.
 
 ### 4. Run database migrations
 
@@ -224,6 +234,8 @@ Cloud107 database schema
 ```bash
 npm run db:migrate
 ```
+
+**Reference:** [PostgreSQL documentation](https://www.postgresql.org/docs/) · [Drizzle Kit](https://orm.drizzle.team/docs/kit-overview)
 
 **Note:** Create or update the database structure required by the current source version.
 
@@ -244,6 +256,8 @@ Cloud107 source
 ```bash
 npm run dev
 ```
+
+**Reference:** [Vite Guide](https://vite.dev/guide/) · [Express documentation](https://expressjs.com/)
 
 **Note:** Start Cloud107 in development mode.
 
@@ -269,6 +283,8 @@ npm run build
 npm start
 ```
 
+**Reference:** [Node.js documentation](https://nodejs.org/docs/latest/api/) · [Vite build guide](https://vite.dev/guide/build.html)
+
 **Note:** Build the production application and then start the generated server.
 
 ## c107
@@ -290,6 +306,8 @@ c107
 npm run c107 -- --help
 npm run c107 -- --version
 ```
+
+**Reference:** [Node.js CLI documentation](https://nodejs.org/api/cli.html)
 
 **Note:** Use these commands to see available CLI operations and the installed CLI version.
 
@@ -317,9 +335,11 @@ Update pipeline
 npm run c107:update
 ```
 
-**Note:** Run the Cloud107 update workflow. The update system verifies the update before activation and can roll back after a checkpoint if validation fails.
+**Reference:** [The Update Framework (TUF)](https://theupdateframework.io/) · [Git documentation](https://git-scm.com/doc)
 
-For implementation details, see `docs/updates/`.
+**Note:** Run the Cloud107 update workflow. The implementation verifies update metadata before activation and uses a checkpoint for rollback after a failure.
+
+For implementation details, see [docs/updates/](docs/updates/).
 
 ## Development checks
 
@@ -339,11 +359,11 @@ npm run lint
 npm run build
 ```
 
+**Reference:** [Vitest documentation](https://vitest.dev/) · [ESLint documentation](https://eslint.org/docs/latest/)
+
 **Note:** Run the automated tests, code checks, and production build.
 
 ## Documentation
-
-The repository documentation contains architecture, development, deployment, runtime, security, operations, decisions, and research material.
 
 ```text
 docs/
@@ -365,19 +385,36 @@ docs/
 └── research/
 ```
 
-Start with [docs/README.md](docs/README.md).
+| Start here | Then use |
+|---|---|
+| [docs/README.md](docs/README.md) | Documentation map |
+| [docs/architecture/](docs/architecture/) | System structure |
+| [docs/development/](docs/development/) | Development workflow |
+| [docs/deployment/](docs/deployment/) | Deployment |
+| [docs/runtime/](docs/runtime/) | Runtime behavior |
+| [docs/security/](docs/security/) | Security boundaries |
+| [docs/updates/](docs/updates/) | Update verification |
+| [docs/research/](docs/research/) | External references |
 
-Guidance in the documentation should use:
+### Guide format
+
+Every operational guide should follow:
 
 ```text
+Description
+    ↓
 Diagram
-   ↓
+    ↓
 Actual command / configuration
-   ↓
-Brief common-language explanation
-   ↓
-Expected result or next step
+    ↓
+Note
+    ↓
+Expected result / next step
+    ↓
+Relevant reference
 ```
+
+> **Note:** Use upstream documentation for the technology itself. Use Cloud107 documentation for how Cloud107 uses that technology.
 
 ## License
 
@@ -387,6 +424,4 @@ See [LICENSE](LICENSE).
 
 ## Repository
 
-Source code and project history:
-
-https://github.com/souravsviswajith/Cloud107
+[Cloud107 source repository](https://github.com/souravsviswajith/Cloud107)
