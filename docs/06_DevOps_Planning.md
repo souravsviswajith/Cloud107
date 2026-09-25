@@ -2,16 +2,7 @@
 
 ## 18. Infrastructure Diagram
 
-```text
-[ User Browser (React/Vite) ]
-       | (HTTPS)           \ (UDP/WebRTC Media & Input)
-[ Ingress Reverse Proxy ]   \
-       |                     \
-[ Cloud107 API Server ]       \
-       |                       |
-[ PostgreSQL / State Store ] [ Workspace Node (Host Agent) ]
-                               | (NVMe attached User Storage)
-```
+<table><tr><td align="center"><strong>User Browser<br>(React/Vite)</strong></td><td>→<br>HTTPS</td><td align="center"><strong>Ingress Reverse Proxy</strong></td><td>→</td><td align="center"><strong>Cloud107 API Server</strong></td></tr><tr><td>↘<br>UDP/WebRTC Media & Input</td><td colspan="4"></td></tr><tr><td></td><td></td><td></td><td>↓</td><td align="center"><strong>PostgreSQL / State Store</strong></td></tr><tr><td></td><td></td><td></td><td>↘</td><td align="center"><strong>Workspace Node<br>(Host Agent)</strong><br><sub>NVMe attached User Storage</sub></td></tr></table>
 
 ## 19. Repository Structure
 
