@@ -3,7 +3,7 @@
 /**
  * Cloud107 Command Line Interface
  *
- * Sovereign Cloud Workspace Operator & Update Management Tool
+ * Cloud107 workspace operator and update management tool
  */
 
 import { executeUpdatePipeline, getCurrentEnvironment } from './update/pipeline';
@@ -19,7 +19,7 @@ async function main() {
     case '-v':
     case '--version': {
       const env = getCurrentEnvironment();
-      console.log(`Cloud107 Sovereign Workspace CLI v${env.version}`);
+      console.log(`Cloud107 CLI v${env.version}`);
       console.log(`Node: ${env.nodeVersion} | Platform: ${env.platform}-${env.arch}`);
       break;
     }
@@ -27,7 +27,7 @@ async function main() {
     case 'status': {
       const env = getCurrentEnvironment();
       const checkpoints = listCheckpoints();
-      console.log(`\n=== Cloud107 Control Plane Status ===`);
+      console.log(`\n=== Cloud107 Status ===`);
       console.log(`Version:             v${env.version}`);
       console.log(`Identity Provider:   Self-Hosted Cloud107 / WebAuthn`);
       console.log(`Platform:            ${env.platform}-${env.arch}`);
@@ -35,14 +35,14 @@ async function main() {
       if (checkpoints.length > 0) {
         console.log(`Latest Checkpoint:   ${checkpoints[0].id} (${checkpoints[0].status})`);
       }
-      console.log(`Sovereign Status:    Operational & Compliant\n`);
+      console.log(`Status:              Operational\n`);
       break;
     }
 
     case 'health': {
       const env = getCurrentEnvironment();
       console.log(`[OK] Cloud107 Workspace Node is healthy (v${env.version})`);
-      console.log(`[OK] Auth: Sovereign Cryptographic Store Active`);
+      console.log(`[OK] Authentication/configuration boundary available`);
       console.log(`[OK] Storage: Relational Database Ready`);
       break;
     }
@@ -165,10 +165,20 @@ Commands:
                    --force
   rollback       Rollback to previous checkpoint (or specify checkpoint ID)
   checkpoints    List all recovery checkpoints
-  status         Display sovereign control plane status
+  status         Display Cloud107 status
   health         Run self-diagnostic health probes
   version        Print CLI and runtime version
   help           Display this help message
+
+Resource-style commands are being introduced incrementally:
+  node ls / inspect / logs
+  workload ls / inspect / logs
+  application ls / inspect / logs
+  environment ls / inspect
+  operation ls / inspect
+
+Use c107 --help to view this command model.
+
 `);
       break;
     }
