@@ -52,6 +52,15 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [health, setHealth] = useState<'Healthy' | 'Degraded' | 'Offline'>('Offline');
   const [billingConnected, setBillingConnected] = useState(false);
   const [billingMessage, setBillingMessage] = useState('No billing provider is connected.');
+  const [updateStatus, setUpdateStatus] = useState<{
+    currentVersion: string;
+    platform: string;
+    architecture: string;
+    nodeVersion: string;
+    checkpointCount: number;
+    latestCheckpoint: { id: string; targetVersion: string; status: string; timestamp: number } | null;
+    updateManager: { mode: string; verification: string; rollback: string };
+  } | null>(null);
 
   const refresh = async () => {
     try {
@@ -130,6 +139,30 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       clearInterval(timer);
     };
   }, []);
+
+  useEffect(() => {
+    if (settingsSection !== 'Updates') return;
+    let active = true;
+    const loadUpdateStatus = async () => {
+      try {
+        const response = await fetch('/api/v1/updates/status');
+        if (!response.ok) {
+          if (active) setUpdateStatus(null);
+          return;
+        }
+        const payload = await response.json();
+        if (active) setUpdateStatus(payload.success ? payload.data : null);
+      } catch {
+        if (active) setUpdateStatus(null);
+      }
+    };
+    loadUpdateStatus();
+    const timer = setInterval(loadUpdateStatus, 10000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [settingsSection]);
 
   const nodes = useMemo(() => workspaces.map(mapWorkspace), [workspaces]);
   const online = nodes.filter((node) => node.status === 'ready').length;
@@ -450,7 +483,20 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                   <div className="space-y-5 text-sm">
                     <div><div className="text-neutral-500 mb-1">Environment Name</div><div className="text-neutral-200">Cloud107</div></div>
                     <div><div className="text-neutral-500 mb-1">Execution</div><div className="text-neutral-200">Local Execution</div></div>
-                    {settingsSection !== 'General' && <div><div className="text-neutral-500 mb-1">Status</div><div className="text-neutral-200">Configured surface</div></div>}
+                    {settingsSection === 'Updates' ? (
+                      updateStatus ? (
+                        <>
+                          <div><div className="text-neutral-500 mb-1">Current Version</div><div className="text-neutral-200">v{updateStatus.currentVersion}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Target</div><div className="text-neutral-200">{updateStatus.platform} · {updateStatus.architecture}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Verification</div><div className="text-neutral-200">{updateStatus.updateManager.verification}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Rollback</div><div className="text-neutral-200">{updateStatus.updateManager.rollback}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Checkpoints</div><div className="text-neutral-200">{updateStatus.checkpointCount}</div></div>
+                          {updateStatus.latestCheckpoint && <div><div className="text-neutral-500 mb-1">Latest Checkpoint</div><div className="text-neutral-200">{updateStatus.latestCheckpoint.id} · {updateStatus.latestCheckpoint.status}</div></div>}
+                        </>
+                      ) : (
+                        <div className="text-neutral-500">Update status unavailable.</div>
+                      )
+                    ) : settingsSection !== 'General' && <div><div className="text-neutral-500 mb-1">Status</div><div className="text-neutral-200">Configured surface</div></div>}
                   </div>
                 </div>
               </section>
