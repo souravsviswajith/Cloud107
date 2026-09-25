@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { artifactReferenceSchema, type ArtifactReference } from './artifact';
 
 const architectureSchema = z.enum(['x86_64', 'arm64', 'risc-v']);
 
@@ -103,6 +104,7 @@ export const workloadRepresentationSchema = z
   .strict();
 
 export type WorkloadIdentity = z.infer<typeof workloadIdentitySchema>;
+export type { ArtifactReference };
 export type WorkloadOperation = z.infer<typeof workloadOperationSchema>;
 export type ResourceRequirement = z.infer<typeof resourceRequirementSchema>;
 export type CapabilityRequirement = z.infer<typeof capabilityRequirementSchema>;
