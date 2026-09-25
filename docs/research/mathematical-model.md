@@ -1,517 +1,541 @@
-# Mathematical Model of Cloud107
+# Cloud107 Mathematical Model
 
-This document converts the Cloud107 execution model and the referenced computing ecosystem into mathematical abstractions.
+This document defines the mathematical model of Cloud107 independently of particular products, vendors, frameworks, or implementation projects.
 
-## 1. Computing target
+The purpose is to describe the system for readers who want the underlying mathematics rather than a list of software references.
 
-Represent a physical or virtual computing target as
+## 1. System state
 
-$$
-H=(A,O,T,R,C,I)
-$$
-
-where $A$ is hardware architecture / ISA, $O$ is operating system or firmware, $T$ is available toolchain, $R$ is runtime environment, $C$ is available compute resources, and $I$ is the interface set exposed by the target.
-
-The resource vector can be represented as
-
-$$
-C=(c_{cpu},c_{gpu},c_{mem},c_{storage},c_{net},c_{acc})
-$$
-
-where the accelerator component may include FPGA, TPU, NPU, QPU, or another specialized resource.
-
-This representation can cover an MCU, IoT device, PC, server, cluster, or quantum device without claiming that their execution models are identical.
-
-## 2. Workload
-
-Represent a workload as
-
-$$
-W=(S,L,D,E,Q)
-$$
-
-where $S$ is source/program representation, $L$ is language or programming model, $D$ is dependencies, $E$ is execution requirements, and $Q$ is required capabilities.
-
-A workload is executable on target $H$ only when the target can satisfy its requirements:
-
-$$
-H \models W
-$$
-
-or, more explicitly,
-
-$$
-\operatorname{Compatible}(H,W)=1.
-$$
-
-## 3. Compilation
-
-Compilation is a transformation:
-
-$$
-K:S\times T\rightarrow B
-$$
-
-where $B$ is a target representation such as machine code, bytecode, object code, executable code, or another intermediate representation.
-
-A multi-stage compiler pipeline can be expressed as
-
-$$
-S
-\rightarrow IR_1
-\rightarrow IR_2
-\rightarrow \cdots
-\rightarrow IR_n
-\rightarrow B_H.
-$$
-
-This covers the referenced GCC, Clang/LLVM, rustc, Cranelift, MLIR, assembly/binutils, hardware-oriented compilation, and quantum compilation layers.
-
-## 4. Execution
-
-Execution is a state transition:
-
-$$
-X_{t+1}=F(X_t,W,H,P)
-$$
-
-where $X_t$ is system state, $W$ is the workload, $H$ is the target, and $P$ is execution policy.
-
-The observable result is
-
-$$
-Y=G(X_0,W,H,P).
-$$
-
-Cloud107 should obtain $Y$ from authoritative execution interfaces rather than infer it from model output.
-
-## 5. Virtualization and emulation
-
-For virtualization, define a virtual target
-
-$$
-V=\mathcal{V}(H,\theta)
-$$
-
-where $\theta$ describes virtual CPU, memory, devices, firmware, and other virtual hardware parameters.
-
-A workload then executes through
-
-$$
-W\rightarrow V\rightarrow H.
-$$
-
-For emulation, define
-
-$$
-\hat{H}=E(H_s,H_t)
-$$
-
-where $H_s$ is the source architecture/device model and $H_t$ is the host execution target.
+Let the complete Cloud107 state at time \(t\) be
 
-The workload path becomes
-
 $$
-W\rightarrow \hat{H}\rightarrow H_t.
+X_t =
+(N_t, W_t, R_t, P_t, A_t, E_t)
 $$
 
-QEMU, KVM, Xen, bhyve, Hyper-V, Cloud Hypervisor, Firecracker, crosvm, and related components occupy different points in this virtualization/emulation space.
+where \(N_t\) is node/resource state, \(W_t\) workload state, \(R_t\) available resource state, \(P_t\) policy and permission state, \(A_t\) agent/planning state, and \(E_t\) execution/observation state.
 
-## 6. Container execution
+Cloud107 is therefore modeled as a state-transition system:
 
-For a containerized workload:
-
 $$
-W\rightarrow Ctn\rightarrow O
+X_{t+1}=F(X_t,U_t,\Pi_t)
 $$
-
-where $Ctn$ is an isolated workload environment and $O$ is the host operating system.
 
-Unlike full machine virtualization, a container normally shares the host kernel.
+where \(U_t\) is an authorized operation and \(\Pi_t\) is the applicable policy.
 
-## 7. Resource allocation
+The UI and AI layer observe or propose transitions; they do not define authoritative state.
 
-Let available resources be
-
-$$
-R=\{r_1,r_2,\ldots,r_n\}
-$$
+## 2. Resource vector
 
-and workload requirements be
+Represent a compute target by a resource vector
 
 $$
-Q_W=\{q_1,q_2,\ldots,q_m\}.
+\mathbf r =
+\begin{bmatrix}
+c_{cpu}\\
+c_{gpu}\\
+c_{mem}\\
+c_{storage}\\
+c_{network}\\
+c_{accelerator}
+\end{bmatrix}.
 $$
 
-A placement function is
+A workload requirement is
 
 $$
-\pi:W\rightarrow R
+\mathbf q =
+\begin{bmatrix}
+q_{cpu}\\
+q_{gpu}\\
+q_{mem}\\
+q_{storage}\\
+q_{network}\\
+q_{accelerator}
+\end{bmatrix}.
 $$
 
-subject to capacity, architecture, locality, authorization, compatibility, and scheduling constraints.
+A necessary capacity condition is
 
-For multiple workloads:
-
 $$
-\Pi=\{\pi_1,\pi_2,\ldots,\pi_k\}.
+\mathbf r \succeq \mathbf q
 $$
-
-The aggregate allocation must remain within the capacity of the selected resources.
-
-## 8. Heterogeneous computing
 
-Let available hardware classes be
-
-$$
-\mathcal{H}=\{CPU,GPU,FPGA,NPU,QPU,MCU,\ldots\}.
-$$
+where the relation is component-wise.
 
-A workload may be decomposed into components
+Capacity alone is insufficient; architecture, permissions, dependencies, locality, and runtime compatibility must also hold.
 
-$$
-W=\{w_1,w_2,\ldots,w_n\}
-$$
+## 3. Capability space
 
-with a mapping
+Let the capability universe be
 
 $$
-m(w_i)\in\mathcal{H}.
+\mathcal C=\{c_1,c_2,\ldots,c_n\}.
 $$
 
-The execution graph becomes
+A node \(N_i\) exposes a subset
 
 $$
-G_W=(V_W,E_W)
+C(N_i)\subseteq\mathcal C.
 $$
-
-where vertices are workload components and edges represent data/control dependencies.
 
-A valid heterogeneous mapping must satisfy capability and dependency constraints.
+A workload requires
 
-## 9. Graphics and computer vision
-
-A graphics workload can be represented as
-
 $$
-W_g=(G,D,P,R)
+C(W)\subseteq\mathcal C.
 $$
-
-where $G$ is a graphics computation graph, $D$ is data, $P$ is the rendering pipeline, and $R$ is the required graphics capability set.
 
-A computer-vision pipeline can be represented as
+Capability compatibility is
 
 $$
-I
-\rightarrow P_1
-\rightarrow P_2
-\rightarrow\cdots
-\rightarrow P_n
-\rightarrow O.
+C(W)\subseteq C(N_i).
 $$
 
-OpenCV, Open3D, MediaPipe, Halide, Mesa, Vulkan, Blender, Godot, and embedded vision systems represent different layers of this pipeline rather than one common implementation.
+For a capability with an input schema, define
 
-## 10. LLM execution
-
-Represent an LLM provider/runtime as
-
 $$
-M=(P_m,C_m,F_m,E_m)
+c=(u,s,k)
 $$
-
-where $P_m$ is provider/runtime, $C_m$ is model/context characteristics, $F_m$ is supported capabilities, and $E_m$ is execution environment.
 
-A request is
+where \(u\) is canonical capability identity, \(s\) is input/output schema, and \(k\) is execution constraints.
 
-$$
-R_q=(I_q,O_q,F_q)
-$$
+The provider implements the mapping from this abstract capability to native execution.
 
-where $I_q$ is input, $O_q$ is desired output characteristics, and $F_q$ is the required capability set.
+## 4. Graph model
 
-LLM107 selects a compatible model/runtime subject to
+Cloud107 can be represented as a directed graph
 
 $$
-F_q\subseteq F_m
+G=(V,E)
 $$
-
-and policy, authorization, availability, resource, and provider constraints.
 
-## 11. AI-agent orchestration
+where vertices represent nodes, workloads, capabilities, providers, resources, operations, and execution states.
 
-Represent a user request as
+An edge
 
 $$
-G=(g_0,C_u)
+v_i\rightarrow v_j
 $$
 
-where $g_0$ is the user's objective and $C_u$ contains explicit constraints.
+represents a valid relationship or transition.
 
-The agent decomposes it into tasks:
+A workload dependency graph is
 
 $$
-D(G)=\{t_1,t_2,\ldots,t_n\}.
+G_W=(V_W,E_W).
 $$
 
-Each task has
+A valid execution ordering is a topological ordering
 
 $$
-t_i=(a_i,I_i,O_i,C_i)
+\tau:V_W\rightarrow\{1,\ldots,|V_W|\}
 $$
 
-where $a_i$ is action, $I_i$ input, $O_i$ expected output, and $C_i$ constraints.
+such that
 
-The agent selects tools:
-
 $$
-\tau:t_i\rightarrow T.
+(v_i,v_j)\in E_W
+\Rightarrow
+\tau(v_i)<\tau(v_j).
 $$
 
-Execution becomes
+This gives Cloud107 a mathematical basis for dependency-aware execution.
 
-$$
-t_i\xrightarrow{\tau(t_i)}y_i
-$$
+## 5. Matrix representation
 
-and the complete result is
+For larger systems, graph relationships can be represented by an adjacency matrix
 
 $$
-Y=\operatorname{Compose}(y_1,\ldots,y_n).
+A_{ij}=
+\begin{cases}
+1 & \text{if }v_i\rightarrow v_j\\
+0 & \text{otherwise}.
+\end{cases}
 $$
 
-The critical boundary is
+A capability-resource relationship can similarly be represented by
 
 $$
-\text{AI agent}\neq\text{authoritative infrastructure state}.
+M_{ij}=
+\begin{cases}
+1 & \text{if resource }r_j\text{ satisfies capability }c_i\\
+0 & \text{otherwise}.
+\end{cases}
 $$
-
-The agent proposes and sequences operations; the execution layer validates and reports actual state.
-
-## 12. Authority model
-
-Let $A_u$ be user authority, $A_a$ agent authority, and $A_c$ Cloud107 execution authority.
 
-An operation $o$ is executable only if
+Capability selection then becomes a constrained matrix-selection problem rather than a hardcoded device lookup.
 
-$$
-\operatorname{Authorized}(o,A_u,A_a,A_c)=1.
-$$
+## 6. Transformation and compilation
 
-The agent cannot create authority merely by generating a command:
+Represent program transformation as a sequence of mappings
 
 $$
-\operatorname{Generate}(o)\not\Rightarrow\operatorname{Authorize}(o).
+S_0
+\xrightarrow{T_1}
+S_1
+\xrightarrow{T_2}
+\cdots
+\xrightarrow{T_n}
+S_n.
 $$
 
-Likewise:
+Each transformation satisfies a contract
 
 $$
-\operatorname{ModelOutput}\not\Rightarrow\operatorname{InfrastructureState}.
+T_i:S_{i-1}\rightarrow S_i.
 $$
-
-## 13. CLI composition
 
-Let the CLI/tool set be
+The final representation must satisfy the target execution constraints:
 
 $$
-T=\{t_1,t_2,\ldots,t_n\}.
+S_n\in\mathcal S_H
 $$
 
-A workflow is a composition
-
-$$
-F=t_n\circ t_{n-1}\circ\cdots\circ t_1.
-$$
+where \(\mathcal S_H\) is the set of valid representations for target \(H\).
 
-For example,
+The abstraction is therefore
 
 $$
-\text{fastfetch}
+\text{program}
 \rightarrow
-\text{fd/rg}
+\text{intermediate representation}
 \rightarrow
-\text{bat}
+\text{target representation}
 \rightarrow
-\text{git}
+\text{execution}.
 $$
 
-can form a discovery-and-inspection workflow.
+## 7. Dynamical system
 
-The agent selects and composes existing tools:
+Execution can be treated as a discrete dynamical system:
 
 $$
-\text{Natural-language goal}
+X_{t+1}=F(X_t,U_t).
+$$
+
+For continuous physical or resource-control processes, the corresponding abstraction is
+
+$$
+\frac{dX}{dt}=f(X,U,t).
+$$
+
+A control operation is valid only when the resulting state remains inside the permitted state space:
+
+$$
+X_{t+1}\in\mathcal X_{valid}.
+$$
+
+This gives Cloud107 a formal basis for health, recovery, lifecycle, and control operations.
+
+## 8. Optimization
+
+Let a placement decision be
+
+$$
+x_{ij}\in\{0,1\}
+$$
+
+where \(x_{ij}=1\) means workload \(i\) is assigned to resource \(j\).
+
+A general objective can be written as
+
+$$
+\min_x
+\left(
+\alpha C(x)
++\beta L(x)
++\gamma E(x)
++\delta R(x)
+\right)
+$$
+
+subject to
+
+$$
+x\in\mathcal F
+$$
+
+where \(C\) is resource cost, \(L\) latency, \(E\) energy/resource consumption, \(R\) operational risk, and \(\mathcal F\) the feasible assignments satisfying capability, capacity, policy, and dependency constraints.
+
+The coefficients are policy parameters, not universal constants.
+
+## 9. Probability and uncertainty
+
+Observed infrastructure state can contain uncertainty.
+
+Let
+
+$$
+P(X=x\mid O)
+$$
+
+represent the probability distribution over possible states given observations \(O\).
+
+The system should distinguish:
+
+$$
+\text{Observed state}
+\neq
+\text{Inferred state}
+\neq
+\text{Predicted state}.
+$$
+
+Authoritative operations must use verified state rather than silently converting an inference into fact.
+
+For failure modeling:
+
+$$
+P(F\mid S)
+$$
+
+can represent the probability of failure under system state \(S\), while reliability over an interval can be represented as
+
+$$
+R(t)=P(T_f>t).
+$$
+
+These are analytical quantities; they do not replace runtime health signals.
+
+## 10. Information flow
+
+Let information entering the system be \(I_{in}\), transformations be \(T\), and observed information be \(I_{out}\):
+
+$$
+I_{out}=T(I_{in},X).
+$$
+
+A useful invariant is provenance preservation:
+
+$$
+\operatorname{Prov}(I_{out})
+\supseteq
+\operatorname{Prov}(I_{in}).
+$$
+
+For source and artifact verification, hashes provide a deterministic identity relation:
+
+$$
+h=H(data).
+$$
+
+A verified artifact satisfies
+
+$$
+H(data_{received})=h_{expected}.
+$$
+
+## 11. Logic and authorization
+
+Let \(Auth(o)\) denote whether operation \(o\) is authorized.
+
+Execution requires
+
+$$
+Execute(o)
+\Rightarrow
+Auth(o)\land Valid(o)\land Available(o).
+$$
+
+The converse is intentionally not assumed:
+
+$$
+Auth(o)\land Valid(o)\land Available(o)
+\not\Rightarrow
+Execute(o)
+$$
+
+because scheduling, dependencies, operator choice, or other policy may still prevent execution.
+
+An AI-generated command is therefore only a proposition about an operation:
+
+$$
+Generate(o)\not\Rightarrow Auth(o).
+$$
+
+## 12. Distributed state
+
+For nodes
+
+$$
+N=\{N_1,N_2,\ldots,N_n\},
+$$
+
+each node has local state
+
+$$
+X_i(t).
+$$
+
+Cloud107 observes a distributed state
+
+$$
+\mathbf X(t)=
+[X_1(t),X_2(t),\ldots,X_n(t)]^T.
+$$
+
+Because observations can arrive at different times,
+
+$$
+X_i(t_i)\neq X_j(t_j)
+$$
+
+does not necessarily indicate a contradiction.
+
+A reported system state should therefore retain observation time, source, and provenance.
+
+## 13. Control and feedback
+
+Cloud107's operational loop can be modeled as
+
+$$
+Observe
 \rightarrow
-\text{tool graph}
+Analyze
 \rightarrow
-\text{execution}
+Plan
 \rightarrow
-\text{verified result}.
+Validate
+\rightarrow
+Act
+\rightarrow
+Observe.
 $$
 
-## 14. Provider abstraction
-
-For infrastructure providers
+Let the desired state be \(X^*\). Define the error
 
 $$
-P=\{P_{gcp},P_{aws},P_{azure},P_{local},P_{user}\}
+e(t)=X^*-X(t).
 $$
 
-a provider adapter is
+A control policy can be represented abstractly as
 
 $$
-A_p:P_i\rightarrow C_{107}
+U(t)=K(e(t)).
 $$
 
-where $C_{107}$ is the Cloud107 capability model.
+Recovery is then a feedback problem: observe deviation, select a permitted corrective operation, execute it, and measure the resulting state.
 
-The abstraction should preserve provider-specific capabilities:
+## 14. Physical and computational hierarchy
 
-$$
-C_{107}=C_{common}\cup C_{provider-specific}.
-$$
-
-Therefore Cloud107 should not reduce every provider to a lowest-common-denominator interface.
-
-## 15. End-to-end model
-
-The complete abstraction can be represented as
+A machine-interaction path can be expressed as a sequence of mappings:
 
 $$
+Intent
+\rightarrow
+Capability
+\rightarrow
+Protocol
+\rightarrow
+OS/Runtime
+\rightarrow
+Driver/System\ Interface
+\rightarrow
+ISA
+\rightarrow
+CPU/Memory/I/O
+\rightarrow
+Physical\ State.
+$$
+
+Each layer transforms an abstract representation into a representation understood by the next layer.
+
+For a valid mapping,
+
+$$
+f_{i+1}\circ f_i
+$$
+
+must preserve the semantics required by the higher layer.
+
+The abstraction therefore does not require identical implementations across machines. It requires a valid semantic mapping between layers.
+
+## 15. Heterogeneous execution
+
+Let the target set be
+
+$$
+\mathcal H=
+\{CPU,GPU,NPU,FPGA,MCU,QPU,\ldots\}.
+$$
+
+A workload is decomposed into
+
+$$
+W=\{w_1,w_2,\ldots,w_n\}.
+$$
+
+Each component receives a target mapping
+
+$$
+m:W\rightarrow\mathcal H.
+$$
+
+The mapping is valid when
+
+$$
+\forall w_i:
+\operatorname{Requirements}(w_i)
+\subseteq
+\operatorname{Capabilities}(m(w_i)).
+$$
+
+Communication between heterogeneous components introduces transfer functions
+
+$$
+D_{ij}:S_i\rightarrow S_j.
+$$
+
+Thus heterogeneous execution is a composition of computation and state-transfer mappings.
+
+## 16. Mathematical execution invariant
+
+The central Cloud107 execution condition is
+
+$$
+\boxed{
+Execute(W,H)
+\iff
+Compatible(W,H)
+\land
+Authorized(W,H)
+\land
+ResourcesAvailable(W,H)
+\land
+DependenciesSatisfied(W,H)
+}
+$$
+
+The mathematical model intentionally sits below specific products and technologies.
+
+Software implementations, protocols, runtimes, providers, and user interfaces are realizations of these abstractions rather than the abstractions themselves.
+
+## 17. Compact model
+
+The complete system can be reduced to
+
+$$
+\boxed{
 U
-\rightarrow
-G
-\rightarrow
-D(G)
 \rightarrow
 C
 \rightarrow
-T
+G
 \rightarrow
-W
-\rightarrow
-H
+\Pi
 \rightarrow
 X
 \rightarrow
 Y
-$$
-
-where $U$ is user, $G$ is goal, $D$ is task decomposition, $C$ is capability selection, $T$ is toolchain/tool selection, $W$ is workload, $H$ is execution target, $X$ is execution state, and $Y$ is observed result.
-
-With infrastructure providers and virtualization inserted where required:
-
-$$
-U
-\rightarrow
-AI
-\rightarrow
-Capability
-\rightarrow
-Provider/Node
-\rightarrow
-Virtualization/Runtime
-\rightarrow
-Toolchain
-\rightarrow
-Workload
-\rightarrow
-Hardware
-\rightarrow
-Result.
-$$
-
-## 16. Universal target model
-
-The overall Cloud107 target space can be represented as
-
-$$
-\mathcal{T}
-=
-\mathcal{T}_{IoT}
-\cup
-\mathcal{T}_{MCU}
-\cup
-\mathcal{T}_{Mobile}
-\cup
-\mathcal{T}_{PC}
-\cup
-\mathcal{T}_{Server}
-\cup
-\mathcal{T}_{Cluster}
-\cup
-\mathcal{T}_{GPU}
-\cup
-\mathcal{T}_{Quantum}.
-$$
-
-A UI is not a requirement of every target:
-
-$$
-UI(H)\in\{0,1\}.
-$$
-
-For constrained IoT and MCU targets:
-
-$$
-UI(H)=0
-$$
-
-may be valid.
-
-For general user-facing targets:
-
-$$
-UI(H)=1.
-$$
-
-Thus
-
-$$
-\text{Universal capability model}\neq\text{identical UI implementation}.
-$$
-
-## 17. Historical computing span
-
-The architecture can be viewed as a mapping across computing generations:
-
-$$
-\text{Punch card}
-\rightarrow
-\text{machine code}
-\rightarrow
-\text{assembly}
-\rightarrow
-\text{compiled languages}
-\rightarrow
-\text{managed/high-level languages}
-\rightarrow
-\text{domain-specific languages}
-\rightarrow
-\text{quantum programming models}.
-$$
-
-The abstraction does not require identical execution mechanisms. It requires a valid mapping
-
-$$
-M:\text{program representation}\rightarrow\text{target execution representation}.
-$$
-
-## 18. Core invariant
-
-The central invariant is
-
-$$
-\boxed{
-\operatorname{Execute}(W,H)
-\iff
-\operatorname{Compatible}(W,H)
-\land
-\operatorname{Authorized}(W,H)
-\land
-\operatorname{ResourcesAvailable}(W,H)
 }
 $$
 
-The UI, AI agent, provider adapter, compiler, hypervisor, container runtime, and CLI are mechanisms for reaching and observing this execution condition. They are not substitutes for it.
+where \(U\) is user intent, \(C\) capability selection, \(G\) execution/dependency graph, \(\Pi\) policy and placement function, \(X\) authoritative execution state, and \(Y\) observed result.
+
+with the state evolution
+
+$$
+X_{t+1}=F(X_t,U_t,\Pi_t).
+$$
+
+This is the mathematical core of the Cloud107 control model.
