@@ -1,5 +1,36 @@
 import { Router } from 'express';
-import type { IBillingProvider, BillingQuery } from '../../../Cloud107.Core/Providers/IBillingProvider';
+interface BillingQuery {
+  From: Date;
+  To: Date;
+  NodeId?: string;
+  WorkspaceId?: string;
+}
+
+interface BillingLineItem {
+  ResourceId: string;
+  ResourceType: string;
+  Description: string;
+  Amount: number;
+  Currency: string;
+  From: Date;
+  To: Date;
+}
+
+interface BillingSnapshot {
+  ProviderId: string;
+  Currency: string;
+  TotalAmount: number;
+  From: Date;
+  To: Date;
+  SampledAt: Date;
+  Items: readonly BillingLineItem[];
+}
+
+interface BillingProvider {
+  ProviderId: string;
+  DisplayName: string;
+  getSnapshotAsync(query: BillingQuery): Promise<BillingSnapshot>;
+}
 
 const router = Router();
 
@@ -10,9 +41,9 @@ const router = Router();
  * The route intentionally returns an unavailable state until an authoritative
  * provider is registered; it never estimates cost from resource metrics.
  */
-let billingProvider: IBillingProvider | null = null;
+let billingProvider: BillingProvider | null = null;
 
-export function registerBillingProvider(provider: IBillingProvider): void {
+export function registerBillingProvider(provider: BillingProvider): void {
   billingProvider = provider;
 }
 
