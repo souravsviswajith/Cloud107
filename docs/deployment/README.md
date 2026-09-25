@@ -121,3 +121,37 @@ npm run build
 For container changes, build and start the Compose deployment and verify that PostgreSQL becomes healthy, migrations complete successfully, Cloud107 starts afterward, port `3000` is reachable, and the health endpoint reports the actual service state.
 
 Do not document a deployment target as supported solely because packaging files exist. Verify the target first.
+
+
+## Phase 2 artifact targets
+
+Phase 2 targets distributable artifacts and runtime packages across the supported hardware families. The target matrix is:
+
+| Target | Artifact / delivery form | Architectures |
+|---|---|---|
+| Windows | `.msi`, `.exe` | x86_64, ARM64 |
+| Linux | `.deb` | x86_64, ARM64 |
+| IoT | device-specific image/package | ARM and x86 where the target supports them |
+| Apple | native application/package | Apple Silicon ARM64 and Intel x86_64 |
+
+These are **Phase 2 targets**, not claims that every artifact is already built or validated.
+
+### Packaging rule
+
+The same Cloud107 capability contract should be preserved across targets while the implementation may use the target's native packaging, runtime, installer, signing, and system integration mechanisms.
+
+The architecture is therefore:
+
+```text
+Cloud107 capability contract
+          │
+   ┌──────┼───────────────┐
+   ▼      ▼       ▼       ▼
+Windows Linux    IoT    Apple
+ .msi    .deb   device  package
+ .exe            image
+   │      │       │       │
+ x86_64 ARM64  target   ARM64/x86_64
+```
+
+Artifact availability, signing, installer behavior, hardware compatibility, and runtime validation must be verified separately for each target. A package existing in the repository does not by itself establish support.
