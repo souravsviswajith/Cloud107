@@ -4,32 +4,35 @@ Node registration, capabilities, connectivity, lifecycle, resources, and state.
 
 ## Node architecture
 
-```text
-                         Cloud107
-                            │
-                     Control / API layer
-                            │
-                            ▼
-                    Node registration
-                            │
-                 ┌──────────┼──────────┐
-                 ▼          ▼          ▼
-             Identity   Capabilities  State
-                 │          │          │
-                 └──────────┼──────────┘
-                            ▼
-                       Node lifecycle
-                            │
-              ┌─────────────┼─────────────┐
-              ▼             ▼             ▼
-           Connect        Operate       Disconnect
-              │             │             │
-              └─────────────┼─────────────┘
-                            ▼
-                       Resources
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 NODE</strong></td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>CONTROL / API</strong><br><sub>(Node.js · TypeScript · Express · HTTP/JSON · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>IDENTITY</strong><br><sub>(Node identity)</sub></td>
+<td align="center"><strong>CAPABILITIES</strong><br><sub>(Hardware · ISA · OS · toolchain · runtime)</sub></td>
+<td align="center"><strong>STATE</strong><br><sub>(Connection · lifecycle · resources)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>CONNECT</strong><br><sub>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11)</sub></td>
+<td align="center"><strong>OPERATE</strong><br><sub>(Workload execution)</sub></td>
+<td align="center"><strong>DISCONNECT</strong><br><sub>(Lifecycle transition)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>RESOURCES</strong><br><sub>(Compute · memory · storage · devices · available workloads)</sub></td>
+</tr>
+</table>
 
-**Note:** A node represents a connected execution/resource endpoint. Registration, capability reporting, connectivity, lifecycle, and state should remain separate concerns.
+**Note:** A node represents a connected execution/resource endpoint. Registration, capability reporting, connectivity, lifecycle, and state remain separate concerns.
 
 ## Connectivity boundary
 
