@@ -29,6 +29,43 @@ Execution events, logs, health, recovery, monitoring, and troubleshooting.
 
 **Note:** Operations should describe what the runtime is actually doing. Logs, metrics, health results, and recovery actions should come from the implemented system.
 
+## Implementation and interface map
+
+```text
+Operation
+   │
+   ├── Node.js / TypeScript / Express
+   │       │
+   │       ├── HTTP request context
+   │       ├── structured request logging
+   │       └── API health endpoint
+   │
+   ├── PostgreSQL / Drizzle
+   │       └── persistent application state
+   │
+   ├── c107 / TypeScript / Node.js
+   │       └── operational and update control
+   │
+   └── Update pipeline
+           ├── Ed25519 verification
+           ├── SHA-256 verification
+           └── checkpoint / rollback
+```
+
+**Note:** The operational layer observes and reports implemented runtime state. It should not manufacture health, resource, billing, or recovery results.
+
+### Interface references
+
+| Boundary | Current technology | Interface / mechanism |
+|---|---|---|
+| Client → application | HTTP / Express | Request / response |
+| Request → logs | TypeScript / request context | Correlation and request IDs |
+| Application → database | Drizzle / PostgreSQL | SQL |
+| Health → client | Express / TypeScript | HTTP / JSON |
+| Update → verification | TypeScript / Node.js | Ed25519 / SHA-256 |
+
+**Note:** Standards and external technologies should be named only where the implementation actually depends on them. Vendor products are not standards.
+
 ## Request and event flow
 
 ```text
