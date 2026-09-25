@@ -8,26 +8,28 @@ The CLI is the terminal control surface for Cloud107.
 
 ### 1. CLI architecture
 
-```text
-                         c107
-                          │
-                 TypeScript / Node.js
-                          │
-          ┌───────────────┼────────────────┐
-          ▼               ▼                ▼
-       Commands        Config            Update
-          │               │                │
-          │          environment      verification
-          │          / local state    / rollback
-          │                                │
-          └───────────────┬────────────────┘
-                          ▼
-                    Cloud107 API
-                 HTTP / JSON / Express
-                          │
-                          ▼
-                     Cloud107
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>c107 CLI</strong><br><sub>(TypeScript · Node.js · Terminal / process · POSIX where applicable)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>COMMANDS</strong><br><sub>(Command parsing)</sub></td>
+<td align="center"><strong>CONFIG</strong><br><sub>(Environment / local state)</sub></td>
+<td align="center"><strong>UPDATE</strong><br><sub>(Git · Ed25519 · SHA-256 · RFC 8032 · FIPS 180-4)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 API</strong><br><sub>(Express · TypeScript · HTTP/JSON · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 RUNTIME / OPERATIONS</strong><br><sub>(Authoritative application and runtime state)</sub></td>
+</tr>
+</table>
 
 **Note:** `c107` is the command-line control surface. It operates against the Cloud107 application boundary and contains the update operation implemented under `src/cli/update/`.
 
