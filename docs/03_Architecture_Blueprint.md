@@ -63,3 +63,25 @@ A lightweight service runs on boot to optimize the OS:
 1. **GPU Validation:** Verifies NVENC capabilities, CUDA health, and DirectX.
 2. **Power Plan:** Sets system to High Performance.
 3. **Network Tuning:** Tunes MTU and low-latency buffer profiles.
+
+
+## 13. Basis Language and System Foundation
+
+Cloud107 does not adopt an industry-template technology stack. Language, operating-system interfaces, runtime, and tooling are selected from the requirements of each subsystem.
+
+The architectural basis is language-neutral and permits multiple implementation bases where the computational problem requires them:
+
+- **Unix / POSIX:** process model, shell orchestration, filesystem and IPC primitives, service lifecycle, deployment and runtime operations.
+- **Assembly:** architecture-specific instructions and lowest-level operations where direct machine-level control is justified.
+- **C:** operating-system interfaces, native runtime components, hardware-near services, and portable systems primitives.
+- **C++:** performance-sensitive native systems, rendering, simulation, and complex runtime components where its execution model is appropriate.
+- **SQL:** relational persistence, queries, constraints, transactions, and database-side computation.
+- **Python:** automation, data processing, machine learning, experimentation, and scripting where its ecosystem and iteration speed are appropriate.
+- **Java:** JVM-based components where portability, ecosystem compatibility, or platform requirements justify it.
+- **JavaScript / TypeScript:** browser-facing interfaces and server components where the JavaScript runtime is the appropriate execution environment.
+- **Rust, Go, or other languages:** permitted when their concrete safety, concurrency, portability, or systems characteristics fit the subsystem.
+- **Platform-native toolchains:** used where Android, Windows, Linux, Apple, or another target platform exposes capabilities that require or materially benefit from native integration.
+
+The choice is made **after the subsystem boundary and requirements are established**, not before them. Different subsystems may therefore use different basis languages while communicating through explicit architectural contracts.
+
+No language is selected merely because it is conventional for a particular industry category, and no subsystem is forced into a common language for stylistic uniformity.
