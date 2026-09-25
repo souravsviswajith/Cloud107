@@ -45,6 +45,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
   const [operations, setOperations] = useState<OperationEvent[]>([]);
+  const [settingsSection, setSettingsSection] = useState('General');
 
   const refresh = async () => {
     try {
@@ -270,18 +271,19 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
               <section className="grid grid-cols-[180px_1fr] gap-10">
                 <div className="space-y-1">
                   {['General', 'Identity', 'Security', 'Nodes', 'Providers', 'Runtime', 'Updates', 'Storage', 'Network'].map((item) => (
-                    <button key={item} className={`w-full text-left px-3 py-1.5 text-sm rounded ${item === 'General' ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}>{item}</button>
+                    <button key={item} onClick={() => setSettingsSection(item)} className={`w-full text-left px-3 py-1.5 text-sm rounded ${settingsSection === item ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}>{item}</button>
                   ))}
                   <div className="pt-5 pb-2 text-[10px] uppercase tracking-wider text-neutral-600">Advanced</div>
                   {['Capabilities', 'Policies', 'Schedulers', 'Reconciliation', 'Diagnostics', 'Events', 'Logs'].map((item) => (
-                    <button key={item} className="w-full text-left px-3 py-1.5 text-sm rounded text-neutral-500 hover:text-white">{item}</button>
+                    <button key={item} onClick={() => setSettingsSection(item)} className={`w-full text-left px-3 py-1.5 text-sm rounded ${settingsSection === item ? 'bg-white/10 text-white' : 'text-neutral-500 hover:text-white'}`}>{item}</button>
                   ))}
                 </div>
                 <div>
-                  <h2 className="text-lg font-medium mb-6">General Configuration</h2>
+                  <h2 className="text-lg font-medium mb-6">{settingsSection} Configuration</h2>
                   <div className="space-y-5 text-sm">
                     <div><div className="text-neutral-500 mb-1">Environment Name</div><div className="text-neutral-200">Cloud107</div></div>
                     <div><div className="text-neutral-500 mb-1">Execution</div><div className="text-neutral-200">Local Execution</div></div>
+                    {settingsSection !== 'General' && <div><div className="text-neutral-500 mb-1">Status</div><div className="text-neutral-200">Configured surface</div></div>}
                   </div>
                 </div>
               </section>
