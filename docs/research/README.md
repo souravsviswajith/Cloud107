@@ -253,3 +253,14 @@ Cloud107 should adopt a concept only after checking:
 7. Whether the concept is a standard, an implementation, a research result, or an experimental proposal.
 
 No external project should be copied into Cloud107 merely because it is popular.
+
+
+## Research documents
+
+- [Compiler and Toolchain References](./compilers.md) — open-source compilers, assemblers, linkers, IR/code-generation systems, hardware compilation, and quantum compilation.
+- [Infrastructure, Graphics, and Computer Vision](./infrastructure-graphics-cv.md) — emulation, virtualization infrastructure, graphics, rendering, and computer-vision projects.
+- [Hypervisor References](./hypervisors.md) — KVM, Xen, bhyve, Hyper-V, VMMs, microVMs, VirtIO, and virtual firmware.
+- [Cloud Provider References](./cloud-providers.md) — Google Cloud, AWS, and Azure infrastructure documentation and provider-adapter concepts.
+- [LLM Project and API References](./llm.md) — open-source LLM runtimes/inference projects and OpenAI, Anthropic, and Google Gemini documentation.
+- [CLI and AI Agent References](./cli-and-ai-agents.md) — infrastructure CLIs, Unix terminal utilities, and the division of work between user intent, AI orchestration, and authoritative execution.
+
