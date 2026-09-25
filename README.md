@@ -31,89 +31,84 @@ Common workspace areas:
 
 > **Note:** This README is the shortest path from an installed repository to a working Cloud107 instance. Detailed implementation information is in [docs/](docs/).
 
-## Architecture and technology map
+## Architecture
 
-This is the quick-reference architecture for Cloud107. It shows the current application layers, languages, runtimes, frameworks, interfaces, infrastructure technologies, and standards/specifications used or explicitly depended on by the documented architecture.
+This is the quick-reference blueprint for Cloud107. The diagram keeps the structure compact; the bracketed line on each module identifies its implementation stack and relevant industry references.
 
-```text
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                      CLOUD107                                                 │
-│                         Web workspace + CLI + runtime/control                                  │
-└──────────────────────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    ▼                                   ▼
-┌───────────────────────────────────┐     ┌───────────────────────────────────┐
-│ WEB WORKSPACE                     │     │ c107 CLI                          │
-│                                   │     │                                   │
-│ Language: TypeScript              │     │ Language: TypeScript              │
-│ Markup: HTML                      │     │ Runtime: Node.js                  │
-│ Styling: CSS / Tailwind CSS       │     │ Interface: Terminal / HTTP        │
-│ Framework: React 19               │     │                                   │
-│ Build: Vite 6                     │     │ Update pipeline                    │
-│ Browser: Chrome/Chromium, Firefox │     │ Git + cryptographic verification │
-└─────────────────┬─────────────────┘     └─────────────────┬─────────────────┘
-                  │ HTTP / JSON                              │
-                  └──────────────────┬───────────────────────┘
-                                     ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ API / APPLICATION                                                                              │
-│                                                                                               │
-│ Language: TypeScript                                                                           │
-│ Runtime: Node.js 22                                                                            │
-│ Framework: Express 4                                                                           │
-│ Middleware: Helmet, CORS, compression, JSON parsing, request logging                         │
-│ Validation: Zod                                                                                │
-│ Interface: HTTP / JSON                                                                         │
-│ Routes: /api/v1/health, users, workspaces, applications, billing, updates/status             │
-└───────────────────────────────────────────┬──────────────────────────────────────────────────┘
-                                            │ SQL
-                                            ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ DATA                                                                                          │
-│                                                                                               │
-│ Database: PostgreSQL 15                                                                        │
-│ Query/ORM layer: Drizzle ORM / Drizzle Kit                                                     │
-│ Language/interface: SQL                                                                        │
-│                                                                                               │
-│ Persistent application state                                                                    │
-└───────────────────────────────────────────┬──────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ CORE / RUNTIME BOUNDARY                                                                        │
-│                                                                                               │
-│ Core: C# / .NET                                                                               │
-│ Native/runtime extensions: C / C++ / Rust / platform-native / Assembly where required         │
-│ Platform interfaces: POSIX / OS APIs / platform SDKs                                          │
-│                                                                                               │
-│ Hardware / ISA: x86-64, ARM64 and other supported architectures                              │
-└───────────────────────────────────────────┬──────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ DEPLOYMENT / INFRASTRUCTURE                                                                    │
-│                                                                                               │
-│ Container: Docker Engine / Docker Compose                                                      │
-│ Image base: Node.js 22 Alpine                                                                  │
-│ Orchestration target: Kubernetes                                                               │
-│ Host: Windows / Linux / Apple / WSL / IoT targets as implemented or explicitly marked target │
-│                                                                                               │
-│ Deployment interface: HTTP / JSON                                                              │
-└───────────────────────────────────────────┬──────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ NETWORK / PLATFORM REFERENCES                                                                   │
-│                                                                                               │
-│ Network: Ethernet / Wi-Fi / IP / Bluetooth / NFC                                               │
-│ Internet/application protocols: HTTP / HTTPS / TCP/IP / MQTT where applicable                 │
-│ Standards/specifications: IETF RFCs, IEEE specifications, ISO/IEC specifications where used  │
-│ Security specifications: RFC 8032 (Ed25519), NIST FIPS 180-4 (SHA-2)                          │
-│                                                                                               │
-│ Custom mesh networking: EXCLUDED by architectural decision                                    │
-└──────────────────────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    U["User / AI Agent"]
+
+    subgraph C["Cloud107 Workspace"]
+        UI["Dashboard<br/><small>(React · TypeScript · Vite · HTML/CSS · Web Platform)</small>"]
+        CLI["c107<br/><small>(TypeScript · Node.js · Git · POSIX)</small>"]
+        API["API<br/><small>(TypeScript · Node.js · Express · HTTP · RFC 9110)</small>"]
+        APP["Applications<br/><small>(Application lifecycle · HTTP/JSON)</small>"]
+        ENV["Environments<br/><small>(Toolchains · dependencies · runtime · OCI)</small>"]
+        NODE["Machines / Nodes<br/><small>(x86-64 · ARM64 · OS APIs · POSIX)</small>"]
+        WORK["Workloads<br/><small>(Process · container · runtime)</small>"]
+        OPS["Operations<br/><small>(Health · logs · metrics)</small>"]
+        UP["Updates<br/><small>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</small>"]
+    end
+
+    subgraph I["Infrastructure"]
+        R["Runtime<br/><small>(C# · .NET · platform APIs)</small>"]
+        D["Containers<br/><small>(Docker · OCI)</small>"]
+        K["Orchestration<br/><small>(Kubernetes · OCI)</small>"]
+        H["Host OS<br/><small>(POSIX · OS APIs)</small>"]
+        HW["Hardware<br/><small>(x86-64 · ARM64)</small>"]
+    end
+
+    DB["PostgreSQL<br/><small>(SQL · Drizzle)"]
+    NET["Network<br/><small>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</small>"]
+
+    U --> UI
+    U --> CLI
+    UI --> API
+    CLI --> API
+    API --> APP
+    API --> ENV
+    API --> NODE
+    API --> WORK
+    API --> OPS
+    API --> UP
+    API --> DB
+    API --> NET
+    APP --> WORK
+    ENV --> WORK
+    NODE --> WORK
+    WORK --> R
+    R --> D
+    R --> K
+    D --> H
+    K --> H
+    H --> HW
 ```
+
+<details>
+<summary><strong>Technology and standards</strong></summary>
+
+| Module | Stack / reference |
+|---|---|
+| Dashboard | React · TypeScript · Vite · HTML/CSS · Web Platform |
+| API | Node.js · Express · HTTP/JSON · RFC 9110 |
+| CLI | TypeScript · Node.js · Git · POSIX |
+| Applications | Cloud107 application layer · HTTP/JSON |
+| Environments | Toolchains · dependencies · runtime · OCI where applicable |
+| Nodes | x86-64 · ARM64 · OS APIs · POSIX where applicable |
+| Workloads | Process · container · runtime · OCI where applicable |
+| Operations | Health · logs · metrics; telemetry standards where implemented |
+| Updates | Git · SHA-256 · FIPS 180-4 · Ed25519 · RFC 8032 |
+| Database | PostgreSQL · SQL · Drizzle |
+| Containers | Docker · OCI where applicable |
+| Orchestration | Kubernetes · OCI where applicable |
+| Runtime | C# · .NET · native/platform APIs |
+| Networking | Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs |
+| Hardware | x86-64 · ARM64 · ISA/platform specifications |
+
+</details>
+
+**Note:** Standards and specifications are shown only where the documented architecture uses or explicitly depends on them. Vendor products are not presented as standards.
 
 ### Stack quick reference
 
