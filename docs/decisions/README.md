@@ -6,21 +6,15 @@ Concise technical decision records: context, alternatives, decision, and consequ
 
 ## Decision flow
 
-```text
-Problem
-  ↓
-Context
-  ↓
-Options
-  ↓
-Decision
-  ↓
-Consequences
-  ↓
-Implementation
-  ↓
-Validation
-```
+<table>
+<tr>
+<td align="center"><strong>Problem</strong></td><td>→</td><td align="center"><strong>Context</strong></td><td>→</td><td align="center"><strong>Options</strong></td><td>→</td><td align="center"><strong>Decision</strong></td>
+</tr>
+<tr><td colspan="7" align="center">↓</td></tr>
+<tr>
+<td align="center"><strong>Consequences</strong></td><td>→</td><td align="center"><strong>Implementation</strong></td><td>→</td><td colspan="3" align="center"><strong>Validation</strong></td>
+</tr>
+</table>
 
 **Note:** The decision record explains *why* a change exists. Implementation documentation explains *how* it works.
 
