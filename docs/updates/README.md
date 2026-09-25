@@ -2,6 +2,60 @@
 
 Cloud107 includes a source-first update path with provenance checks, cryptographic verification, compatibility checks, checkpoints, activation, health checks, and rollback.
 
+## Update architecture
+
+```text
+                     Update source
+                          │
+                          ▼
+                    Update manifest
+        version / revision / target / schema
+        hashes / signing key / signature
+                          │
+                          ▼
+                 Verification boundary
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+         Provenance     Ed25519      SHA-256
+             │            │            │
+             └────────────┼────────────┘
+                          ▼
+                    Compatibility
+             version / platform / arch / schema
+                          │
+                          ▼
+                      Checkpoint
+                          │
+                          ▼
+                    Stage → Build
+                          │
+                          ▼
+                     Validate
+                          │
+                          ▼
+                  Health → Activate
+                          │
+                 ┌────────┴────────┐
+                 ▼                 ▼
+              Commit            Rollback
+```
+
+**Note:** The update path verifies the source and artifact before activation, then uses a checkpoint so a failed activation can return to the previous state.
+
+### Implementation map
+
+| Part | Current implementation | Purpose |
+|---|---|---|
+| Update manager | TypeScript / Node.js | Pipeline execution |
+| Source metadata | Update manifest | Version and compatibility data |
+| Signature | Ed25519 | Manifest authenticity check |
+| Artifact integrity | SHA-256 | Artifact hash verification |
+| Repository source | Git / GitHub workflow | Source revision and provenance |
+| API | Express / TypeScript | Update status endpoint |
+| CLI | c107 / TypeScript / Node.js | Update operation |
+
+**Note:** Cryptographic algorithms and repository protocols are part of the verification boundary. A development/test manifest must not be presented as a production release signature.
+
 ## Update manifest
 
 An update manifest contains:
