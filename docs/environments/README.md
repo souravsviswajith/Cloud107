@@ -2,7 +2,11 @@
 
 Prepared environments, toolchains, dependencies, reproducibility, and validation.
 
-## Environment architecture
+This page documents the environment inputs currently present in the Cloud107 repository.
+
+## Guide
+
+### 1. Environment architecture
 
 ```text
                          Cloud107
@@ -25,9 +29,11 @@ Prepared environments, toolchains, dependencies, reproducibility, and validation
                        Validation
 ```
 
-**Note:** An environment combines the tools, dependencies, runtime, and configuration required by a workload. The repository should record enough information to reproduce and validate the environment where that information is implemented.
+**Note:** An environment combines the tools, dependencies, runtime, and configuration required by a workload.
 
-## Current implementation boundary
+**Reference:** [Workloads](../workloads/) · [Runtime](../runtime/)
+
+### 2. Current environment inputs
 
 ```text
 Repository source
@@ -57,16 +63,76 @@ Cloud107 workload
 
 **Note:** This table describes the current repository environment. Additional toolchains should be added when they become part of an implemented workload.
 
-## Environment validation
+**Reference:** [Node.js](https://nodejs.org/docs/latest/api/) · [TypeScript](https://www.typescriptlang.org/docs/) · [Vite](https://vite.dev/guide/) · [PostgreSQL](https://www.postgresql.org/docs/) · [Docker](https://docs.docker.com/)
+
+### 3. Install the locked dependencies
+
+```text
+package.json
+     │
+     ▼
+package-lock.json
+     │
+     ▼
+npm ci
+     │
+     ▼
+Installed environment
+```
+
+**Command**
 
 ```bash
 npm ci
+```
+
+**Note:** Use `npm ci` to install the dependency versions recorded by the repository lockfile.
+
+**Expected result:** The project dependencies are installed from the lockfile.
+
+**Reference:** [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci)
+
+### 4. Validate the application environment
+
+```text
+Prepared environment
+       │
+       ├── lint
+       ├── test
+       └── build
+       │
+       ▼
+Application validation
+```
+
+**Commands**
+
+```bash
 npm run lint
 npm test
 npm run build
 ```
 
-For containerized validation:
+**Note:** Run these checks when validating a source environment or an environment change.
+
+**Expected result:** The configured lint, test, and production build steps complete successfully.
+
+**Reference:** [Vitest](https://vitest.dev/) · [ESLint](https://eslint.org/docs/latest/) · [Vite build](https://vite.dev/guide/build.html)
+
+### 5. Validate the container environment
+
+```text
+Docker / Compose
+      │
+      ├── PostgreSQL
+      ├── migration
+      └── Cloud107
+            │
+            ▼
+       deployment state
+```
+
+**Commands**
 
 ```bash
 docker compose up -d
@@ -74,31 +140,107 @@ docker compose ps
 docker compose logs -f cloud107
 ```
 
-**Note:** Validate both the application checks and the deployment environment when an environment change affects containers, dependencies, or runtime behavior.
+**Note:** Use container validation when an environment change affects Docker, dependencies, database initialization, or runtime behavior.
 
-## Reproducibility
+**Expected result:** PostgreSQL becomes healthy, migration completes, and Cloud107 starts.
 
-Environment reproducibility depends on:
+**Reference:** [Docker Compose](https://docs.docker.com/compose/) · [Deployment](../deployment/)
 
-- repository source revision
-- package lockfile
-- declared configuration
-- database migration state
-- container build definition
-- target platform and architecture
+### 6. Database environment
 
-The repository should not claim reproducibility beyond the information and validation actually available.
+```text
+Cloud107
+    │
+    ▼
+Drizzle
+    │
+    ▼
+PostgreSQL 15
+    ▲
+    │
+npm run db:migrate
+```
 
-## Standards and references
+**Command**
 
-Environment documentation should distinguish:
+```bash
+npm run db:migrate
+```
 
-- programming languages
-- runtimes and frameworks
-- package/build tooling
-- container formats and runtimes
-- operating-system interfaces
-- standards and specifications
-- vendor technologies
+**Note:** Apply the database migrations required by the current source version.
 
-**Note:** Add a specific standard or external reference only when the environment actually uses or depends on it.
+**Expected result:** PostgreSQL contains the schema required by the current application source.
+
+**Reference:** [Drizzle Kit](https://orm.drizzle.team/docs/kit-overview) · [PostgreSQL](https://www.postgresql.org/docs/)
+
+### 7. Reproducibility inputs
+
+```text
+Source revision
+      │
+      ├── package lockfile
+      ├── configuration
+      ├── migration state
+      ├── container build definition
+      └── target platform / architecture
+      │
+      ▼
+Environment definition
+      │
+      ▼
+Validation
+```
+
+| Input | Purpose |
+|---|---|
+| Repository source revision | Identifies source state |
+| Package lockfile | Identifies dependency versions |
+| Declared configuration | Defines required environment values |
+| Database migration state | Defines database schema state |
+| Dockerfile / Compose | Defines container environment |
+| Target platform / architecture | Defines execution boundary |
+
+**Note:** The repository should not claim reproducibility beyond the information and validation actually available.
+
+**Reference:** [npm package-lock](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json) · [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+
+### 8. Environment boundaries
+
+```text
+Language
+   │
+   ▼
+Runtime / framework
+   │
+   ▼
+Package / build tooling
+   │
+   ▼
+Container / OS interface
+   │
+   ▼
+Platform / architecture
+   │
+   ▼
+Workload
+```
+
+| Type | Example |
+|---|---|
+| Language | TypeScript, SQL, C# |
+| Runtime / framework | Node.js, React, Vite, .NET |
+| Package/build tooling | npm, Vite, Drizzle Kit |
+| Container | Docker / Compose |
+| Database | PostgreSQL |
+| OS interface | POSIX / platform APIs where required |
+| Hardware / ISA | x86-64, ARM64 where supported |
+
+**Note:** A specific standard, platform API, or external technology should be listed only when the environment actually uses or depends on it.
+
+**Reference:** [POSIX — The Open Group](https://pubs.opengroup.org/onlinepubs/9699919799/) · [Docker](https://docs.docker.com/)
+
+## Scope
+
+This page documents environment inputs currently present in the repository. A target toolchain or platform should remain marked as a target until it is implemented and validated.
+
+**Reference:** [Architecture](../architecture/) · [Development](../development/)
