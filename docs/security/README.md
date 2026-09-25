@@ -2,7 +2,11 @@
 
 Cloud107 security behavior is implemented across authentication, request handling, API boundaries, update verification, and secret configuration.
 
-## Security model
+This page documents security controls that are present in the repository. A configuration field or planned component is not treated as an enforced control.
+
+## Guide
+
+### 1. Security model
 
 ```text
 User / Client
@@ -34,45 +38,71 @@ Checkpoint → Validation → Health → Activation
      └────────────── failure → rollback
 ```
 
-**Note:** Security controls are applied at request, API, update, and configuration boundaries. The repository documents a control only where the corresponding implementation exists.
+**Note:** Security controls are applied at request, API, update, and configuration boundaries.
 
-### Implementation and standards
+**Reference:** [Architecture](../architecture/) · [OWASP](https://owasp.org/www-project-web-security-testing-guide/)
+
+### 2. HTTP request boundary
 
 ```text
-Security boundary
-├── TypeScript / Node.js / Express
-├── Helmet / CORS
-├── HTTP headers and transport controls
-├── Environment-based secret configuration
-├── Ed25519 signatures
-├── SHA-256 hashes
-└── Platform / protocol specifications where applicable
+HTTP request
+    │
+    ▼
+Request context
+    │
+    ├── correlation ID
+    ├── request ID
+    ├── start time
+    ├── client IP
+    └── user-agent
+    │
+    ▼
+HTTP middleware
+    │
+    ├── Helmet
+    ├── CORS
+    ├── compression
+    └── JSON parsing
+    │
+    ▼
+API routes
 ```
 
-**Note:** Standards and technologies are listed at the boundary where they are used. A library, configuration field, or interface does not by itself establish an enforced security control.
+Cloud107 accepts an incoming `X-Correlation-ID` when supplied and otherwise generates one.
 
-## Request context
-
-Every HTTP request receives:
-
-- a correlation ID
-- a request ID
-- request start time
-- client IP
-- user-agent information
-
-Cloud107 accepts an incoming `X-Correlation-ID` when supplied. Otherwise it generates one.
-
-The response includes:
+Responses include:
 
 ```text
 X-Correlation-ID
 X-Request-ID
 ```
 
-Correlation IDs are also used by request logging.
+**Note:** Correlation information is also used by request logging so related request activity can be traced.
 
-## HTTP middleware
+**Reference:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html) · [MDN HTTP headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers)
+
+### 3. HTTP security middleware
+
+```text
+HTTP request
+     │
+     ▼
+Helmet
+     │
+     ├── security headers
+     │
+     ▼
+CORS
+     │
+     ▼
+Compression
+     │
+     ▼
+JSON parsing
+     │
+     ▼
+API
+```
 
 The API application currently applies:
 
@@ -82,40 +112,156 @@ The API application currently applies:
 - JSON request parsing
 - centralized error handling
 
-Helmet's Content Security Policy is currently disabled in the application configuration because the development setup uses Vite middleware.
+Helmet's Content Security Policy is currently disabled because the development setup uses Vite middleware.
 
-## Error handling
+**Note:** The disabled CSP setting is an implementation detail that must not be documented as an active CSP control.
 
-Known `ApiError` instances are returned with their status, error code, message, and associated details.
+**Reference:** [Helmet](https://helmetjs.github.io/) · [Express](https://expressjs.com/en/guide/using-middleware.html) · [CORS — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
 
-Unhandled errors are logged and returned as system errors.
+### 4. API error handling
 
-The API error path uses the request context so operational logs can be correlated with the originating request.
+```text
+API operation
+     │
+     ├── known ApiError
+     │       │
+     │       ▼
+     │   status / code / message / details
+     │
+     └── unhandled error
+             │
+             ▼
+         logged system error
+```
 
-## Authentication and authorization
+**Note:** The error path uses the request context so operational logs can be correlated with the originating request.
 
-Authentication and authorization are part of the Cloud107 API boundary. Detailed behavior should be documented here from the corresponding implemented authentication and authorization components rather than inferred from the UI.
+**Expected result:** Known API errors return their configured status and error information; unhandled errors follow the system error path.
 
-Do not treat the presence of an authentication-related UI component as proof that an API operation is protected.
+**Reference:** [Express error handling](https://expressjs.com/en/guide/error-handling.html)
 
-## Secrets
+### 5. Authentication and authorization
 
-Secrets are supplied through environment configuration rather than committed application source.
+```text
+Client
+  │
+  ▼
+API boundary
+  │
+  ├── authentication
+  └── authorization
+          │
+          ▼
+    protected operation
+```
 
-Examples include database passwords and `C107_AUTH_SECRET`.
+Authentication and authorization are part of the Cloud107 API boundary.
 
-Do not place real credentials, signing keys, API keys, or production secrets in the repository.
+**Note:** Detailed protection claims should come from the corresponding implemented authentication and authorization components. An authentication-related UI element does not by itself prove that an API operation is protected.
 
-## Update trust
+**Expected result:** Only implemented authentication/authorization controls should be documented as enforced behavior.
 
-Universal Update Management performs provenance, Ed25519 signature, SHA-256 artifact, and compatibility checks before activation.
+**Reference:** [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html) · [OWASP Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
 
-Update failures after checkpoint creation use the rollback path.
+### 6. Secret configuration
 
-See `docs/updates/` for the update protocol.
+```text
+Secret
+  │
+  ▼
+Environment configuration
+  │
+  ▼
+Cloud107 process
+  │
+  └── source repository does not contain the real value
+```
 
-## Security boundary
+Examples include:
 
-Cloud107 should treat external providers, connected nodes, workloads, update artifacts, and user input as separate trust boundaries.
+- database passwords
+- `C107_AUTH_SECRET`
+- provider API keys
+- signing keys
 
-Security claims should be tied to an implemented control. Do not document a control as enforced merely because a configuration field, interface, or planned component exists.
+**Note:** Do not place real credentials, signing keys, API keys, or production secrets in the repository.
+
+**Reference:** [Node.js environment variables](https://nodejs.org/api/environment_variables.html) · [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
+
+### 7. Update trust boundary
+
+```text
+Update source
+     │
+     ▼
+Provenance
+     │
+     ▼
+Ed25519 signature
+     │
+     ▼
+SHA-256 artifact
+     │
+     ▼
+Compatibility
+     │
+     ▼
+Checkpoint
+     │
+     ▼
+Validation
+     │
+     ▼
+Health
+     │
+     ▼
+Activation
+     │
+     └── failure → rollback
+```
+
+**Command**
+
+```bash
+npm run c107:update
+```
+
+**Note:** Universal Update Management performs provenance, Ed25519 signature, SHA-256 artifact, and compatibility checks before activation. Failures after checkpoint creation use the rollback path.
+
+**Expected result:** An update that fails its configured verification or validation stages does not proceed as a successful activation.
+
+**Reference:** [Updates](../updates/) · [The Update Framework](https://theupdateframework.io/) · [Ed25519 — RFC 8032](https://www.rfc-editor.org/rfc/rfc8032) · [SHA-2 — FIPS 180-4](https://csrc.nist.gov/pubs/fips/180-4/upd1/final)
+
+### 8. Trust boundaries
+
+```text
+Cloud107
+   │
+   ├── User input
+   ├── External providers
+   ├── Connected nodes
+   ├── Workloads
+   └── Update artifacts
+        │
+        ▼
+Separate trust boundaries
+```
+
+**Note:** External providers, connected nodes, workloads, update artifacts, and user input should be treated as separate trust boundaries.
+
+**Expected result:** Security claims remain tied to the specific boundary and implemented control rather than to a general security label.
+
+**Reference:** [Architecture](../architecture/) · [Operations](../operations/)
+
+## Implementation and standards map
+
+| Type | Current example |
+|---|---|
+| Language / runtime | TypeScript / Node.js / Express |
+| Middleware | Helmet / CORS |
+| Cryptography | Ed25519 / SHA-256 |
+| Configuration | Environment variables |
+| Protocol / interface | HTTP |
+| Standards / specifications | RFCs and NIST publications where directly applicable |
+
+**Note:** Standards and technologies are listed at the boundary where they are used. A library, configuration field, or interface does not by itself establish an enforced security control.
