@@ -4,6 +4,70 @@ This page records external projects, specifications, documentation, datasets/dat
 
 These references are inputs to engineering decisions. They are not evidence that Cloud107 implements the referenced system.
 
+## Research map
+
+```text
+Cloud107 engineering question
+            │
+            ▼
+      Research reference
+            │
+     ┌──────┼──────┐
+     ▼      ▼      ▼
+ Project  Spec   Paper
+     │      │      │
+     └──────┼──────┘
+            ▼
+       Extract concept
+            │
+            ▼
+  Check scope / cost / security
+            │
+            ▼
+       Cloud107 decision
+            │
+      ┌─────┴─────┐
+      ▼           ▼
+ Adopt       Do not adopt
+```
+
+**Note:** Research documents explain what an external reference is useful for. They do not establish that Cloud107 implements that project, standard, or research result.
+
+### Reference classification
+
+| Type | Example | How Cloud107 uses it |
+|---|---|---|
+| Open-source project | Nix, LLVM, Kubernetes | Architecture and implementation reference |
+| Specification / standard | OCI, protocol specifications | Interface or compatibility reference where applicable |
+| Vendor technology | Cloud providers, platform products | Integration/reference material |
+| Research paper | Reproducibility, agentic systems, quantum computing | Technical evidence and design input |
+| Data/source system | Git, GitHub | Source and provenance information |
+
+**Note:** Keep the classification explicit. A popular implementation is not automatically a standard, and a research result is not automatically a production recommendation.
+
+### Research entry format
+
+Each reference should answer:
+
+1. **What is it?**
+2. **What problem does it address?**
+3. **What part is relevant to Cloud107?**
+4. **What are its assumptions or limits?**
+5. **Is it implemented, planned, tested, or reference-only?**
+
+<details>
+<summary>Reference status</summary>
+
+| Status | Meaning |
+|---|---|
+| Reference | Studied for architecture or implementation ideas |
+| Evaluating | Being tested against a Cloud107 requirement |
+| Adopted | A concept or dependency has been explicitly accepted |
+| Implemented | The repository contains the corresponding implementation |
+| Rejected | Studied and intentionally not used |
+
+</details>
+
 ## Open-source projects and specifications
 
 ### Development environments
