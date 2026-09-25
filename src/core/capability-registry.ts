@@ -11,6 +11,25 @@ export interface CapabilityImplementation {
     internalProject: string;
     description: string;
   };
+  defaultEnvironment?: Record<string, string>;
+  minimumMemory?: number;
+  recommendedMemory?: number;
+  recommendedCpuCores?: number;
+  requiredCapabilities?: {
+    networking?: boolean;
+    fileSystem?: {
+      readOnly?: string[];
+      readWrite?: string[];
+    };
+    devices?: string[];
+    syscallGroups?: string[];
+  };
+  dependencies?: {
+    name: string;
+    version: string;
+    type: 'library' | 'runtime' | 'service';
+    resolution: string;
+  }[];
 }
 
 export interface CapabilityRegistry {
