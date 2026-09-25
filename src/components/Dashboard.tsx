@@ -275,13 +275,13 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                           <div>
                             <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Actions</h3>
                             <div className="flex flex-wrap gap-2">
-                              {node.status === 'ready' && <button onClick={() => openWorkspace(node, 'desktop')} className="px-3 py-2 bg-white/10 hover:bg-white/15 text-white text-xs rounded-md">Open Workspace</button>}
+                              {node.status === 'ready' && <button onClick={() => openWorkspace(node, 'desktop')} className={`px-3 py-2 bg-white/[0.07] hover:bg-white/15 text-white text-xs rounded-md backdrop-blur-lg border border-white/10`}>Open Workspace</button>}
                               {node.status === 'ready' ? (
-                                <button onClick={() => changeWorkspaceState(node, 'stop')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Stop</button>
+                                <button onClick={() => changeWorkspaceState(node, 'stop')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Stop</button>
                               ) : (
-                                <button onClick={() => changeWorkspaceState(node, 'start')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Start</button>
+                                <button onClick={() => changeWorkspaceState(node, 'start')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Start</button>
                               )}
-                              <button onClick={() => openWorkspace(node, 'app')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Applications</button>
+                              <button onClick={() => openWorkspace(node, 'app')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Applications</button>
                             </div>
                           </div>
                         </div>
