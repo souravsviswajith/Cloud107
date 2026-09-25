@@ -100,7 +100,7 @@ These are optional integration adapters, not Cloud107 core dependencies. Cloud10
 
 ### Mesh networking scope
 
-Custom mesh networking is **deferred for at least two years** and is not part of the current Phase 2 architecture.
+Custom mesh networking is **deferred for at least two years** and is not part of the current architecture.
 
 The following are therefore out of current scope:
 
