@@ -48,7 +48,7 @@ Docker
 
 Install Docker and Docker Compose using the instructions for your operating system.
 
-**In plain language:** Docker runs Cloud107 and its PostgreSQL dependency as containers.
+**Note:** Docker runs Cloud107 and its PostgreSQL dependency as containers.
 
 ### 2. Configure Cloud107
 
@@ -76,7 +76,7 @@ SQL_PASSWORD=change-this
 C107_AUTH_SECRET=change-this
 ```
 
-**In plain language:** Create the local configuration file and replace the example secrets with your own values.
+**Note:** Create the local configuration file and replace the example secrets with your own values.
 
 ### 3. Start Cloud107
 
@@ -100,7 +100,7 @@ docker compose up -d
 
 The database migration runs before the Cloud107 application starts.
 
-**In plain language:** Start the database, apply its schema, and then start Cloud107.
+**Note:** Start the database, apply its schema, and then start Cloud107.
 
 ### 4. Open the workspace
 
@@ -120,7 +120,7 @@ Web browser
 http://localhost:3000
 ```
 
-**In plain language:** Open the local Cloud107 workspace in your browser.
+**Note:** Open the local Cloud107 workspace in your browser.
 
 ### 5. Stop Cloud107
 
@@ -142,7 +142,7 @@ docker compose down
 
 The PostgreSQL data remains in the `cloud107-postgres` volume.
 
-**In plain language:** Stop the containers without deleting the stored database volume.
+**Note:** Stop the containers without deleting the stored database volume.
 
 ## Run from source
 
@@ -161,7 +161,7 @@ Git + Node.js 22+ + PostgreSQL 15+
 - PostgreSQL 15+
 - Git
 
-**In plain language:** These tools provide the source-control, JavaScript runtime, and database environment required by the source installation.
+**Note:** These tools provide the source-control, JavaScript runtime, and database environment required by the source installation.
 
 ### 2. Get the source and install dependencies
 
@@ -183,7 +183,7 @@ cd Cloud107
 npm ci
 ```
 
-**In plain language:** Download the repository and install the dependency versions recorded by the project lockfile.
+**Note:** Download the repository and install the dependency versions recorded by the project lockfile.
 
 ### 3. Configure the environment
 
@@ -205,7 +205,7 @@ cp .env.example .env
 
 Set the required environment values before starting the application.
 
-**In plain language:** Give Cloud107 the local configuration it needs to connect to its services.
+**Note:** Give Cloud107 the local configuration it needs to connect to its services.
 
 ### 4. Run database migrations
 
@@ -225,7 +225,7 @@ Cloud107 database schema
 npm run db:migrate
 ```
 
-**In plain language:** Create or update the database structure required by the current source version.
+**Note:** Create or update the database structure required by the current source version.
 
 ### 5. Start development mode
 
@@ -245,7 +245,7 @@ Cloud107 source
 npm run dev
 ```
 
-**In plain language:** Start Cloud107 in development mode.
+**Note:** Start Cloud107 in development mode.
 
 ### 6. Build and run production mode
 
@@ -269,7 +269,7 @@ npm run build
 npm start
 ```
 
-**In plain language:** Build the production application and then start the generated server.
+**Note:** Build the production application and then start the generated server.
 
 ## c107
 
@@ -291,7 +291,7 @@ npm run c107 -- --help
 npm run c107 -- --version
 ```
 
-**In plain language:** Use these commands to see available CLI operations and the installed CLI version.
+**Note:** Use these commands to see available CLI operations and the installed CLI version.
 
 ### Update Cloud107
 
@@ -317,7 +317,7 @@ Update pipeline
 npm run c107:update
 ```
 
-**In plain language:** Run the Cloud107 update workflow. The update system verifies the update before activation and can roll back after a checkpoint if validation fails.
+**Note:** Run the Cloud107 update workflow. The update system verifies the update before activation and can roll back after a checkpoint if validation fails.
 
 For implementation details, see `docs/updates/`.
 
@@ -339,7 +339,7 @@ npm run lint
 npm run build
 ```
 
-**In plain language:** Run the automated tests, code checks, and production build.
+**Note:** Run the automated tests, code checks, and production build.
 
 ## Documentation
 
