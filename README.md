@@ -31,126 +31,67 @@ Common workspace areas:
 
 > **Note:** This README is the shortest path from an installed repository to a working Cloud107 instance. Detailed implementation information is in [docs/](docs/).
 
-## Choose how to use Cloud107
+## Distribution
 
-Cloud107 supports two normal paths. Users who are comfortable working with operating systems, source code, dependencies, and command-line tools can work directly from the source repository. Users who only need a working system can use a pre-configured release artifact.
+Cloud107 can be used from source or from a packaged release artifact.
 
-| User path | Distribution | Use |
-|---|---|---|
-| System-literate | Source repository | Inspect, modify, test, build, and operate Cloud107 directly |
-| General user | Pre-configured release artifact | Install and use Cloud107 without setting up the development environment |
-| Developer / maintainer | Source repository + development build | Develop changes and validate them before release |
+| Distribution | Function |
+|---|---|
+| Source | Inspect, modify, test, build and operate |
+| Release artifact | Install and operate a validated packaged version |
+| Development build | Build and validate source changes |
 
-**Note:** A release artifact is the packaged, pre-configured path. It removes the need to install the source tree, development dependencies, or build toolchain just to use Cloud107.
+Release path:
 
-**Release process:** source → build → validation → package → pre-configuration → verification → release artifact
+**Source → Build → Validation → Package → Pre-configuration → Verification → Release artifact**
 
 ## Architecture
 
-This is the quick-reference blueprint for Cloud107. The diagram keeps the structure compact; the bracketed line on each module identifies its implementation stack and relevant industry references.
-
 <table>
-<tr>
-<td colspan="3" align="center"><strong>CLOUD107 WORKSPACE</strong><br><sub>(Web workspace · CLI · runtime/control)</sub></td>
-</tr>
-<tr>
-<td align="center"><strong>DASHBOARD</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
-<td align="center"><strong>c107</strong><br><sub>(TypeScript · Node.js · Git · POSIX)</sub></td>
-<td align="center"><strong>USER / AI AGENT</strong><br><sub>(Human or agent control)</sub></td>
-</tr>
-<tr>
-<td colspan="3" align="center">↓</td>
-</tr>
-<tr>
-<td colspan="3" align="center"><strong>API / CONTROL LAYER</strong><br><sub>(TypeScript · Node.js · Express · HTTP · RFC 9110)</sub></td>
-</tr>
-<tr>
-<td align="center"><strong>APPLICATIONS</strong><br><sub>(Lifecycle · HTTP/JSON)</sub></td>
-<td align="center"><strong>ENVIRONMENTS</strong><br><sub>(Toolchains · dependencies · runtime · OCI)</sub></td>
-<td align="center"><strong>NODES / WORKLOADS</strong><br><sub>(x86-64 · ARM64 · OS APIs · POSIX)</sub></td>
-</tr>
-<tr>
-<td colspan="3" align="center">↓</td>
-</tr>
-<tr>
-<td align="center"><strong>OPERATIONS</strong><br><sub>(Health · logs · metrics)</sub></td>
-<td align="center"><strong>POSTGRESQL</strong><br><sub>(SQL · Drizzle)</sub></td>
-<td align="center"><strong>UPDATES</strong><br><sub>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</sub></td>
-</tr>
-<tr>
-<td colspan="3" align="center">↓</td>
-</tr>
-<tr>
-<td align="center"><strong>RUNTIME</strong><br><sub>(C# · .NET · platform APIs)</sub></td>
-<td align="center"><strong>CONTAINERS / ORCHESTRATION</strong><br><sub>(Docker · OCI · Kubernetes)</sub></td>
-<td align="center"><strong>NETWORK</strong><br><sub>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</sub></td>
-</tr>
-<tr>
-<td colspan="3" align="center">↓</td>
-</tr>
-<tr>
-<td colspan="3" align="center"><strong>HOST / HARDWARE</strong><br><sub>(POSIX · OS APIs · x86-64 · ARM64)</sub></td>
-</tr>
+<tr><th colspan="3">CLOUD107 WORKSPACE</th></tr>
+<tr><td>Web workspace<br><sub>React · TypeScript · Vite · HTML/CSS</sub></td><td>c107<br><sub>TypeScript · Node.js</sub></td><td>Human / AI agent<br><sub>Cloud107 control interfaces</sub></td></tr>
+<tr><td colspan="3">↓</td></tr>
+<tr><td colspan="3">API / Control Layer<br><sub>Node.js · Express · HTTP · JSON</sub></td></tr>
+<tr><td>Applications<br><sub>Lifecycle · HTTP/JSON</sub></td><td>Environments<br><sub>Toolchains · dependencies · runtimes · OCI</sub></td><td>Nodes / Workloads<br><sub>x86-64 · ARM64 · OS/platform APIs</sub></td></tr>
+<tr><td colspan="3">↓</td></tr>
+<tr><td>Operations<br><sub>Health · logs · metrics</sub></td><td>PostgreSQL<br><sub>SQL · Drizzle</sub></td><td>Updates<br><sub>Git · SHA-256 · Ed25519</sub></td></tr>
+<tr><td colspan="3">↓</td></tr>
+<tr><td>Cloud107 Core<br><sub>C# · .NET · native/platform APIs</sub></td><td>Containers / orchestration<br><sub>Docker · OCI · Kubernetes</sub></td><td>Network<br><sub>Ethernet · Wi-Fi · IP · HTTP · WebSocket</sub></td></tr>
+<tr><td colspan="3">↓</td></tr>
+<tr><td colspan="3">Host / Hardware<br><sub>x86-64 · ARM64 · OS APIs · POSIX where applicable</sub></td></tr>
 </table>
 
-<details>
-<summary><strong>Technology and standards</strong></summary>
+## Stack
 
-| Module | Stack / reference |
-|---|---|
-| Dashboard | React · TypeScript · Vite · HTML/CSS · Web Platform |
-| API | Node.js · Express · HTTP/JSON · RFC 9110 |
-| CLI | TypeScript · Node.js · Git · POSIX |
-| Applications | Cloud107 application layer · HTTP/JSON |
-| Environments | Toolchains · dependencies · runtime · OCI where applicable |
-| Nodes | x86-64 · ARM64 · OS APIs · POSIX where applicable |
-| Workloads | Process · container · runtime · OCI where applicable |
-| Operations | Health · logs · metrics; telemetry standards where implemented |
-| Updates | Git · SHA-256 · FIPS 180-4 · Ed25519 · RFC 8032 |
-| Database | PostgreSQL · SQL · Drizzle |
-| Containers | Docker · OCI where applicable |
-| Orchestration | Kubernetes · OCI where applicable |
-| Runtime | C# · .NET · native/platform APIs |
-| Networking | Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs |
-| Hardware | x86-64 · ARM64 · ISA/platform specifications |
-
-</details>
-
-**Note:** Standards and specifications are shown only where the documented architecture uses or explicitly depends on them. Vendor products are not presented as standards.
-
-### Stack quick reference
-
-| Layer | Language | Runtime / framework | Technology / interface | Status |
+| Layer | Language | Runtime / framework | Technology | Status |
 |---|---|---|---|---|
-| Web | TypeScript, HTML, CSS | React 19, Vite 6 | Browser, HTTP | Current |
-| API | TypeScript | Node.js 22, Express 4 | HTTP / JSON | Current |
-| Validation | TypeScript | Zod | API input validation | Current |
-| Database | SQL | PostgreSQL 15, Drizzle | SQL | Current |
+| Web | TypeScript · HTML · CSS | React 19 · Vite 6 | Browser | Current |
+| API | TypeScript | Node.js 22 · Express 4 | HTTP / JSON | Current |
+| Validation | TypeScript | Zod | API validation | Current |
+| Database | SQL | PostgreSQL 15 · Drizzle | SQL | Current |
 | Core | C# | .NET | Core/application boundary | Current |
-| CLI | TypeScript | Node.js | Terminal / HTTP | Current |
-| Updates | TypeScript, shell | Node.js, Git | Provenance, Ed25519, SHA-256 | Current |
-| Containers | — | Docker Engine / Compose | Container deployment | Current |
-| Orchestration | — | Kubernetes | Deployment target | Current/Phase 2 |
-| Native/runtime | C / C++ / Rust / Assembly | Platform-native | OS/platform interfaces | As required |
-| Hardware | — | x86-64 / ARM64 | Hardware/ISA boundary | Supported/target-dependent |
+| CLI | TypeScript | Node.js | Terminal / API | Current |
+| Updates | TypeScript · shell | Node.js · Git | SHA-256 · Ed25519 | Current |
+| Containers | — | Docker Engine / Compose | OCI containers | Current |
+| Orchestration | — | Kubernetes | Container orchestration | Current / Phase 2 |
+| Native/runtime | C · C++ · Rust · Assembly | Platform-native | OS/platform interfaces | As required |
+| Hardware | — | x86-64 · ARM64 | ISA/platform boundary | Supported / target-dependent |
 
-### Standards and technology classification
+## Standards and interfaces
 
-| Type | Meaning | Examples used/referenced by Cloud107 |
-|---|---|---|
-| Language | Source code language | TypeScript, C#, SQL, C/C++, Rust, Assembly |
-| Runtime/framework | Executes or structures code | Node.js, .NET, React, Vite, Express |
-| Protocol | Communication/interface method | HTTP, HTTPS, TCP/IP, MQTT |
-| Standards body | Publishes specifications | IETF, IEEE, ISO/IEC |
-| Specification | Actual technical specification | RFCs, IEEE specifications, ISO/IEC specifications |
-| Vendor technology | Product/vendor implementation | Cisco, Palo Alto Networks where explicitly used |
-| Reference implementation | Software implementation used as reference/infrastructure | Kubernetes, LLVM, PostgreSQL |
-| Platform API | Operating-system/device interface | POSIX, Win32, Android SDK, Apple APIs |
-| Hardware / ISA | Processor or hardware execution boundary | x86-64, ARM64, RISC-V |
+| Type | Examples |
+|---|---|
+| Language | C · C++ · C# · Rust · Go · Java · JavaScript · TypeScript · Python · SQL · Assembly |
+| Runtime / framework | Node.js · .NET · React · Vite · Express |
+| Protocol | HTTP(S) · TCP/IP · WebSocket · MQTT · AMQP · gRPC |
+| Configuration / serialization | JSON · YAML · TOML · XML · HCL · Protocol Buffers |
+| Standards body | IETF · IEEE · ISO/IEC |
+| Specification | RFCs · IEEE specifications · ISO/IEC specifications |
+| Platform API | POSIX · Win32 · Android SDK · Apple APIs |
+| Hardware / ISA | x86-64 · ARM64 · RISC-V |
+| Reference implementation | Kubernetes · LLVM · PostgreSQL |
 
-> **Note:** This map is intended to remove stack ambiguity for a quick search or AI-agent query. A technology is listed as **current** only where the repository documents or implements it. Target-only technologies remain marked as target/planned. Vendor names are not presented as standards.
-
-**Reference:** [Architecture](docs/architecture/) · [Development](docs/development/) · [Runtime](docs/runtime/) · [Deployment](docs/deployment/) · [Security](docs/security/) · [Updates](docs/updates/)
+Only interfaces and specifications used or explicitly required by a subsystem should be listed for that subsystem.
 
 ## Quick start with Docker
 
@@ -462,26 +403,25 @@ npm run build
 
 ## Documentation
 
-<table><tr><td align="center"><strong>docs/</strong></td><td>→</td><td>architecture<br>design<br>development<br>runtime<br>deployment<br>security<br>updates<br>APIs<br>CLI<br>environments<br>nodes<br>workloads<br>AI<br>operations<br>decisions<br>research</td></tr></table>
-
-| Start here | Then use |
+| Section | Purpose |
 |---|---|
-| [docs/README.md](docs/README.md) | Documentation map |
-| [docs/architecture/](docs/architecture/) | System structure |
-| [docs/development/](docs/development/) | Development workflow |
-| [docs/deployment/](docs/deployment/) | Deployment |
-| [docs/runtime/](docs/runtime/) | Runtime behavior |
-| [docs/security/](docs/security/) | Security boundaries |
-| [docs/updates/](docs/updates/) | Update verification |
-| [docs/research/](docs/research/) | External references |
-
-### Guide format
-
-Every operational guide should follow:
-
-<table><tr><td align="center"><strong>Description</strong></td><td>↓</td><td align="center"><strong>Diagram</strong></td><td>↓</td><td align="center"><strong>Actual command / configuration</strong></td><td>↓</td><td align="center"><strong>Note</strong></td><td>↓</td><td align="center"><strong>Expected result / next step</strong></td><td>↓</td><td align="center"><strong>Relevant reference</strong></td></tr></table>
-
-> **Note:** Use upstream documentation for the technology itself. Use Cloud107 documentation for how Cloud107 uses that technology.
+| [Architecture](docs/architecture/) | System structure and boundaries |
+| [Design](docs/design/) | Interface and interaction structure |
+| [Development](docs/development/) | Source workflow and tooling |
+| [Runtime](docs/runtime/) | Runtime behavior |
+| [Deployment](docs/deployment/) | Docker and Kubernetes deployment |
+| [Security](docs/security/) | Security boundaries and controls |
+| [Updates](docs/updates/) | Update verification and activation |
+| [APIs](docs/APIs/) | HTTP API |
+| [CLI](docs/CLI/) | c107 interface |
+| [Environments](docs/environments/) | Execution environments |
+| [Nodes](docs/nodes/) | Nodes and capabilities |
+| [Workloads](docs/workloads/) | Workload lifecycle |
+| [AI](docs/AI/) | AI interfaces and control boundaries |
+| [Operations](docs/operations/) | Health, logs, recovery and diagnostics |
+| [Decisions](docs/decisions/) | Accepted technical constraints |
+| [Research](docs/research/) | External technical references |
+| [Phase 3](docs/phase-3/) | Cloud107 OS and device runtime |
 
 ## License
 
