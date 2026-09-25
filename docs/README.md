@@ -22,7 +22,7 @@ Technical documentation for Cloud107.
 | [Operations](operations/) | Health, logging, recovery and diagnostics |
 | [Decisions](decisions/) | Accepted technical constraints |
 | [Research](research/) | External technical references and prior art |
-| [Phase 3](phase-3/) | Cloud107 OS, modular images and device runtime |
+| [OS / Device Runtime](os/) | Cloud107 OS, modular images and device runtime |
 
 ## Page structure
 
