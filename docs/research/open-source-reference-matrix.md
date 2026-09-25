@@ -122,7 +122,30 @@ Existing authentication, authorization, node identity, and encrypted transport r
 - **Cloud107 relation:** These concepts are relevant to the design of Cloud107's source-first update and rollback model, but Cloud107 does not depend on NixOS.
 
 
-## 7. Infrastructure Administration & Provisioning
+## 7. Observability & Configuration Management
+
+### Prometheus
+
+- **Project:** [prometheus/prometheus](https://github.com/prometheus/prometheus)
+- **Relevance:** Open-source monitoring and time-series collection system.
+- **Cloud107 lesson:** Study metric collection, exporters, scrape-based monitoring, labels, queries, alerting, and operational visibility.
+- **Cloud107 boundary:** Prometheus is an observability integration/reference. Cloud107 should expose authoritative metrics where implemented; it should not fabricate metrics.
+
+### Grafana
+
+- **Project:** [grafana/grafana](https://github.com/grafana/grafana)
+- **Relevance:** Open-source visualization and observability platform for dashboards, metrics, logs, traces, and operational data.
+- **Cloud107 lesson:** Study operational dashboards, visualization of system state, drill-down from aggregate state to resource details, and integration with monitoring backends.
+- **Cloud107 boundary:** Grafana is an optional observability interface/reference. The Cloud107 workspace remains the primary product interface.
+
+### Ansible
+
+- **Project:** [ansible/ansible](https://github.com/ansible/ansible)
+- **Relevance:** Open-source automation and configuration-management system for provisioning and operating heterogeneous machines.
+- **Cloud107 lesson:** Study inventory, idempotent configuration, playbooks, remote execution, role structure, and repeatable machine configuration.
+- **Cloud107 boundary:** Ansible can be used as a supported automation tool for appropriate node/environment operations. It does not replace the Cloud107 node, workload, or operation model.
+
+## 8. Infrastructure Administration & Provisioning
 
 Additional references for the Cloud107 product model: a simple user-facing administration surface backed by direct system interfaces and declarative infrastructure tooling.
 
@@ -147,7 +170,7 @@ Additional references for the Cloud107 product model: a simple user-facing admin
 - **Cloud107 lesson:** Study explicit plans, dependency graphs, state tracking, and controlled infrastructure changes.
 - **Cloud107 boundary:** OpenTofu is an infrastructure-management reference; Cloud107 does not require all infrastructure operations to be represented as OpenTofu configurations.
 
-## 8. Infrastructure Platforms & Product Distribution
+## 9. Infrastructure Platforms & Product Distribution
 
 How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
 
@@ -193,7 +216,7 @@ How established open-source infrastructure projects separate source, packaged re
 - **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
 - **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
 
-## 9. Reference-to-Implementation Mapping
+## 10. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -210,11 +233,13 @@ The prior-art references should feed implementation decisions through explicit s
 | Infrastructure administration | Cockpit | How can a graphical workspace expose real system state while remaining consistent with terminal/system APIs? |
 | IaaS product structure | Apache CloudStack | How are UI, CLI, API, resource management, accounting, and infrastructure control separated? |
 | Declarative provisioning | OpenTofu | How are desired state, execution plans, dependencies, state, and controlled changes represented? |
+| Observability | Prometheus, Grafana | How are metrics collected, queried, visualized, and connected to operational state? |
+| Configuration management | Ansible | How are heterogeneous nodes configured, provisioned, and maintained repeatably? |
 | Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 10. Phase 2 Use
+## 11. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -263,7 +288,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 11. Authority Model for AI-Mediated Operations
+## 12. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -322,7 +347,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 12. Scope
+## 13. Scope
 
 This matrix is a research and implementation reference.
 
