@@ -76,7 +76,7 @@ export function createSchedulingRouter(
           plan.execution = {
             ...plan.execution,
             executablePath: artifact.path,
-            arguments: [artifact.path, ...plan.execution.arguments.slice(1)],
+            arguments: plan.execution.arguments,
           };
         }
       }
