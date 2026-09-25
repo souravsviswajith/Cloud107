@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Activity,
   CheckCircle2,
-  AlertCircle,
   XCircle,
   Circle,
 } from 'lucide-react';
@@ -389,9 +388,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
             </section>
           )}
 
-          {activeTab === 'overview' && (
-
-          {vms.length === 0 && !loading && (
+          {activeTab === 'overview' && vms.length === 0 && !loading && (
 
             <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
               <Server size={48} className="mx-auto text-neutral-600 mb-4" />
