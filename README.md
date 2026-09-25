@@ -31,6 +31,20 @@ Common workspace areas:
 
 > **Note:** This README is the shortest path from an installed repository to a working Cloud107 instance. Detailed implementation information is in [docs/](docs/).
 
+## Use a released version
+
+A released version is for users who only need to run Cloud107 on a supported device. Source checkout and development dependencies are not required for normal use.
+
+| Distribution | Use |
+|---|---|
+| Released artifact | Install and run Cloud107 on the supported device |
+| Source repository | Development, testing, modification, and building |
+| Development build | Testing changes before release |
+
+**Note:** Use the released artifact that matches the target platform and architecture. Use the source repository when you need to modify, test, or build Cloud107.
+
+**Release process:** source → build → validation → package → verification → release artifact
+
 ## Architecture
 
 This is the quick-reference blueprint for Cloud107. The diagram keeps the structure compact; the bracketed line on each module identifies its implementation stack and relevant industry references.
