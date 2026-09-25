@@ -1,6 +1,14 @@
+import type { ArtifactReference } from './artifact';
+
 export interface ExecutionPlan {
   workloadId: string;
   nodeId: string;
+  artifact?: {
+    reference: ArtifactReference;
+    available: boolean;
+    distributed: boolean;
+    path: string;
+  };
 
   resolved: {
     dependencies: {
