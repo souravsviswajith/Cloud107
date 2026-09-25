@@ -41,22 +41,7 @@ This page documents the environment inputs currently present in the Cloud107 rep
 
 ### 2. Current environment inputs
 
-```text
-Repository source
-      │
-      ├── package.json / lockfile
-      ├── TypeScript configuration
-      ├── Vite configuration
-      ├── Dockerfile
-      ├── Compose configuration
-      └── database migrations
-      │
-      ▼
-Development / deployment environment
-      │
-      ▼
-Cloud107 workload
-```
+<table><tr><td align="center"><strong>Repository source</strong></td><td>→</td><td align="center"><strong>package.json / lockfile</strong><br>TypeScript configuration<br>Vite configuration<br>Dockerfile<br>Compose configuration<br>database migrations</td></tr><tr><td colspan="3" align="center">↓</td></tr><tr><td colspan="3" align="center"><strong>Development / deployment environment</strong></td></tr><tr><td colspan="3" align="center">↓</td></tr><tr><td colspan="3" align="center"><strong>Cloud107 workload</strong></td></tr></table>
 
 | Area | Current technology | Role |
 |---|---|---|
@@ -73,18 +58,7 @@ Cloud107 workload
 
 ### 3. Install the locked dependencies
 
-```text
-package.json
-     │
-     ▼
-package-lock.json
-     │
-     ▼
-npm ci
-     │
-     ▼
-Installed environment
-```
+<table><tr><td align="center"><strong>package.json</strong></td><td>→</td><td align="center"><strong>package-lock.json</strong></td><td>→</td><td align="center"><strong>npm ci</strong></td><td>→</td><td align="center"><strong>Installed environment</strong></td></tr></table>
 
 **Command**
 
@@ -100,16 +74,7 @@ npm ci
 
 ### 4. Validate the application environment
 
-```text
-Prepared environment
-       │
-       ├── lint
-       ├── test
-       └── build
-       │
-       ▼
-Application validation
-```
+<table><tr><td align="center"><strong>Prepared environment</strong></td><td>→</td><td>lint · test · build</td><td>→</td><td align="center"><strong>Application validation</strong></td></tr></table>
 
 **Commands**
 
@@ -127,16 +92,7 @@ npm run build
 
 ### 5. Validate the container environment
 
-```text
-Docker / Compose
-      │
-      ├── PostgreSQL
-      ├── migration
-      └── Cloud107
-            │
-            ▼
-       deployment state
-```
+<table><tr><td align="center"><strong>Docker / Compose</strong></td><td>→</td><td>PostgreSQL<br>migration<br>Cloud107</td><td>→</td><td align="center"><strong>Deployment state</strong></td></tr></table>
 
 **Commands**
 
@@ -154,18 +110,7 @@ docker compose logs -f cloud107
 
 ### 6. Database environment
 
-```text
-Cloud107
-    │
-    ▼
-Drizzle
-    │
-    ▼
-PostgreSQL 15
-    ▲
-    │
-npm run db:migrate
-```
+<table><tr><td align="center"><strong>Cloud107</strong></td><td>→</td><td align="center"><strong>Drizzle</strong></td><td>→</td><td align="center"><strong>PostgreSQL 15</strong></td></tr><tr><td colspan="5" align="center">↑ npm run db:migrate</td></tr></table>
 
 **Command**
 
@@ -181,21 +126,7 @@ npm run db:migrate
 
 ### 7. Reproducibility inputs
 
-```text
-Source revision
-      │
-      ├── package lockfile
-      ├── configuration
-      ├── migration state
-      ├── container build definition
-      └── target platform / architecture
-      │
-      ▼
-Environment definition
-      │
-      ▼
-Validation
-```
+<table><tr><td align="center"><strong>Source revision</strong></td><td>→</td><td align="center">package lockfile<br>configuration<br>migration state<br>container build definition<br>target platform / architecture</td></tr><tr><td colspan="3" align="center">↓</td></tr><tr><td colspan="3" align="center"><strong>Environment definition</strong></td></tr><tr><td colspan="3" align="center">↓</td></tr><tr><td colspan="3" align="center"><strong>Validation</strong></td></tr></table>
 
 | Input | Purpose |
 |---|---|
@@ -212,24 +143,7 @@ Validation
 
 ### 8. Environment boundaries
 
-```text
-Language
-   │
-   ▼
-Runtime / framework
-   │
-   ▼
-Package / build tooling
-   │
-   ▼
-Container / OS interface
-   │
-   ▼
-Platform / architecture
-   │
-   ▼
-Workload
-```
+<table><tr><td align="center"><strong>Language</strong></td><td>→</td><td align="center"><strong>Runtime / framework</strong></td><td>→</td><td align="center"><strong>Package / build tooling</strong></td><td>→</td><td align="center"><strong>Container / OS interface</strong></td><td>→</td><td align="center"><strong>Platform / architecture</strong></td><td>→</td><td align="center"><strong>Workload</strong></td></tr></table>
 
 | Type | Example |
 |---|---|
