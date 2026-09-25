@@ -1,6 +1,24 @@
 # Architecture
 
-Cloud107 is organized around a web workspace, an API/control layer, persistent state, and connected workloads and resources.
+Cloud107 is organized around a web workspace, an API layer, persistent state, and connected workloads and resources.
+
+## Architecture flow
+
+```text
+User
+  │
+  ▼
+Web workspace / c107
+  │
+  ▼
+API / CLI operations
+  │
+  ├── application state ──► PostgreSQL
+  ├── workload operations ─► Runtime / resources
+  └── updates ─────────────► Update pipeline
+```
+
+**Note:** The diagram shows the main control paths. Components below the application boundary are only represented where the repository currently implements or connects them.
 
 ## Current application structure
 
