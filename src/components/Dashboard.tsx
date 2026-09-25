@@ -191,7 +191,15 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                   <button onClick={createWorkspace} className="px-3 py-2 bg-white text-black text-sm font-medium rounded-md hover:bg-neutral-200">New Workspace</button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-3 gap-6">
+                  <section className={`${liquidGlass} rounded-xl p-5`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Live Bill</h2>
+                      <span className="text-[10px] uppercase tracking-wider text-neutral-600">Provider</span>
+                    </div>
+                    <div className="text-2xl font-medium text-neutral-300">Unavailable</div>
+                    <p className="text-xs text-neutral-600 mt-2">No billing provider is connected.</p>
+                  </section>
                   <section>
                     <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
                     <div className="space-y-2 text-sm text-neutral-300">
