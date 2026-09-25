@@ -2,6 +2,55 @@
 
 This page documents the deployment path currently present in the repository.
 
+## Deployment architecture
+
+```text
+                         Cloud107
+                            │
+                ┌───────────┴───────────┐
+                ▼                       ▼
+          Docker Compose          Phase 2 targets
+                │             Windows / Linux / IoT
+                │             Apple / Web / WSL
+                ▼
+          PostgreSQL 15
+          SQL / PostgreSQL
+                │
+                ▼
+        cloud107-migrate
+        Node.js / npm
+        Drizzle migrations
+                │
+                ▼
+          cloud107 :3000
+        Node.js 22 / Express
+        TypeScript application
+                │
+                ▼
+        HTTP / JSON API
+
+Container boundary:
+Docker / OCI-compatible container model
+
+Host boundary:
+OS → platform runtime → hardware architecture
+```
+
+**Note:** The current deployment path is Docker Compose. The Phase 2 targets below describe planned delivery targets and are not claims that every target is already built or validated.
+
+### Deployment layers
+
+| Layer | Current technology | Role |
+|---|---|---|
+| Application | Node.js 22, TypeScript, Express | Cloud107 server |
+| Database | PostgreSQL 15, SQL, Drizzle | Persistent state |
+| Migration | Node.js / npm | Schema migration |
+| Container | Docker / Compose | Local deployment topology |
+| Host | OS and target architecture | Execution environment |
+| Network | HTTP / JSON | Application interface |
+
+**Note:** Standards, specifications, and vendor technologies are documented separately when they are actually used or required by the implementation.
+
 ## Docker Compose
 
 The repository includes a Docker Compose setup with three services:
