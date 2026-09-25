@@ -8,34 +8,7 @@ This page describes the current source-development workflow for Cloud107.
 
 ### 1. Development flow
 
-```text
-Source repository
-      │
-      ▼
-Node.js / TypeScript project
-      │
-      ├── Web workspace
-      │    React / TypeScript / Vite
-      │
-      ├── API server
-      │    Express / TypeScript
-      │
-      ├── c107 CLI
-      │    TypeScript / Node.js
-      │
-      └── Database
-           PostgreSQL / Drizzle
-      │
-      ▼
-Checks
- ├── lint
- ├── format
- ├── test
- └── build
-      │
-      ▼
-Development artifact
-```
+<table><tr><td align="center"><strong>Source repository</strong></td><td>→</td><td align="center"><strong>Node.js / TypeScript project</strong></td></tr><tr><td></td><td>↓</td><td>Web: React · TypeScript · Vite<br>API: Express · TypeScript<br>CLI: c107 · TypeScript · Node.js<br>Database: PostgreSQL · Drizzle</td></tr><tr><td align="center"><strong>Checks</strong></td><td>→</td><td>lint · format · test · build</td></tr><tr><td colspan="3" align="center">↓</td></tr><tr><td colspan="3" align="center"><strong>Development artifact</strong></td></tr></table>
 
 **Note:** The repository is developed as one application with separate web, API, CLI, and database boundaries. This diagram shows the current implementation.
 
@@ -43,18 +16,7 @@ Development artifact
 
 ### 2. Install dependencies
 
-```text
-Cloud107 source
-      │
-      ▼
-package-lock.json
-      │
-      ▼
-npm ci
-      │
-      ▼
-Installed dependencies
-```
+<table><tr><td align="center"><strong>Cloud107 source</strong></td><td>→</td><td align="center"><strong>package-lock.json</strong></td><td>→</td><td align="center"><strong>npm ci</strong></td><td>→</td><td align="center"><strong>Installed dependencies</strong></td></tr></table>
 
 **Command**
 
@@ -70,15 +32,7 @@ npm ci
 
 ### 3. Start development mode
 
-```text
-Cloud107 source
-      │
-      ▼
-npm run dev
-      │
-      ├── Web workspace
-      └── API server
-```
+<table><tr><td align="center"><strong>Cloud107 source</strong></td><td>→</td><td align="center"><strong>npm run dev</strong></td><td>→</td><td>Web workspace<br>API server</td></tr></table>
 
 **Command**
 
@@ -94,17 +48,7 @@ npm run dev
 
 ### 4. Run development checks
 
-```text
-Source change
-    │
-    ├── lint
-    ├── format
-    ├── test
-    └── build
-    │
-    ▼
-Checked change
-```
+<table><tr><td align="center"><strong>Source change</strong></td><td>→</td><td>lint · format · test · build</td><td>→</td><td align="center"><strong>Checked change</strong></td></tr></table>
 
 **Commands**
 
@@ -123,18 +67,7 @@ npm run build
 
 ### 5. Database migration
 
-```text
-Application
-    │
-    ▼
-Drizzle
-    │
-    ▼
-PostgreSQL
-    ▲
-    │
-npm run db:migrate
-```
+<table><tr><td align="center"><strong>Application</strong></td><td>→</td><td align="center"><strong>Drizzle</strong></td><td>→</td><td align="center"><strong>PostgreSQL</strong></td></tr><tr><td colspan="5" align="center">↑ npm run db:migrate</td></tr></table>
 
 **Command**
 
