@@ -2,7 +2,11 @@
 
 Cloud107 currently runs as a Node.js application with a web interface and API.
 
-## Runtime architecture
+This page describes the runtime boundaries and execution paths currently present in the repository.
+
+## Guide
+
+### 1. Runtime architecture
 
 ```text
                               Cloud107
@@ -34,34 +38,70 @@ Platform boundary:
 OS / platform APIs → supported hardware / network interfaces
 ```
 
-**Note:** The diagram shows the current runtime boundaries. Platform-native or lower-level components are added only where the repository implements or explicitly depends on them.
+**Note:** Platform-native or lower-level components are included only where the repository implements or explicitly depends on them.
 
-### Runtime interfaces
+**Reference:** [Architecture](../architecture/) · [Node.js](https://nodejs.org/docs/latest/api/) · [.NET](https://learn.microsoft.com/en-us/dotnet/)
 
-| Boundary | Current technology | Interface |
-|---|---|---|
-| Browser → application | React / TypeScript / Vite | HTTP |
-| Client → API | Node.js / Express / TypeScript | HTTP / JSON |
-| Application → database | Drizzle / PostgreSQL | SQL |
-| Update pipeline | TypeScript / Node.js | Git / cryptographic verification |
-| Process shutdown | Node.js | SIGTERM / SIGINT |
+### 2. Start the production runtime
 
-**Note:** Protocol and standard names should be tied to the interface actually implemented. This page does not treat vendor products as standards.
-## Application runtime
+```text
+Source
+  │
+  ▼
+npm run build
+  │
+  ▼
+dist/
+  │
+  ▼
+node dist/server.cjs
+  │
+  ▼
+HTTP :3000
+```
 
-The production server is started with:
+**Commands**
 
 ```bash
+npm run build
 node dist/server.cjs
 ```
 
-The server listens on port `3000` and binds to `0.0.0.0`.
+**Note:** The production server runs the generated server bundle and serves the built application.
 
-In development, the server mounts Vite middleware. In production, it serves the built frontend from `dist/`.
+**Expected result:** Cloud107 listens on port `3000` and binds to `0.0.0.0`.
 
-## Request path
+**Reference:** [Node.js](https://nodejs.org/docs/latest/api/) · [Vite build guide](https://vite.dev/guide/build.html)
 
-Requests enter the Express application through the server application layer:
+### 3. Development runtime
+
+```text
+Cloud107 source
+      │
+      ▼
+Node.js / Express
+      │
+      ├── Vite middleware
+      │       │
+      │       ▼
+      │   Web workspace
+      │
+      └── API routes
+```
+
+**Command**
+
+```bash
+npm run dev
+```
+
+**Note:** Development mode mounts Vite middleware into the Express server.
+
+**Expected result:** The development workspace and API run through the configured development server.
+
+**Reference:** [Vite server guide](https://vite.dev/guide/) · [Express](https://expressjs.com/)
+
+### 4. Request path
 
 ```text
 HTTP request
@@ -87,16 +127,31 @@ Error handling
 
 The request context provides a correlation ID used by the request logger.
 
-## Shutdown
+**Note:** Middleware processes the request before it reaches the API routes. The correlation ID connects request activity in the logs.
 
-The server handles `SIGTERM` and `SIGINT`.
+**Reference:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html) · [HTTP overview — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
 
-Shutdown closes the HTTP server before the process exits.
+### 5. Runtime interfaces
 
-## Database runtime
+| Boundary | Current technology | Interface |
+|---|---|---|
+| Browser → application | React / TypeScript / Vite | HTTP |
+| Client → API | Node.js / Express / TypeScript | HTTP / JSON |
+| Application → database | Drizzle / PostgreSQL | SQL |
+| Update pipeline | TypeScript / Node.js | Git / cryptographic verification |
+| Process shutdown | Node.js | SIGTERM / SIGINT |
+
+**Note:** Protocol and standard names should describe interfaces actually implemented by the repository.
+
+**Reference:** [React](https://react.dev/learn) · [Express](https://expressjs.com/) · [PostgreSQL](https://www.postgresql.org/docs/)
+
+### 6. Database runtime
 
 ```text
 Cloud107
+   │
+   ▼
+Drizzle
    │
    ▼
 PostgreSQL
@@ -104,8 +159,6 @@ PostgreSQL
    │
 npm run db:migrate
 ```
-
-Cloud107 uses PostgreSQL for persistent application state.
 
 **Command**
 
@@ -115,49 +168,138 @@ npm run db:migrate
 
 **Note:** Apply the database migrations required by the current source version.
 
-In the Docker Compose deployment, the migration service completes before the application service starts.
+**Expected result:** PostgreSQL contains the schema required by the current application source.
 
-## Environments
+**Reference:** [Drizzle Kit](https://orm.drizzle.team/docs/kit-overview) · [PostgreSQL](https://www.postgresql.org/docs/)
 
-Cloud107 has separate development and production server behavior:
+### 7. Shutdown
 
-- **Development** — Vite middleware is mounted into the Express server.
-- **Production** — the built frontend is served from `dist/` and the bundled server runs with Node.js.
+```text
+SIGTERM / SIGINT
+       │
+       ▼
+HTTP server
+       │
+       ▼
+Server closed
+       │
+       ▼
+Process exits
+```
 
-The repository also contains workspace/runtime-related components. Their detailed execution contracts should be documented here as those components are implemented and verified.
+**Note:** The server handles `SIGTERM` and `SIGINT` and closes the HTTP server before exiting.
 
-## Update execution
+**Expected result:** The HTTP server stops cleanly before the process exits.
 
-The `c107` update pipeline is implemented as a source-first, verification-oriented sequence.
+**Reference:** [Node.js process signals](https://nodejs.org/api/process.html#signal-events)
 
-The current pipeline includes:
+### 8. Development and production environments
 
-1. Identify the canonical origin.
-2. Obtain update metadata.
-3. Verify provenance.
-4. Verify the release signature.
-5. Verify artifact SHA-256 hashes.
-6. Check compatibility.
-7. Create a recovery checkpoint.
-8. Stage update artifacts.
-9. Build the source update.
-10. Validate the staged result.
-11. Stage the activation.
-12. Run a health check.
-13. Activate the update atomically.
-14. Verify the activated version.
-15. Commit the checkpoint.
+```text
+Environment
+    │
+    ├── Development
+    │     ├── Express
+    │     ├── Vite middleware
+    │     └── source-oriented workflow
+    │
+    └── Production
+          ├── built frontend
+          ├── bundled server
+          └── Node.js runtime
+```
 
-A failure after checkpoint creation triggers the fail-closed rollback path.
+| Environment | Server behavior |
+|---|---|
+| Development | Vite middleware mounted into Express |
+| Production | Built frontend served from `dist/`; bundled server runs with Node.js |
 
-The implementation is in `src/cli/update/`.
+**Note:** Workspace/runtime-related components that are not fully implemented are documented as such rather than treated as current runtime behavior.
 
-## Runtime state
+**Reference:** [Vite](https://vite.dev/guide/) · [Node.js](https://nodejs.org/docs/latest/api/)
 
-Runtime state exposed by Cloud107 should come from the application and its connected resources. The UI should not invent process, node, resource, billing, or health state.
+### 9. Update execution
 
-When a runtime capability is not connected or available, the interface should report that state rather than presenting simulated values.
+```text
+c107
+ │
+ ▼
+Canonical origin
+ │
+ ▼
+Metadata
+ │
+ ▼
+Provenance
+ │
+ ▼
+Release signature
+ │
+ ▼
+SHA-256
+ │
+ ▼
+Compatibility
+ │
+ ▼
+Checkpoint
+ │
+ ▼
+Stage
+ │
+ ▼
+Build
+ │
+ ▼
+Validate
+ │
+ ▼
+Health
+ │
+ ▼
+Atomic activation
+ │
+ ▼
+Post-verification
+ │
+ ▼
+Commit / rollback
+```
+
+**Command**
+
+```bash
+npm run c107:update
+```
+
+**Note:** The update pipeline is implemented in `src/cli/update/`. A failure after checkpoint creation enters the fail-closed rollback path.
+
+**Expected result:** The configured update stages execute in sequence; failed validation or post-checks can prevent activation or trigger rollback.
+
+**Reference:** [Update documentation](../updates/) · [The Update Framework](https://theupdateframework.io/) · [Git](https://git-scm.com/doc)
+
+### 10. Runtime state
+
+```text
+Application / connected resource
+             │
+             ▼
+        Runtime state
+             │
+             ▼
+          Cloud107 UI
+```
+
+**Note:** Runtime state exposed by Cloud107 should come from the application and connected resources. The UI must not invent process, node, resource, billing, or health state.
+
+**Expected result:** An unavailable capability is reported as unavailable rather than represented with simulated values.
+
+**Reference:** [Operations](../operations/) · [Nodes](../nodes/) · [Workloads](../workloads/)
 
 ## Scope
 
-This page documents runtime behavior that is currently present in the repository. Planned runtime features should be added only after their implementation is available and verified.
+This page documents runtime behavior currently present in the repository. Planned runtime features should be added only after implementation and verification.
+
+**Note:** The runtime page is a description of the source, not a target architecture.
+
+**Reference:** [Architecture](../architecture/) · [Development](../development/)
