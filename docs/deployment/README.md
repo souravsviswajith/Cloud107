@@ -8,32 +8,30 @@ The current local deployment uses Docker Compose. Other delivery targets are lis
 
 ### 1. Deployment architecture
 
-```text
-                         Cloud107
-                            │
-                            ▼
-                     Docker Compose
-                            │
-                ┌───────────┴───────────┐
-                ▼                       ▼
-          PostgreSQL 15          cloud107-migrate
-          SQL / PostgreSQL        Node.js / npm
-                │                 Drizzle migrations
-                └───────────┬───────────┘
-                            ▼
-                       cloud107 :3000
-                     Node.js 22 / Express
-                     TypeScript application
-                            │
-                            ▼
-                       HTTP / JSON API
-
-Container boundary:
-Docker / OCI-compatible container model
-
-Host boundary:
-OS → platform runtime → hardware architecture
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 DEPLOYMENT</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>POSTGRESQL</strong><br><sub>(PostgreSQL 15 · SQL · Drizzle)</sub></td>
+<td align="center"><strong>MIGRATION</strong><br><sub>(Node.js · npm · Drizzle migrations)</sub></td>
+<td align="center"><strong>CLOUD107</strong><br><sub>(Node.js 22 · TypeScript · Express · HTTP/JSON · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>DOCKER COMPOSE</strong><br><sub>(Docker Engine · Compose · OCI container ecosystem)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>HOST OS</strong><br><sub>(OS APIs · POSIX where applicable)</sub></td>
+<td align="center"><strong>NETWORK</strong><br><sub>(HTTP · TCP/IP · IETF RFCs)</sub></td>
+<td align="center"><strong>HARDWARE</strong><br><sub>(x86-64 · ARM64 · platform specifications)</sub></td>
+</tr>
+</table>
 
 **Note:** Docker Compose is the current deployment path. Phase 2 targets are not claims that every target is already built or validated.
 
