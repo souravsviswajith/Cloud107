@@ -6,22 +6,17 @@ The purpose is to describe the system for readers who want the underlying mathem
 
 ## 1. System state
 
-Let the complete Cloud107 state at time \(t\) be
+Let the complete Cloud107 state at time t be
 
-$$
-X_t =
-(N_t, W_t, R_t, P_t, A_t, E_t)
-$$
+**Xₜ = (Nₜ, Wₜ, Rₜ, Pₜ, Aₜ, Eₜ)**
 
-where \(N_t\) is node/resource state, \(W_t\) workload state, \(R_t\) available resource state, \(P_t\) policy and permission state, \(A_t\) agent/planning state, and \(E_t\) execution/observation state.
+where Nₜ is node/resource state, Wₜ workload state, Rₜ available resource state, Pₜ policy and permission state, Aₜ agent/planning state, and Eₜ execution/observation state.
 
 Cloud107 is therefore modeled as a state-transition system:
 
-$$
-X_{t+1}=F(X_t,U_t,\Pi_t)
-$$
+**Xₜ₊₁ = F(Xₜ, Uₜ, Πₜ)**
 
-where \(U_t\) is an authorized operation and \(\Pi_t\) is the applicable policy.
+where Uₜ is an authorized operation and Πₜ is the applicable policy.
 
 The UI and AI layer observe or propose transitions; they do not define authoritative state.
 
@@ -29,37 +24,15 @@ The UI and AI layer observe or propose transitions; they do not define authorita
 
 Represent a compute target by a resource vector
 
-$$
-\mathbf r =
-\begin{bmatrix}
-c_{cpu}\\
-c_{gpu}\\
-c_{mem}\\
-c_{storage}\\
-c_{network}\\
-c_{accelerator}
-\end{bmatrix}.
-$$
+**r⃗ = [c_cpu, c_gpu, c_mem, c_storage, c_network, c_accelerator]ᵀ**
 
 A workload requirement is
 
-$$
-\mathbf q =
-\begin{bmatrix}
-q_{cpu}\\
-q_{gpu}\\
-q_{mem}\\
-q_{storage}\\
-q_{network}\\
-q_{accelerator}
-\end{bmatrix}.
-$$
+**q⃗ = [q_cpu, q_gpu, q_mem, q_storage, q_network, q_accelerator]ᵀ**
 
 A necessary capacity condition is
 
-$$
-\mathbf r \succeq \mathbf q
-$$
+**r⃗ ⪰ q⃗**
 
 where the relation is component-wise.
 
@@ -69,35 +42,25 @@ Capacity alone is insufficient; architecture, permissions, dependencies, localit
 
 Let the capability universe be
 
-$$
-\mathcal C=\{c_1,c_2,\ldots,c_n\}.
-$$
+**𝒞 = {c₁, c₂, …, cₙ}**
 
-A node \(N_i\) exposes a subset
+A node Nᵢ exposes a subset
 
-$$
-C(N_i)\subseteq\mathcal C.
-$$
+**C(Nᵢ) ⊆ 𝒞**
 
 A workload requires
 
-$$
-C(W)\subseteq\mathcal C.
-$$
+**C(W) ⊆ 𝒞**
 
 Capability compatibility is
 
-$$
-C(W)\subseteq C(N_i).
-$$
+**C(W) ⊆ C(Nᵢ)**
 
 For a capability with an input schema, define
 
-$$
-c=(u,s,k)
-$$
+**c = (u, s, k)**
 
-where \(u\) is canonical capability identity, \(s\) is input/output schema, and \(k\) is execution constraints.
+where u is canonical capability identity, s is input/output schema, and k is execution constraints.
 
 The provider implements the mapping from this abstract capability to native execution.
 
@@ -105,39 +68,27 @@ The provider implements the mapping from this abstract capability to native exec
 
 Cloud107 can be represented as a directed graph
 
-$$
-G=(V,E)
-$$
+**G = (V, E)**
 
 where vertices represent nodes, workloads, capabilities, providers, resources, operations, and execution states.
 
 An edge
 
-$$
-v_i\rightarrow v_j
-$$
+**vᵢ → vⱼ**
 
 represents a valid relationship or transition.
 
 A workload dependency graph is
 
-$$
-G_W=(V_W,E_W).
-$$
+**G_W = (V_W, E_W)**
 
 A valid execution ordering is a topological ordering
 
-$$
-\tau:V_W\rightarrow\{1,\ldots,|V_W|\}
-$$
+**τ: V_W → {1, …, |V_W|}**
 
 such that
 
-$$
-(v_i,v_j)\in E_W
-\Rightarrow
-\tau(v_i)<\tau(v_j).
-$$
+**(vᵢ, vⱼ) ∈ E_W ⇒ τ(vᵢ) < τ(vⱼ)**
 
 This gives Cloud107 a mathematical basis for dependency-aware execution.
 
@@ -145,23 +96,11 @@ This gives Cloud107 a mathematical basis for dependency-aware execution.
 
 For larger systems, graph relationships can be represented by an adjacency matrix
 
-$$
-A_{ij}=
-\begin{cases}
-1 & \text{if }v_i\rightarrow v_j\\
-0 & \text{otherwise}.
-\end{cases}
-$$
+**Aᵢⱼ = { 1, if vᵢ → vⱼ; 0, otherwise }**
 
 A capability-resource relationship can similarly be represented by
 
-$$
-M_{ij}=
-\begin{cases}
-1 & \text{if resource }r_j\text{ satisfies capability }c_i\\
-0 & \text{otherwise}.
-\end{cases}
-$$
+**Mᵢⱼ = { 1, if resource rⱼ satisfies capability cᵢ; 0, otherwise }**
 
 Capability selection then becomes a constrained matrix-selection problem rather than a hardcoded device lookup.
 
@@ -169,61 +108,35 @@ Capability selection then becomes a constrained matrix-selection problem rather 
 
 Represent program transformation as a sequence of mappings
 
-$$
-S_0
-\xrightarrow{T_1}
-S_1
-\xrightarrow{T_2}
-\cdots
-\xrightarrow{T_n}
-S_n.
-$$
+**S₀ →[T₁] S₁ →[T₂] ⋯ →[Tₙ] Sₙ**
 
 Each transformation satisfies a contract
 
-$$
-T_i:S_{i-1}\rightarrow S_i.
-$$
+**Tᵢ: Sᵢ₋₁ → Sᵢ**
 
 The final representation must satisfy the target execution constraints:
 
-$$
-S_n\in\mathcal S_H
-$$
+**Sₙ ∈ 𝒮_H**
 
-where \(\mathcal S_H\) is the set of valid representations for target \(H\).
+where 𝒮_H is the set of valid representations for target H.
 
 The abstraction is therefore
 
-$$
-\text{program}
-\rightarrow
-\text{intermediate representation}
-\rightarrow
-\text{target representation}
-\rightarrow
-\text{execution}.
-$$
+**program → intermediate representation → target representation → execution**
 
 ## 7. Dynamical system
 
 Execution can be treated as a discrete dynamical system:
 
-$$
-X_{t+1}=F(X_t,U_t).
-$$
+**Xₜ₊₁ = F(Xₜ, Uₜ)**
 
 For continuous physical or resource-control processes, the corresponding abstraction is
 
-$$
-\frac{dX}{dt}=f(X,U,t).
-$$
+**dX/dt = f(X, U, t)**
 
 A control operation is valid only when the resulting state remains inside the permitted state space:
 
-$$
-X_{t+1}\in\mathcal X_{valid}.
-$$
+**Xₜ₊₁ ∈ 𝒳_valid**
 
 This gives Cloud107 a formal basis for health, recovery, lifecycle, and control operations.
 
@@ -231,31 +144,19 @@ This gives Cloud107 a formal basis for health, recovery, lifecycle, and control 
 
 Let a placement decision be
 
-$$
-x_{ij}\in\{0,1\}
-$$
+**xᵢⱼ ∈ {0, 1}**
 
-where \(x_{ij}=1\) means workload \(i\) is assigned to resource \(j\).
+where xᵢⱼ = 1 means workload i is assigned to resource j.
 
 A general objective can be written as
 
-$$
-\min_x
-\left(
-\alpha C(x)
-+\beta L(x)
-+\gamma E(x)
-+\delta R(x)
-\right)
-$$
+**minₓ [αC(x) + βL(x) + γE(x) + δR(x)]**
 
 subject to
 
-$$
-x\in\mathcal F
-$$
+**x ∈ 𝓕**
 
-where \(C\) is resource cost, \(L\) latency, \(E\) energy/resource consumption, \(R\) operational risk, and \(\mathcal F\) the feasible assignments satisfying capability, capacity, policy, and dependency constraints.
+where C is resource cost, L latency, E energy/resource consumption, R operational risk, and 𝓕 the feasible assignments satisfying capability, capacity, policy, and dependency constraints.
 
 The coefficients are policy parameters, not universal constants.
 
@@ -265,120 +166,79 @@ Observed infrastructure state can contain uncertainty.
 
 Let
 
-$$
-P(X=x\mid O)
-$$
+**P(X = x | O)**
 
-represent the probability distribution over possible states given observations \(O\).
+represent the probability distribution over possible states given observations O.
 
 The system should distinguish:
 
-$$
-\text{Observed state}
-\neq
-\text{Inferred state}
-\neq
-\text{Predicted state}.
-$$
+**Observed state ≠ Inferred state ≠ Predicted state**
 
 Authoritative operations must use verified state rather than silently converting an inference into fact.
 
 For failure modeling:
 
-$$
-P(F\mid S)
-$$
+**P(F | S)**
 
-can represent the probability of failure under system state \(S\), while reliability over an interval can be represented as
+can represent the probability of failure under system state S, while reliability over an interval can be represented as
 
-$$
-R(t)=P(T_f>t).
-$$
+**R(t) = P(T_f > t)**
 
 These are analytical quantities; they do not replace runtime health signals.
 
 ## 10. Information flow
 
-Let information entering the system be \(I_{in}\), transformations be \(T\), and observed information be \(I_{out}\):
+Let information entering the system be I_in, transformations be T, and observed information be I_out:
 
-$$
-I_{out}=T(I_{in},X).
-$$
+**I_out = T(I_in, X)**
 
 A useful invariant is provenance preservation:
 
-$$
-\operatorname{Prov}(I_{out})
-\supseteq
-\operatorname{Prov}(I_{in}).
-$$
+**Prov(I_out) ⊇ Prov(I_in)**
 
 For source and artifact verification, hashes provide a deterministic identity relation:
 
-$$
-h=H(data).
-$$
+**h = H(data)**
 
 A verified artifact satisfies
 
-$$
-H(data_{received})=h_{expected}.
-$$
+**H(data_received) = h_expected**
 
 ## 11. Logic and authorization
 
-Let \(Auth(o)\) denote whether operation \(o\) is authorized.
+Let Auth(o) denote whether operation o is authorized.
 
 Execution requires
 
-$$
-Execute(o)
-\Rightarrow
-Auth(o)\land Valid(o)\land Available(o).
-$$
+**Execute(o) ⇒ Auth(o) ∧ Valid(o) ∧ Available(o)**
 
 The converse is intentionally not assumed:
 
-$$
-Auth(o)\land Valid(o)\land Available(o)
-\not\Rightarrow
-Execute(o)
-$$
+**Auth(o) ∧ Valid(o) ∧ Available(o) ↛ Execute(o)**
 
 because scheduling, dependencies, operator choice, or other policy may still prevent execution.
 
 An AI-generated command is therefore only a proposition about an operation:
 
-$$
-Generate(o)\not\Rightarrow Auth(o).
-$$
+**Generate(o) ↛ Auth(o)**
 
 ## 12. Distributed state
 
 For nodes
 
-$$
-N=\{N_1,N_2,\ldots,N_n\},
-$$
+**N = {N₁, N₂, …, Nₙ}**
 
 each node has local state
 
-$$
-X_i(t).
-$$
+**Xᵢ(t)**
 
 Cloud107 observes a distributed state
 
-$$
-\mathbf X(t)=
-[X_1(t),X_2(t),\ldots,X_n(t)]^T.
-$$
+**X⃗(t) = [X₁(t), X₂(t), …, Xₙ(t)]ᵀ**
 
 Because observations can arrive at different times,
 
-$$
-X_i(t_i)\neq X_j(t_j)
-$$
+**Xᵢ(tᵢ) ≠ Xⱼ(tⱼ)**
 
 does not necessarily indicate a contradiction.
 
@@ -388,31 +248,15 @@ A reported system state should therefore retain observation time, source, and pr
 
 Cloud107's operational loop can be modeled as
 
-$$
-Observe
-\rightarrow
-Analyze
-\rightarrow
-Plan
-\rightarrow
-Validate
-\rightarrow
-Act
-\rightarrow
-Observe.
-$$
+**Observe → Analyze → Plan → Validate → Act → Observe**
 
-Let the desired state be \(X^*\). Define the error
+Let the desired state be X*. Define the error
 
-$$
-e(t)=X^*-X(t).
-$$
+**e(t) = X* − X(t)**
 
 A control policy can be represented abstractly as
 
-$$
-U(t)=K(e(t)).
-$$
+**U(t) = K(e(t))**
 
 Recovery is then a feedback problem: observe deviation, select a permitted corrective operation, execute it, and measure the resulting state.
 
@@ -420,31 +264,13 @@ Recovery is then a feedback problem: observe deviation, select a permitted corre
 
 A machine-interaction path can be expressed as a sequence of mappings:
 
-$$
-Intent
-\rightarrow
-Capability
-\rightarrow
-Protocol
-\rightarrow
-OS/Runtime
-\rightarrow
-Driver/System\ Interface
-\rightarrow
-ISA
-\rightarrow
-CPU/Memory/I/O
-\rightarrow
-Physical\ State.
-$$
+**Intent → Capability → Protocol → OS/Runtime → Driver/System Interface → ISA → CPU/Memory/I/O → Physical State**
 
 Each layer transforms an abstract representation into a representation understood by the next layer.
 
 For a valid mapping,
 
-$$
-f_{i+1}\circ f_i
-$$
+**fᵢ₊₁ ∘ fᵢ**
 
 must preserve the semantics required by the higher layer.
 
@@ -454,37 +280,23 @@ The abstraction therefore does not require identical implementations across mach
 
 Let the target set be
 
-$$
-\mathcal H=
-\{CPU,GPU,NPU,FPGA,MCU,QPU,\ldots\}.
-$$
+**ℋ = {CPU, GPU, NPU, FPGA, MCU, QPU, …}**
 
 A workload is decomposed into
 
-$$
-W=\{w_1,w_2,\ldots,w_n\}.
-$$
+**W = {w₁, w₂, …, wₙ}**
 
 Each component receives a target mapping
 
-$$
-m:W\rightarrow\mathcal H.
-$$
+**m: W → ℋ**
 
 The mapping is valid when
 
-$$
-\forall w_i:
-\operatorname{Requirements}(w_i)
-\subseteq
-\operatorname{Capabilities}(m(w_i)).
-$$
+**∀wᵢ: Requirements(wᵢ) ⊆ Capabilities(m(wᵢ))**
 
 Communication between heterogeneous components introduces transfer functions
 
-$$
-D_{ij}:S_i\rightarrow S_j.
-$$
+**Dᵢⱼ: Sᵢ → Sⱼ**
 
 Thus heterogeneous execution is a composition of computation and state-transfer mappings.
 
@@ -492,19 +304,7 @@ Thus heterogeneous execution is a composition of computation and state-transfer 
 
 The central Cloud107 execution condition is
 
-$$
-\boxed{
-Execute(W,H)
-\iff
-Compatible(W,H)
-\land
-Authorized(W,H)
-\land
-ResourcesAvailable(W,H)
-\land
-DependenciesSatisfied(W,H)
-}
-$$
+**Execute(W, H) ⇔ Compatible(W, H) ∧ Authorized(W, H) ∧ ResourcesAvailable(W, H) ∧ DependenciesSatisfied(W, H)**
 
 The mathematical model intentionally sits below specific products and technologies.
 
@@ -514,28 +314,12 @@ Software implementations, protocols, runtimes, providers, and user interfaces ar
 
 The complete system can be reduced to
 
-$$
-\boxed{
-U
-\rightarrow
-C
-\rightarrow
-G
-\rightarrow
-\Pi
-\rightarrow
-X
-\rightarrow
-Y
-}
-$$
+**U → C → G → Π → X → Y**
 
-where \(U\) is user intent, \(C\) capability selection, \(G\) execution/dependency graph, \(\Pi\) policy and placement function, \(X\) authoritative execution state, and \(Y\) observed result.
+where U is user intent, C capability selection, G execution/dependency graph, Π policy and placement function, X authoritative execution state, and Y observed result.
 
 with the state evolution
 
-$$
-X_{t+1}=F(X_t,U_t,\Pi_t).
-$$
+**Xₜ₊₁ = F(Xₜ, Uₜ, Πₜ)**
 
 This is the mathematical core of the Cloud107 control model.
