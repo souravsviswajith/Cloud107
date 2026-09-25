@@ -62,7 +62,41 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Note:** This table describes the current repository implementation. A platform target is not proof that its implementation is complete.
 
-### 3. Workspace model
+### 3. UX principles
+
+<table>
+<tr><th>Principle</th><th>Rule</th></tr>
+<tr><td><strong>Clarity</strong></td><td>Show the user's current context, available action, and resulting state without requiring implementation knowledge.</td></tr>
+<tr><td><strong>Progressive disclosure</strong></td><td>Keep the primary workflow visible; expose diagnostics, runtime details, logs, and advanced controls when needed.</td></tr>
+<tr><td><strong>State authority</strong></td><td>Displayed status, health, resources, operations, and billing data must come from authoritative application/runtime sources.</td></tr>
+<tr><td><strong>Technical access</strong></td><td>The UI must not hide the underlying technical controls. Terminal, diagnostics, operations, and configuration remain reachable.</td></tr>
+<tr><td><strong>Context preservation</strong></td><td>Moving between workspace surfaces should preserve the selected project, node, workload, application, or operation context where applicable.</td></tr>
+<tr><td><strong>Feedback</strong></td><td>Actions expose a clear pending, success, failure, or unavailable state. Silent state changes are avoided.</td></tr>
+<tr><td><strong>Recovery</strong></td><td>Failed operations expose the recorded error and the available recovery path rather than masking the failure.</td></tr>
+<tr><td><strong>Responsive surface</strong></td><td>The web workspace adapts to supported viewport sizes without changing the underlying execution model.</td></tr>
+<tr><td><strong>Accessibility</strong></td><td>Interactive controls, keyboard navigation, text alternatives, focus behavior, and readable contrast are part of UI validation.</td></tr>
+<tr><td><strong>Visual restraint</strong></td><td>Use hierarchy, spacing, typography, and state indicators to communicate information without relying on decorative effects.</td></tr>
+</table>
+
+**UX flow**
+
+<table>
+<tr>
+<td align="center"><strong>Context</strong></td>
+<td>→</td>
+<td align="center"><strong>Action</strong></td>
+<td>→</td>
+<td align="center"><strong>System response</strong></td>
+<td>→</td>
+<td align="center"><strong>Result / recovery</strong></td>
+</tr>
+</table>
+
+**Note:** UX describes how a user moves through Cloud107. UI describes the visual and interactive implementation of that flow.
+
+**Reference:** [Web Content Accessibility Guidelines](https://www.w3.org/TR/WCAG/) · [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
+
+### 4. Workspace model
 
 | Surface | Purpose | Technical boundary |
 |---|---|---|
@@ -82,7 +116,7 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Reference:** [Runtime](../runtime/) · [Nodes](../nodes/) · [Operations](../operations/)
 
-### 4. Interaction flow
+### 5. Interaction flow
 
 <table>
 <tr><th>Stage</th><th>Boundary</th></tr>
@@ -99,7 +133,7 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Reference:** [APIs](../APIs/) · [Operations](../operations/)
 
-### 5. UI technology lock
+### 6. UI technology lock
 
 | Layer | Locked baseline |
 |---|---|
@@ -120,7 +154,7 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Reference:** [React](https://react.dev/learn) · [Vite](https://vite.dev/guide/) · [TypeScript](https://www.typescriptlang.org/docs/) · [Tailwind CSS](https://tailwindcss.com/docs) · [HTML Living Standard](https://html.spec.whatwg.org/) · [CSS specifications](https://www.w3.org/Style/CSS/)
 
-### 6. Platform boundary
+### 7. Platform boundary
 
 <table>
 <tr><th>Platform</th><th>Interface</th><th>State</th></tr>
@@ -136,7 +170,7 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Reference:** [HTML](https://html.spec.whatwg.org/) · [Web APIs — MDN](https://developer.mozilla.org/en-US/docs/Web/API)
 
-### 7. Local Flutter reference
+### 8. Local Flutter reference
 
 <table>
 <tr><th>Reference project</th><th>Relevant organization</th></tr>
@@ -149,7 +183,7 @@ The design keeps the main user actions visible while allowing technical details 
 
 **Reference:** [BusPass Management System using Flutter Template](https://github.com/souravsviswajith/BusPass-Management-System-using-flutter-Template) · [Flutter documentation](https://docs.flutter.dev/)
 
-### 8. Design validation
+### 9. Design validation
 
 <table>
 <tr><th>Validation area</th><th>Check</th></tr>
