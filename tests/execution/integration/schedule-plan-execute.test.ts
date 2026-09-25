@@ -1,15 +1,17 @@
 import express from 'express';
+import type { Server } from 'node:http';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createSchedulingRouter } from '../../../src/server/routes/v1/scheduling';
 import { InMemoryNodeRegistry, type NodeCapability } from '../../../src/core/node-registry';
+import type { ExecutionPlan } from '../../../src/core/execution-plan';
 import { lowerToUnixProcess } from '../../../src/platform/unix/lower';
 import { executeUnixProcess } from '../../../src/platform/unix/execute';
 
 const plannerEndpoint = 'http://127.0.0.1:5107';
 let planner: ChildProcess | undefined;
-let server: ReturnType<express['listen']>;
+let server: Server;
 
 const node: NodeCapability = {
   id: 'node-x86-sufficient',
@@ -133,7 +135,7 @@ describe('S₁ → schedule → T₂ → S₂ → T₃/T₄', () => {
     expect(result.scheduled.id).toBe('node-x86-sufficient');
     expect(result.plan.executable).toBe(true);
 
-    const s3 = lowerToUnixProcess(result.plan as never);
+    const s3 = lowerToUnixProcess(result.plan as ExecutionPlan);
     const s4 = await executeUnixProcess(s3);
 
     expect(s4.exitCode).toBe(0);
