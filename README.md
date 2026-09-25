@@ -142,15 +142,7 @@ This is the quick-reference blueprint for Cloud107. The diagram keeps the struct
 
 ### 1. Prepare Docker
 
-```text
-Docker
-  │
-  ├── Docker Engine
-  └── Docker Compose
-          │
-          ▼
-      Cloud107
-```
+<table><tr><td align="center"><strong>Docker</strong></td><td>→</td><td align="center"><strong>Docker Engine</strong><br>Docker Compose</td><td>→</td><td align="center"><strong>Cloud107</strong></td></tr></table>
 
 **Requirements**
 
@@ -163,15 +155,7 @@ Docker
 
 ### 2. Configure Cloud107
 
-```text
-.env.example
-      │
-      ▼
-     .env
-      │
-      ▼
-Cloud107 configuration
-```
+<table><tr><td align="center"><strong>.env.example</strong></td><td>→</td><td align="center"><strong>.env</strong></td><td>→</td><td align="center"><strong>Cloud107 configuration</strong></td></tr></table>
 
 **Command**
 
@@ -193,17 +177,7 @@ C107_AUTH_SECRET=change-this
 
 ### 3. Start Cloud107
 
-```text
-docker compose up
-      │
-      ├── PostgreSQL
-      │       │
-      │       ▼
-      │   migration
-      │       │
-      │       ▼
-      └── Cloud107
-```
+<table><tr><td align="center"><strong>docker compose up</strong></td><td>→</td><td>PostgreSQL<br>↓<br>migration<br>↓<br>Cloud107</td></tr></table>
 
 **Command**
 
@@ -217,15 +191,7 @@ docker compose up -d
 
 ### 4. Open the workspace
 
-```text
-Cloud107 server
-      │
-      ▼
-localhost:3000
-      │
-      ▼
-Web browser
-```
+<table><tr><td align="center"><strong>Cloud107 server</strong></td><td>→</td><td align="center"><strong>localhost:3000</strong></td><td>→</td><td align="center"><strong>Web browser</strong></td></tr></table>
 
 **Open**
 
@@ -239,15 +205,7 @@ http://localhost:3000
 
 ### 5. Stop Cloud107
 
-```text
-Cloud107
-   │
-   ▼
-docker compose down
-   │
-   ▼
-Containers stopped
-```
+<table><tr><td align="center"><strong>Cloud107</strong></td><td>→</td><td align="center"><strong>docker compose down</strong></td><td>→</td><td align="center"><strong>Containers stopped</strong></td></tr></table>
 
 **Command**
 
@@ -263,12 +221,7 @@ docker compose down
 
 ### 1. Install prerequisites
 
-```text
-Git + Node.js 22+ + PostgreSQL 15+
-                │
-                ▼
-          Cloud107 source
-```
+<table><tr><td align="center"><strong>Git + Node.js 22+ + PostgreSQL 15+</strong></td><td>→</td><td align="center"><strong>Cloud107 source</strong></td></tr></table>
 
 | Requirement | Reference |
 |---|---|
@@ -280,15 +233,7 @@ Git + Node.js 22+ + PostgreSQL 15+
 
 ### 2. Get the source and install dependencies
 
-```text
-Git repository
-      │
-      ▼
-   npm ci
-      │
-      ▼
-Project dependencies
-```
+<table><tr><td align="center"><strong>Git repository</strong></td><td>→</td><td align="center"><strong>npm ci</strong></td><td>→</td><td align="center"><strong>Project dependencies</strong></td></tr></table>
 
 **Commands**
 
@@ -304,15 +249,7 @@ npm ci
 
 ### 3. Configure the environment
 
-```text
-.env.example
-      │
-      ▼
-     .env
-      │
-      ▼
-Application configuration
-```
+<table><tr><td align="center"><strong>.env.example</strong></td><td>→</td><td align="center"><strong>.env</strong></td><td>→</td><td align="center"><strong>Application configuration</strong></td></tr></table>
 
 **Command**
 
@@ -326,15 +263,7 @@ cp .env.example .env
 
 ### 4. Run database migrations
 
-```text
-PostgreSQL
-    │
-    ▼
-db:migrate
-    │
-    ▼
-Cloud107 database schema
-```
+<table><tr><td align="center"><strong>PostgreSQL</strong></td><td>→</td><td align="center"><strong>db:migrate</strong></td><td>→</td><td align="center"><strong>Cloud107 database schema</strong></td></tr></table>
 
 **Command**
 
@@ -348,15 +277,7 @@ npm run db:migrate
 
 ### 5. Start development mode
 
-```text
-Cloud107 source
-      │
-      ▼
- npm run dev
-      │
-      ├── API
-      └── Web workspace
-```
+<table><tr><td align="center"><strong>Cloud107 source</strong></td><td>→</td><td align="center"><strong>npm run dev</strong></td><td>→</td><td align="center">API<br>Web workspace</td></tr></table>
 
 **Command**
 
@@ -370,18 +291,7 @@ npm run dev
 
 ### 6. Build and run production mode
 
-```text
-Source
-  │
-  ▼
-npm run build
-  │
-  ▼
-dist/
-  │
-  ▼
-npm start
-```
+<table><tr><td align="center"><strong>Source</strong></td><td>→</td><td align="center"><strong>npm run build</strong></td><td>→</td><td align="center"><strong>dist/</strong></td><td>→</td><td align="center"><strong>npm start</strong></td></tr></table>
 
 **Commands**
 
@@ -400,14 +310,16 @@ The CLI provides a terminal interface to Cloud107.
 
 ### Check the CLI
 
-```text
-c107
- │
- ├── --help
- └── --version
+<table><tr><td align="center"><strong>c107</strong></td><td>→</td><td align="center"><strong>--help</strong><br>--version</td></tr></table>
+
+**Installed CLI commands**
+
+```bash
+c107 --help
+c107 --version
 ```
 
-**Commands**
+**Source checkout invocation**
 
 ```bash
 npm run c107 -- --help
@@ -416,27 +328,21 @@ npm run c107 -- --version
 
 **Reference:** [Node.js CLI documentation](https://nodejs.org/api/cli.html)
 
-**Note:** Use these commands to see available CLI operations and the installed CLI version.
+**Note:** After the CLI is installed, use `c107` directly. The npm form is the repository/source-development invocation.
 
 ### Update Cloud107
 
-```text
-c107
- │
- ▼
-Update pipeline
- │
- ├── provenance
- ├── signature
- ├── hash
- ├── compatibility
- ├── checkpoint
- ├── health
- ├── activation
- └── rollback
+<table><tr><td align="center"><strong>c107</strong></td><td>→</td><td align="center"><strong>Update pipeline</strong></td></tr><tr><td></td><td align="center">provenance · signature · hash · compatibility<br>checkpoint · health · activation · rollback</td></tr></table>
+
+**Commands**
+
+Installed CLI:
+
+```bash
+c107 update
 ```
 
-**Command**
+Source checkout:
 
 ```bash
 npm run c107:update
@@ -450,13 +356,7 @@ For implementation details, see [docs/updates/](docs/updates/).
 
 ## Development checks
 
-```text
-Source
-  │
-  ├── test
-  ├── lint
-  └── build
-```
+<table><tr><td align="center"><strong>Source</strong></td><td>→</td><td align="center">test<br>lint<br>build</td></tr></table>
 
 **Commands**
 
@@ -472,25 +372,7 @@ npm run build
 
 ## Documentation
 
-```text
-docs/
-├── architecture/
-├── design/
-├── development/
-├── runtime/
-├── deployment/
-├── security/
-├── updates/
-├── APIs/
-├── CLI/
-├── environments/
-├── nodes/
-├── workloads/
-├── AI/
-├── operations/
-├── decisions/
-└── research/
-```
+<table><tr><td align="center"><strong>docs/</strong></td><td>→</td><td>architecture<br>design<br>development<br>runtime<br>deployment<br>security<br>updates<br>APIs<br>CLI<br>environments<br>nodes<br>workloads<br>AI<br>operations<br>decisions<br>research</td></tr></table>
 
 | Start here | Then use |
 |---|---|
@@ -507,19 +389,7 @@ docs/
 
 Every operational guide should follow:
 
-```text
-Description
-    ↓
-Diagram
-    ↓
-Actual command / configuration
-    ↓
-Note
-    ↓
-Expected result / next step
-    ↓
-Relevant reference
-```
+<table><tr><td align="center"><strong>Description</strong></td><td>↓</td><td align="center"><strong>Diagram</strong></td><td>↓</td><td align="center"><strong>Actual command / configuration</strong></td><td>↓</td><td align="center"><strong>Note</strong></td><td>↓</td><td align="center"><strong>Expected result / next step</strong></td><td>↓</td><td align="center"><strong>Relevant reference</strong></td></tr></table>
 
 > **Note:** Use upstream documentation for the technology itself. Use Cloud107 documentation for how Cloud107 uses that technology.
 
