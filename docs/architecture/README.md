@@ -6,7 +6,88 @@ This page describes the current architecture and the boundaries between its impl
 
 ## Guide
 
-### 1. Architecture flow
+### 1. Architecture blueprint
+
+```mermaid
+flowchart TB
+    U["User / AI Agent"]
+
+    subgraph C["Cloud107"]
+        UI["Web Workspace<br/><small>(React · TypeScript · Vite · HTML/CSS · Web Platform)</small>"]
+        CLI["c107 CLI<br/><small>(TypeScript · Node.js · Git · POSIX)</small>"]
+        API["API / Control Layer<br/><small>(TypeScript · Node.js · Express · HTTP · RFC 9110)</small>"]
+        CORE["Cloud107 Core<br/><small>(C# · .NET · Application contracts)</small>"]
+        APP["Applications<br/><small>(Application lifecycle · HTTP/JSON)</small>"]
+        ENV["Environments<br/><small>(Toolchains · dependencies · runtime · OCI where applicable)</small>"]
+        NODE["Nodes<br/><small>(x86-64 · ARM64 · OS APIs · POSIX where applicable)</small>"]
+        WORK["Workloads<br/><small>(Process · container · runtime)</small>"]
+        OPS["Operations<br/><small>(Health · logs · metrics)</small>"]
+        UP["Updates<br/><small>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</small>"]
+    end
+
+    DB["PostgreSQL<br/><small>(SQL · Drizzle)</small>"]
+    NET["Network<br/><small>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</small>"]
+
+    subgraph I["Runtime / Infrastructure"]
+        R["Runtime boundary<br/><small>(C/C++/Rust · platform-native · Assembly where required)</small>"]
+        D["Docker / Compose<br/><small>(Container ecosystem · OCI where applicable)</small>"]
+        K["Kubernetes<br/><small>(Orchestration · OCI ecosystem)</small>"]
+        H["Host / OS<br/><small>(POSIX · OS APIs · platform SDKs)</small>"]
+        HW["Hardware / ISA<br/><small>(x86-64 · ARM64 · supported architectures)</small>"]
+    end
+
+    U --> UI
+    U --> CLI
+    UI --> API
+    CLI --> API
+    API --> CORE
+    API --> APP
+    API --> ENV
+    API --> NODE
+    API --> WORK
+    API --> OPS
+    API --> UP
+    API --> DB
+    API --> NET
+    APP --> WORK
+    ENV --> WORK
+    NODE --> WORK
+    CORE --> R
+    WORK --> R
+    R --> D
+    R --> K
+    D --> H
+    K --> H
+    H --> HW
+```
+
+<details>
+<summary><strong>Architecture reference map</strong></summary>
+
+| Module | Stack / reference |
+|---|---|
+| Web workspace | React · TypeScript · Vite · HTML/CSS · Web Platform |
+| API | Node.js · Express · HTTP/JSON · RFC 9110 |
+| CLI | TypeScript · Node.js · Git · POSIX |
+| Core | C# · .NET · application contracts |
+| Applications | Application lifecycle · HTTP/JSON |
+| Environments | Toolchains · dependencies · runtime · OCI where applicable |
+| Nodes | x86-64 · ARM64 · OS APIs · POSIX where applicable |
+| Workloads | Process · container · runtime · OCI where applicable |
+| Operations | Health · logs · metrics; telemetry standards where implemented |
+| Updates | Git · SHA-256 · FIPS 180-4 · Ed25519 · RFC 8032 |
+| Database | PostgreSQL · SQL · Drizzle |
+| Runtime | C/C++/Rust · platform-native · Assembly where required |
+| Containers | Docker · Compose · OCI where applicable |
+| Orchestration | Kubernetes · OCI ecosystem |
+| Networking | Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs |
+| Hardware | x86-64 · ARM64 · ISA/platform specifications |
+
+</details>
+
+**Note:** A language, runtime, protocol, standard, or platform shown here applies only to the boundary where it is used. Target-only components remain marked as target or planned.
+
+### 2. Control flow
 
 ```text
 User
@@ -25,45 +106,6 @@ API / CLI operations
 **Note:** The diagram shows the main control paths. Components below the application boundary are shown only where the repository currently implements or connects them.
 
 **Reference:** [Cloud107 development documentation](../development/) · [Cloud107 runtime documentation](../runtime/)
-
-### 2. Implementation and standards map
-
-```text
-┌─────────────────────────────────────────────────────────────────────┐
-│ Cloud107                                                           │
-│                                                                     │
-│ Web Workspace                                                       │
-│ React + TypeScript + HTML/CSS + Vite                               │
-│ Browser APIs / Web standards                                       │
-│                                                                     │
-│        │                                                            │
-│        ▼                                                            │
-│ API / Control Layer                                                 │
-│ TypeScript + Node.js + Express                                      │
-│ HTTP / JSON / RFC-based protocols                                   │
-│                                                                     │
-│        ├──────────────────┬───────────────────┐                    │
-│        ▼                  ▼                   ▼                    │
-│ Cloud107 Core        PostgreSQL          Update System              │
-│ C# / .NET            SQL                 TypeScript / shell         │
-│ .NET APIs             PostgreSQL          Git / cryptography         │
-│                                                                     │
-│        │                  │                   │                    │
-│        └──────────────────┼───────────────────┘                    │
-│                           ▼                                        │
-│ Runtime / Platform Boundary                                        │
-│ C / C++ / Rust / platform-native / Assembly where required         │
-│ POSIX / OS APIs / platform SDKs                                    │
-│                                                                     │
-│                           ▼                                        │
-│ Hardware / Network                                                 │
-│ x86-64 / ARM64 / other supported architectures                     │
-│ Ethernet / Wi-Fi / IP / Bluetooth / NFC                            │
-│ IEEE / IETF / platform specifications                               │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Note:** A language, runtime, protocol, standard, or platform shown here applies only to the boundary where it is used. It does not mean every component uses every technology.
 
 ### 3. Verify the application boundary
 
