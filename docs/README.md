@@ -4,6 +4,25 @@ Technical documentation for Cloud107.
 
 Cloud107 documentation is split by the part of the system being described. The root [README](../README.md) is the installation and everyday-use guide.
 
+## Product and source model
+
+Cloud107 is maintained as an open-source project and distributed as a usable product.
+
+<table>
+<tr><th>Layer</th><th>Purpose</th></tr>
+<tr><td><strong>Source</strong></td><td>Complete project source, documentation, development workflow, and architecture.</td></tr>
+<tr><td><strong>Release</strong></td><td>Validated, packaged, pre-configured artifacts for supported platforms.</td></tr>
+<tr><td><strong>Operation</strong></td><td>The installed Cloud107 system used through the workspace, <code>c107</code>, and supported interfaces.</td></tr>
+</table>
+
+<table>
+<tr><td align="center"><strong>Source repository</strong></td><td>→</td><td align="center"><strong>Build</strong></td><td>→</td><td align="center"><strong>Validation</strong></td><td>→</td><td align="center"><strong>Package</strong></td><td>→</td><td align="center"><strong>Pre-configuration</strong></td><td>→</td><td align="center"><strong>Release artifact</strong></td></tr>
+</table>
+
+**Note:** The source repository is the path for users who need to inspect, modify, test, or build Cloud107. The release artifact is the path for users who only need to install and operate the system.
+
+**Documentation rule:** Product-facing documentation should explain how to install and use the release. Technical documentation should explain the source, architecture, interfaces, validation, and operational behavior.
+
 ## Documentation map
 
 <table><tr><td colspan="4" align="center"><strong>Cloud107</strong></td></tr><tr><td align="center">Architecture<br>Design<br>Development<br>Runtime</td><td align="center">Deployment<br>Security<br>Updates<br>APIs</td><td align="center">CLI<br>Environments<br>Nodes<br>Workloads</td><td align="center">AI<br>Operations<br>Decisions<br>Research</td></tr></table>
