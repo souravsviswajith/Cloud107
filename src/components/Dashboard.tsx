@@ -50,6 +50,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [terminalInput, setTerminalInput] = useState('');
   const [terminalLines, setTerminalLines] = useState<string[]>(['Cloud107 terminal', 'Type a command to continue.']);
   const [health, setHealth] = useState<'Healthy' | 'Degraded' | 'Offline'>('Offline');
+  const [billingConnected, setBillingConnected] = useState(false);
 
   const refresh = async () => {
     try {
@@ -66,6 +67,29 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     refresh();
     const timer = setInterval(refresh, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const checkBilling = async () => {
+      try {
+        const response = await fetch('/api/v1/billing');
+        if (!response.ok) {
+          if (active) setBillingConnected(false);
+          return;
+        }
+        const payload = await response.json();
+        if (active) setBillingConnected(Boolean(payload.success && payload.data?.providerId));
+      } catch {
+        if (active) setBillingConnected(false);
+      }
+    };
+    checkBilling();
+    const timer = setInterval(checkBilling, 10000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -230,8 +254,8 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                       <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Live Bill</h2>
                       <span className="text-[10px] uppercase tracking-wider text-neutral-600">Provider</span>
                     </div>
-                    <div className="text-2xl font-medium text-neutral-300">Unavailable</div>
-                    <p className="text-xs text-neutral-600 mt-2">No billing provider is connected.</p>
+                    <div className="text-2xl font-medium text-neutral-300">{billingConnected ? 'Connected' : 'Unavailable'}</div>
+                    <p className="text-xs text-neutral-600 mt-2">{billingConnected ? 'Live provider data available.' : 'No billing provider is connected.'}</p>
                   </section>
                   <section>
                     <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
