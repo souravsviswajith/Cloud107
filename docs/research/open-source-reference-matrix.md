@@ -122,7 +122,32 @@ Existing authentication, authorization, node identity, and encrypted transport r
 - **Cloud107 relation:** These concepts are relevant to the design of Cloud107's source-first update and rollback model, but Cloud107 does not depend on NixOS.
 
 
-## 7. Infrastructure Platforms & Product Distribution
+## 7. Infrastructure Administration & Provisioning
+
+Additional references for the Cloud107 product model: a simple user-facing administration surface backed by direct system interfaces and declarative infrastructure tooling.
+
+### Cockpit
+
+- **Project:** [cockpit-project/cockpit](https://github.com/cockpit-project/cockpit)
+- **Relevance:** Web-based server administration that works alongside the terminal and exposes system tasks such as containers, storage, networking, logs, hardware, and performance.
+- **Cloud107 lesson:** Study the relationship between a graphical administration surface and the underlying operating-system commands/APIs. Cockpit explicitly supports switching between browser administration and terminal operation.
+- **Cloud107 boundary:** Reference for administration UX and system integration; Cloud107 retains its own workspace, API, and c107 model.
+
+### Apache CloudStack
+
+- **Project:** [apache/cloudstack](https://github.com/apache/cloudstack)
+- **Relevance:** Open-source IaaS platform with compute orchestration, networking, user/account management, API, resource accounting, web UI, and CLI access.
+- **Cloud107 lesson:** Study the separation of API, UI, CLI, resource accounting, and infrastructure control in a mature open-source infrastructure product.
+- **Cloud107 boundary:** CloudStack is prior art for infrastructure-product structure, not a Cloud107 dependency or service model.
+
+### OpenTofu
+
+- **Project:** [opentofu/opentofu](https://github.com/opentofu/opentofu)
+- **Relevance:** Declarative infrastructure management with execution plans, resource graphs, state, reusable modules, and version-controlled configuration.
+- **Cloud107 lesson:** Study explicit plans, dependency graphs, state tracking, and controlled infrastructure changes.
+- **Cloud107 boundary:** OpenTofu is an infrastructure-management reference; Cloud107 does not require all infrastructure operations to be represented as OpenTofu configurations.
+
+## 8. Infrastructure Platforms & Product Distribution
 
 How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
 
@@ -168,7 +193,7 @@ How established open-source infrastructure projects separate source, packaged re
 - **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
 - **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
 
-## 8. Reference-to-Implementation Mapping
+## 9. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -182,11 +207,14 @@ The prior-art references should feed implementation decisions through explicit s
 | Device connectivity | OS/device APIs | How does Cloud107 discover and use available Wi-Fi, Bluetooth/BLE, NFC, and related device capabilities? |
 | Home integration | Google Home, Apple Home, Amazon Alexa | Which Cloud107 capabilities can be exposed safely through each ecosystem without making them core dependencies? |
 | Updates / environments | NixOS / Nix | How are versions, dependencies, checkpoints, activation, rollback, and reproducibility controlled? |
+| Infrastructure administration | Cockpit | How can a graphical workspace expose real system state while remaining consistent with terminal/system APIs? |
+| IaaS product structure | Apache CloudStack | How are UI, CLI, API, resource management, accounting, and infrastructure control separated? |
+| Declarative provisioning | OpenTofu | How are desired state, execution plans, dependencies, state, and controlled changes represented? |
 | Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 9. Phase 2 Use
+## 10. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -235,7 +263,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 10. Authority Model for AI-Mediated Operations
+## 11. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -294,7 +322,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 11. Scope
+## 12. Scope
 
 This matrix is a research and implementation reference.
 
