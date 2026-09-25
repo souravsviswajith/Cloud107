@@ -2,7 +2,7 @@
 
 Cloud107 uses connectivity capabilities already provided by the user's device, operating system, network, and attached hardware.
 
-The current architecture does not introduce a custom mesh-networking layer.
+The architecture does not introduce a custom mesh-networking layer.
 
 ## Connectivity
 
@@ -86,17 +86,18 @@ Cloud107's responsibility is to:
 
 ## Mesh networking
 
-Custom mesh networking is deferred for at least two years.
+Custom mesh networking is excluded by the accepted architectural decision in `docs/decisions/mesh-networking-exclusion.md`.
 
-The following are outside the current architecture:
+This excludes:
 
-- Headscale/Tailscale control planes
 - custom mesh routing
 - mesh-specific node discovery
+- mesh-specific network identity
+- custom mesh control planes
 - custom NAT traversal infrastructure
-- mesh-specific network identity architecture
+- implicit or AI-selected mesh networking
 
-This deferral does not remove independent requirements for authentication, authorization, node identity, or encrypted transport where those are required by a particular Cloud107 interface.
+Standard networking and security requirements remain applicable where required by a particular interface.
 
 ## Platform boundary
 
@@ -110,8 +111,6 @@ A capability that is unavailable on a particular device is reported as unavailab
 
 ## Phase 2 scope
 
-For the current Phase 2 implementation, device connectivity is an integration surface rather than a new networking subsystem.
+Device connectivity is an integration surface rather than a new networking subsystem.
 
-The immediate objective is to establish clean capability boundaries that can later be connected to platform-specific implementations and optional home-ecosystem adapters.
-
-Mesh networking is not required for Phase 2 artifact release.
+Platform-specific implementations and optional home-ecosystem adapters may be added without introducing a Cloud107 networking overlay.
