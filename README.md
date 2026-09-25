@@ -177,7 +177,7 @@ C107_AUTH_SECRET=change-this
 
 ### 3. Start Cloud107
 
-<table><tr><td align="center"><strong>docker compose up</strong></td><td>→</td><td>PostgreSQL<br>↓<br>migration<br>↓<br>Cloud107</td></tr></table>
+<table><tr><td align="center"><strong>docker compose up</strong></td><td>→</td><td align="center">PostgreSQL<br>↓<br>migration<br>↓<br>Cloud107</td></tr></table>
 
 **Command**
 
@@ -329,6 +329,115 @@ npm run c107 -- --version
 **Reference:** [Node.js CLI documentation](https://nodejs.org/api/cli.html)
 
 **Note:** After the CLI is installed, use `c107` directly. The npm form is the repository/source-development invocation.
+
+### Diagnosis and status
+
+The CLI should provide read-only diagnosis commands before an operation is changed or repaired.
+
+<table>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+<th>Mode</th>
+</tr>
+<tr>
+<td><code>c107 status</code></td>
+<td>Show overall Cloud107 state.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 health</code></td>
+<td>Check API/runtime health.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 nodes</code></td>
+<td>Show connected nodes and their reported state/capabilities.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 workloads</code></td>
+<td>Show workload state and placement information.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 applications</code></td>
+<td>Show application lifecycle state.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 environments</code></td>
+<td>Show environment/runtime information.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 operations</code></td>
+<td>Show current and recent operations.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 logs</code></td>
+<td>Show relevant application/runtime logs.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 diagnostics</code></td>
+<td>Run a combined diagnostic check and summarize detected conditions.</td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td><code>c107 version</code></td>
+<td>Show Cloud107/CLI version information.</td>
+<td>Read-only</td>
+</tr>
+</table>
+
+**Recommended diagnosis path**
+
+<table>
+<tr>
+<th>Step</th>
+<th>Command</th>
+<th>Question answered</th>
+</tr>
+<tr>
+<td>1</td>
+<td><code>c107 status</code></td>
+<td>Is Cloud107 responding?</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>c107 health</code></td>
+<td>Is the API/runtime healthy?</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>c107 nodes</code></td>
+<td>Are the required resources connected?</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>c107 workloads</code></td>
+<td>Are workloads running where expected?</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>c107 operations</code></td>
+<td>Is an operation currently running or failing?</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>c107 logs</code></td>
+<td>What evidence is recorded?</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>c107 diagnostics</code></td>
+<td>What combined conditions require attention?</td>
+</tr>
+</table>
+
+**Note:** These commands define the intended diagnostic surface. A command should only be treated as implemented when it exists in the CLI source and passes its corresponding validation.
 
 ### Update Cloud107
 
