@@ -6,26 +6,7 @@ Cloud107 documentation is split by the part of the system being described. The r
 
 ## Documentation map
 
-```text
-Cloud107
-   │
-   ├── Architecture
-   ├── Design
-   ├── Development
-   ├── Runtime
-   ├── Deployment
-   ├── Security
-   ├── Updates
-   ├── APIs
-   ├── CLI
-   ├── Environments
-   ├── Nodes
-   ├── Workloads
-   ├── AI
-   ├── Operations
-   ├── Decisions
-   └── Research
-```
+<table><tr><td colspan="4" align="center"><strong>Cloud107</strong></td></tr><tr><td align="center">Architecture<br>Design<br>Development<br>Runtime</td><td align="center">Deployment<br>Security<br>Updates<br>APIs</td><td align="center">CLI<br>Environments<br>Nodes<br>Workloads</td><td align="center">AI<br>Operations<br>Decisions<br>Research</td></tr></table>
 
 | Section | Use it for | Guide |
 |---|---|---|
@@ -50,24 +31,7 @@ Cloud107
 
 Each technical guide should answer one concrete question.
 
-```text
-Description
-    │
-    ▼
-Diagram
-    │
-    ▼
-Command / configuration
-    │
-    ▼
-Note
-    │
-    ▼
-Expected result / next step
-    │
-    ▼
-Relevant reference
-```
+<table><tr><td align="center"><strong>Description</strong></td><td>→</td><td align="center"><strong>Diagram</strong></td><td>→</td><td align="center"><strong>Command / configuration</strong></td><td>→</td><td align="center"><strong>Note</strong></td><td>→</td><td align="center"><strong>Expected result / next step</strong></td><td>→</td><td align="center"><strong>Relevant reference</strong></td></tr></table>
 
 ### 1. Description
 
@@ -102,15 +66,7 @@ Explain only what the command, diagram, or result needs the reader to understand
 
 State what the user should see or what to do next.
 
-```text
-command
-   │
-   ▼
-expected result
-   │
-   ▼
-next guide
-```
+<table><tr><td align="center"><strong>Command</strong></td><td>→</td><td align="center"><strong>Expected result</strong></td><td>→</td><td align="center"><strong>Next guide</strong></td></tr></table>
 
 ### 6. Relevant reference
 
