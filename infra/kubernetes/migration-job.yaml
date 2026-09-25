@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cloud107-migrate
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: cloud107-migrate
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:15-alpine
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloud107-secrets
+                  key: SQL_ADMIN_PASSWORD
+          command:
+            - sh
+            - -c
+            - until pg_isready -h postgres -U postgres -d cloud107; do sleep 2; done
+      containers:
+        - name: migrate
+          image: cloud107:1.0.7
+          command:
+            - npm
+            - run
+            - db:migrate
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SQL_HOST
+              value: postgres
+            - name: SQL_USER
+              value: postgres
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloud107-secrets
+                  key: SQL_ADMIN_PASSWORD
+            - name: SQL_DB_NAME
+              value: cloud107
