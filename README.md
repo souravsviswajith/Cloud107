@@ -330,114 +330,81 @@ npm run c107 -- --version
 
 **Note:** After the CLI is installed, use `c107` directly. The npm form is the repository/source-development invocation.
 
-### Diagnosis and status
+### Docker-style command model
 
-The CLI should provide read-only diagnosis commands before an operation is changed or repaired.
+`c107` follows a command hierarchy similar to Docker: the top-level command identifies the Cloud107 area, and subcommands inspect or operate on that resource.
 
 <table>
-<tr>
-<th>Command</th>
-<th>Purpose</th>
-<th>Mode</th>
-</tr>
-<tr>
-<td><code>c107 status</code></td>
-<td>Show overall Cloud107 state.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 health</code></td>
-<td>Check API/runtime health.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 nodes</code></td>
-<td>Show connected nodes and their reported state/capabilities.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 workloads</code></td>
-<td>Show workload state and placement information.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 applications</code></td>
-<td>Show application lifecycle state.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 environments</code></td>
-<td>Show environment/runtime information.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 operations</code></td>
-<td>Show current and recent operations.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 logs</code></td>
-<td>Show relevant application/runtime logs.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 diagnostics</code></td>
-<td>Run a combined diagnostic check and summarize detected conditions.</td>
-<td>Read-only</td>
-</tr>
-<tr>
-<td><code>c107 version</code></td>
-<td>Show Cloud107/CLI version information.</td>
-<td>Read-only</td>
-</tr>
+<tr><th>Command</th><th>Purpose</th></tr>
+<tr><td><code>c107 info</code></td><td>Show Cloud107 installation and runtime information.</td></tr>
+<tr><td><code>c107 status</code></td><td>Show overall Cloud107 state.</td></tr>
+<tr><td><code>c107 health</code></td><td>Check API/runtime health.</td></tr>
+<tr><td><code>c107 stats</code></td><td>Show available runtime/resource statistics.</td></tr>
+<tr><td><code>c107 logs</code></td><td>Show relevant Cloud107 logs.</td></tr>
+<tr><td><code>c107 events</code></td><td>Show recorded runtime/operation events.</td></tr>
+<tr><td><code>c107 diagnostics</code></td><td>Run the combined read-only diagnostic path.</td></tr>
+<tr><td><code>c107 version</code></td><td>Show Cloud107 and CLI versions.</td></tr>
 </table>
+
+### Resource commands
+
+<table>
+<tr><th>Resource</th><th>List</th><th>Inspect</th><th>Logs</th></tr>
+<tr><td>Node</td><td><code>c107 node ls</code></td><td><code>c107 node inspect &lt;node&gt;</code></td><td><code>c107 node logs &lt;node&gt;</code></td></tr>
+<tr><td>Workload</td><td><code>c107 workload ls</code></td><td><code>c107 workload inspect &lt;workload&gt;</code></td><td><code>c107 workload logs &lt;workload&gt;</code></td></tr>
+<tr><td>Application</td><td><code>c107 application ls</code></td><td><code>c107 application inspect &lt;application&gt;</code></td><td><code>c107 application logs &lt;application&gt;</code></td></tr>
+<tr><td>Environment</td><td><code>c107 environment ls</code></td><td><code>c107 environment inspect &lt;environment&gt;</code></td><td>—</td></tr>
+<tr><td>Operation</td><td><code>c107 operation ls</code></td><td><code>c107 operation inspect &lt;operation&gt;</code></td><td>—</td></tr>
+</table>
+
+### System diagnosis
+
+Use read-only inspection first. Resource-specific commands should expose the state needed to diagnose a problem without requiring a repair operation.
+
+```bash
+c107 info
+c107 status
+c107 health
+
+c107 node ls
+c107 node inspect <node>
+c107 node logs <node>
+
+c107 workload ls
+c107 workload inspect <workload>
+c107 workload logs <workload>
+
+c107 application ls
+c107 application inspect <application>
+c107 application logs <application>
+
+c107 environment ls
+c107 operation ls
+c107 operation inspect <operation>
+
+c107 logs
+c107 events
+c107 stats
+c107 diagnostics
+```
 
 **Recommended diagnosis path**
 
 <table>
-<tr>
-<th>Step</th>
-<th>Command</th>
-<th>Question answered</th>
-</tr>
-<tr>
-<td>1</td>
-<td><code>c107 status</code></td>
-<td>Is Cloud107 responding?</td>
-</tr>
-<tr>
-<td>2</td>
-<td><code>c107 health</code></td>
-<td>Is the API/runtime healthy?</td>
-</tr>
-<tr>
-<td>3</td>
-<td><code>c107 nodes</code></td>
-<td>Are the required resources connected?</td>
-</tr>
-<tr>
-<td>4</td>
-<td><code>c107 workloads</code></td>
-<td>Are workloads running where expected?</td>
-</tr>
-<tr>
-<td>5</td>
-<td><code>c107 operations</code></td>
-<td>Is an operation currently running or failing?</td>
-</tr>
-<tr>
-<td>6</td>
-<td><code>c107 logs</code></td>
-<td>What evidence is recorded?</td>
-</tr>
-<tr>
-<td>7</td>
-<td><code>c107 diagnostics</code></td>
-<td>What combined conditions require attention?</td>
-</tr>
+<tr><th>Step</th><th>Command</th><th>Question answered</th></tr>
+<tr><td>1</td><td><code>c107 status</code></td><td>Is Cloud107 responding?</td></tr>
+<tr><td>2</td><td><code>c107 health</code></td><td>Is the API/runtime healthy?</td></tr>
+<tr><td>3</td><td><code>c107 node ls</code></td><td>Which resources are connected?</td></tr>
+<tr><td>4</td><td><code>c107 node inspect &lt;node&gt;</code></td><td>What is the selected node reporting?</td></tr>
+<tr><td>5</td><td><code>c107 workload ls</code></td><td>Which workloads are running?</td></tr>
+<tr><td>6</td><td><code>c107 workload inspect &lt;workload&gt;</code></td><td>What is the workload state and placement?</td></tr>
+<tr><td>7</td><td><code>c107 operation ls</code></td><td>Is an operation running or failing?</td></tr>
+<tr><td>8</td><td><code>c107 operation inspect &lt;operation&gt;</code></td><td>What is the operation reporting?</td></tr>
+<tr><td>9</td><td><code>c107 logs</code></td><td>What evidence is recorded?</td></tr>
+<tr><td>10</td><td><code>c107 diagnostics</code></td><td>What combined conditions require attention?</td></tr>
 </table>
 
-**Note:** These commands define the intended diagnostic surface. A command should only be treated as implemented when it exists in the CLI source and passes its corresponding validation.
+**Note:** This defines the intended Docker-style CLI surface. Commands should only be treated as implemented when they exist in the CLI source and pass their corresponding validation.
 
 ### Update Cloud107
 
