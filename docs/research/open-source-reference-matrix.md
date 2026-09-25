@@ -76,16 +76,43 @@ How to execute workloads across different environments without assuming every wo
 - **Relevance:** Lightweight Kubernetes distribution for constrained and edge environments.
 - **Cloud107 lesson:** Study compact distribution, edge deployment, reduced operational footprint, and deployment to smaller nodes.
 
-## 5. Mesh Networking, Identity & Reproducible Systems
+## 5. Device Connectivity & Existing Ecosystems
 
-How distributed nodes can communicate and how system state can be reproduced and safely updated.
+Cloud107 should use connectivity already present on user devices rather than introducing a separate mesh-networking layer.
 
-### Headscale
+### Local device connectivity
 
-- **Project:** `juanfont/headscale`
-- **Relevance:** Self-hosted control server implementing the Tailscale coordination model around WireGuard.
-- **Cloud107 lesson:** Study node identity, encrypted mesh networking, coordination, and connectivity across networks.
-- **Cloud107 boundary:** Network topology and authorization remain explicit Cloud107 infrastructure concerns.
+- **Wi-Fi / Ethernet:** Primary IP connectivity for Cloud107 workspaces, nodes, and workloads.
+- **Bluetooth / BLE:** Nearby peripherals, sensors, controllers, and device interactions.
+- **NFC:** Short-range discovery, provisioning, identity exchange, and device interactions where supported.
+
+These are platform capabilities to be accessed through the appropriate operating-system APIs and device interfaces. Cloud107 does not need to replace the underlying networking stack.
+
+### Home ecosystem integrations
+
+Where useful, Cloud107 may expose supported capabilities through existing home ecosystems:
+
+- Google Home
+- Apple Home
+- Amazon Alexa
+
+These are optional integration adapters, not Cloud107 core dependencies. Cloud107 remains usable without any of them.
+
+### Mesh networking scope
+
+Custom mesh networking is **deferred for at least two years** and is not part of the current Phase 2 architecture.
+
+The following are therefore out of current scope:
+
+- Headscale/Tailscale control-plane integration
+- custom mesh routing
+- mesh-specific node discovery
+- NAT-traversal control infrastructure
+- mesh-specific network identity architecture
+
+Existing authentication, authorization, node identity, and encrypted transport requirements remain where independently required by Cloud107.
+
+## 6. Reproducible Systems & Updates
 
 ### NixOS / Nix
 
@@ -94,9 +121,9 @@ How distributed nodes can communicate and how system state can be reproduced and
 - **Cloud107 lesson:** Study reproducible environments, immutable-style generations, dependency resolution, rollback, and controlled system transitions.
 - **Cloud107 relation:** These concepts are relevant to the design of Cloud107's source-first update and rollback model, but Cloud107 does not depend on NixOS.
 
-## 6. Reference-to-Implementation Mapping
+## 7. Reference-to-Implementation Mapping
 
-The prior-art references above should feed implementation decisions through explicit subsystem boundaries:
+The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
 | Cloud107 area | Primary references | Implementation question |
 |---|---|---|
@@ -105,10 +132,11 @@ The prior-art references above should feed implementation decisions through expl
 | Developer Mode | Coder | How are development environments provisioned, accessed, persisted, and controlled? |
 | Remote desktop | Sunshine, Kasm | How are capture, encoding, transport, session state, and browser presentation separated? |
 | Workload execution | Nomad, K3s | How does Cloud107 select an execution mechanism according to workload and node capabilities? |
-| Node networking | Headscale | How are nodes identified, connected, authorized, and observed across networks? |
+| Device connectivity | OS/device APIs | How does Cloud107 discover and use available Wi-Fi, Bluetooth/BLE, NFC, and related device capabilities? |
+| Home integration | Google Home, Apple Home, Amazon Alexa | Which Cloud107 capabilities can be exposed safely through each ecosystem without making them core dependencies? |
 | Updates / environments | NixOS / Nix | How are versions, dependencies, checkpoints, activation, rollback, and reproducibility controlled? |
 
-## 7. Phase 2 Use
+## 8. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -136,7 +164,7 @@ Release
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 8. Authority Model for AI-Mediated Operations
+## 9. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -172,7 +200,7 @@ Generated command ≠ authorized operation
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 9. Scope
+## 10. Scope
 
 This matrix is a research and implementation reference.
 
