@@ -2,7 +2,7 @@
 
 This page documents the deployment path currently present in the repository.
 
-The current local deployment uses Docker Compose. Other delivery targets are listed separately as Phase 2 targets.
+The current local deployment uses Docker Compose. Other delivery targets are listed separately as planned targets.
 
 ## Guide
 
@@ -33,7 +33,7 @@ The current local deployment uses Docker Compose. Other delivery targets are lis
 </tr>
 </table>
 
-**Note:** Docker Compose is the current deployment path. Phase 2 targets are not claims that every target is already built or validated.
+**Note:** Docker Compose is the current deployment path. Planned targets are not claims that every target is already built or validated.
 
 **Reference:** [Docker](https://docs.docker.com/) · [Docker Compose](https://docs.docker.com/compose/)
 
@@ -232,7 +232,7 @@ docker compose ps
 
 **Reference:** [Architecture](../architecture/)
 
-## Phase 2 artifact targets
+## Additional artifact targets
 
 ```text
 Cloud107 capability contract
@@ -248,12 +248,12 @@ Windows Linux    IoT    Apple
 
 | Target | Artifact / delivery form | Architectures | State |
 |---|---|---|---|
-| Windows | `.msi`, `.exe` | x86_64, ARM64 | Phase 2 target |
-| Linux | `.deb` | x86_64, ARM64 | Phase 2 target |
-| IoT | Device-specific image/package | Target-dependent | Phase 2 target |
-| Apple | Native application/package | ARM64, x86_64 | Phase 2 target |
-| Web | GitHub Pages-hosted website | Browser | Phase 2 target |
-| WSL | Microsoft Store distribution | Target-dependent | Phase 2 target |
+| Windows | `.msi`, `.exe` | x86_64, ARM64 | Planned target |
+| Linux | `.deb` | x86_64, ARM64 | Planned target |
+| IoT | Device-specific image/package | Target-dependent | Planned target |
+| Apple | Native application/package | ARM64, x86_64 | Planned target |
+| Web | GitHub Pages-hosted website | Browser | Planned target |
+| WSL | Microsoft Store distribution | Target-dependent | Planned target |
 
 **Note:** These are delivery targets, not verified support claims. Artifact availability, signing, installer behavior, hardware compatibility, and runtime behavior must be checked separately for each target.
 
