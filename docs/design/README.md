@@ -8,29 +8,35 @@ The design keeps the main user actions visible while allowing technical details 
 
 ### 1. Design architecture
 
-```text
-                         Cloud107
-                            │
-                            ▼
-                     User interface
-                            │
-          ┌─────────────────┼─────────────────┐
-          ▼                 ▼                 ▼
-       Overview          Projects           Nodes
-          │                 │                 │
-          └─────────────────┼─────────────────┘
-                            ▼
-                       Operations
-                            │
-          ┌─────────────────┼─────────────────┐
-          ▼                 ▼                 ▼
-       Terminal          Settings          Workloads
-                            │
-                            ▼
-                     Cloud107 API
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 WORKSPACE</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>OVERVIEW</strong><br><sub>(System state)</sub></td>
+<td align="center"><strong>PROJECTS</strong><br><sub>(Projects / workloads)</sub></td>
+<td align="center"><strong>NODES</strong><br><sub>(Resource endpoints)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>OPERATIONS</strong><br><sub>(Runtime state)</sub></td>
+<td align="center"><strong>TERMINAL</strong><br><sub>(c107 · Node.js · POSIX)</sub></td>
+<td align="center"><strong>SETTINGS</strong><br><sub>(Configuration)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 API</strong><br><sub>(Node.js · Express · HTTP · RFC 9110)</sub></td>
+</tr>
+</table>
 
-**Note:** The workspace exposes the main Cloud107 concepts first. Technical implementation details remain available through progressive disclosure.
+**Note:** The workspace exposes the main Cloud107 concepts first. Technical details appear through progressive disclosure.
 
 **Reference:** [Architecture](../architecture/) · [React documentation](https://react.dev/learn)
 
