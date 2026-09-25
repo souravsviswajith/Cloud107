@@ -2,32 +2,31 @@
 
 This page documents the deployment path currently present in the repository.
 
-## Deployment architecture
+The current local deployment uses Docker Compose. Other delivery targets are listed separately as Phase 2 targets.
+
+## Guide
+
+### 1. Deployment architecture
 
 ```text
                          Cloud107
                             │
+                            ▼
+                     Docker Compose
+                            │
                 ┌───────────┴───────────┐
                 ▼                       ▼
-          Docker Compose          Phase 2 targets
-                │             Windows / Linux / IoT
-                │             Apple / Web / WSL
-                ▼
-          PostgreSQL 15
-          SQL / PostgreSQL
-                │
-                ▼
-        cloud107-migrate
-        Node.js / npm
-        Drizzle migrations
-                │
-                ▼
-          cloud107 :3000
-        Node.js 22 / Express
-        TypeScript application
-                │
-                ▼
-        HTTP / JSON API
+          PostgreSQL 15          cloud107-migrate
+          SQL / PostgreSQL        Node.js / npm
+                │                 Drizzle migrations
+                └───────────┬───────────┘
+                            ▼
+                       cloud107 :3000
+                     Node.js 22 / Express
+                     TypeScript application
+                            │
+                            ▼
+                       HTTP / JSON API
 
 Container boundary:
 Docker / OCI-compatible container model
@@ -36,9 +35,191 @@ Host boundary:
 OS → platform runtime → hardware architecture
 ```
 
-**Note:** The current deployment path is Docker Compose. The Phase 2 targets below describe planned delivery targets and are not claims that every target is already built or validated.
+**Note:** Docker Compose is the current deployment path. Phase 2 targets are not claims that every target is already built or validated.
 
-### Deployment layers
+**Reference:** [Docker](https://docs.docker.com/) · [Docker Compose](https://docs.docker.com/compose/)
+
+### 2. Configure the deployment
+
+```text
+.env.example
+      │
+      ▼
+     .env
+      │
+      ▼
+Docker Compose
+```
+
+**Command**
+
+```bash
+cp .env.example .env
+```
+
+Set the required values:
+
+```env
+SQL_ADMIN_USER
+SQL_ADMIN_PASSWORD
+SQL_DB_NAME
+SQL_HOST
+SQL_USER
+SQL_PASSWORD
+C107_AUTH_SECRET
+APP_URL
+```
+
+**Note:** Use the values required by the current Compose configuration. Do not commit local secrets.
+
+**Reference:** [Docker Compose environment variables](https://docs.docker.com/compose/how-tos/environment-variables/)
+
+### 3. Start the deployment
+
+```text
+docker compose up -d
+        │
+        ├── PostgreSQL
+        │
+        ├── migration
+        │
+        └── Cloud107 :3000
+```
+
+**Command**
+
+```bash
+docker compose up -d
+```
+
+**Note:** PostgreSQL starts first. The migration service waits for database health, then Cloud107 starts after the migration completes successfully.
+
+**Expected result:** The Cloud107 container is running on port `3000`.
+
+**Reference:** [docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/)
+
+### 4. Check the deployment
+
+```text
+Docker Compose
+      │
+      ├── container status
+      └── Cloud107 logs
+              │
+              ▼
+        deployment state
+```
+
+**Commands**
+
+```bash
+docker compose ps
+docker compose logs -f cloud107
+```
+
+**Note:** Use the container status and Cloud107 logs to verify startup.
+
+**Expected result:** PostgreSQL is healthy, migration completes, and Cloud107 starts without a startup error.
+
+**Reference:** [Docker Compose logs](https://docs.docker.com/reference/cli/docker/compose/logs/)
+
+### 5. Stop the deployment
+
+```text
+Cloud107
+   │
+   ▼
+docker compose down
+   │
+   ▼
+Containers stopped
+   │
+   ▼
+PostgreSQL volume retained
+```
+
+**Command**
+
+```bash
+docker compose down
+```
+
+**Note:** The PostgreSQL volume is retained by default. Do not use volume removal commands unless deleting the stored database is intended.
+
+**Reference:** [docker compose down](https://docs.docker.com/reference/cli/docker/compose/down/)
+
+### 6. Build the application image
+
+```text
+node:22-alpine
+      │
+      ▼
+npm ci
+      │
+      ▼
+npm run build
+      │
+      ▼
+Cloud107 image
+      │
+      ▼
+node:22-alpine runtime
+      │
+      ▼
+non-root node user
+```
+
+**Commands**
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+**Note:** The Dockerfile uses separate build and runtime stages. The runtime image runs the application as the non-root `node` user.
+
+**Expected result:** A production Cloud107 image is built and can be started through Compose.
+
+**Reference:** [Docker multi-stage builds](https://docs.docker.com/build/building/multi-stage/) · [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+
+### 7. Validate a deployment change
+
+```text
+Source change
+     │
+     ├── test
+     ├── lint
+     └── build
+     │
+     ▼
+Docker build
+     │
+     ▼
+Compose deployment
+     │
+     ▼
+health / logs / status
+```
+
+**Commands**
+
+```bash
+npm run test
+npm run lint
+npm run build
+
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+**Note:** A deployment target is not considered supported only because packaging files exist. Verify the actual target.
+
+**Expected result:** Tests, linting, build, container startup, migration, and application health complete as expected.
+
+**Reference:** [Docker documentation](https://docs.docker.com/) · [Cloud107 runtime](../runtime/)
+
+## Deployment layers
 
 | Layer | Current technology | Role |
 |---|---|---|
@@ -49,186 +230,11 @@ OS → platform runtime → hardware architecture
 | Host | OS and target architecture | Execution environment |
 | Network | HTTP / JSON | Application interface |
 
-**Note:** Standards, specifications, and vendor technologies are documented separately when they are actually used or required by the implementation.
+**Note:** Standards, specifications, and vendor technologies are documented separately when they are actually used or required.
 
-## Docker Compose
-
-The repository includes a Docker Compose setup with three services:
-
-```text
-PostgreSQL
-    │
-    ▼
-cloud107-migrate
-    │
-    ▼
-cloud107
-```
-
-### PostgreSQL
-
-The `postgres` service provides persistent database storage through the `cloud107-postgres` volume.
-
-The database administrator values are supplied through:
-
-```env
-SQL_ADMIN_USER
-SQL_ADMIN_PASSWORD
-SQL_DB_NAME
-```
-
-`SQL_ADMIN_PASSWORD` is required by the Compose configuration.
-
-### Migration service
-
-`cloud107-migrate` uses the same Cloud107 image and runs:
-
-```bash
-npm run db:migrate
-```
-
-It waits for PostgreSQL to become healthy.
-
-The application service waits for the migration service to complete successfully before starting.
-
-### Application service
-
-The `cloud107` service runs the production image and exposes port `3000`.
-
-Its database and application settings include:
-
-```env
-SQL_HOST
-SQL_USER
-SQL_PASSWORD
-SQL_DB_NAME
-C107_AUTH_SECRET
-GEMINI_API_KEY
-APP_URL
-```
-
-## Docker image
-
-The Dockerfile uses two stages.
-
-### Build stage
-
-```text
-node:22-alpine
-    │
-    ├── npm ci
-    ├── copy source
-    └── npm run build
-```
-
-### Runtime stage
-
-The runtime image uses `node:22-alpine`, installs production dependencies, copies the built application and database migration/configuration files, and runs as the non-root `node` user.
-
-The application starts with:
-
-```bash
-node dist/server.cjs
-```
-
-## Local deployment
-
-```text
-.env
- │
- ▼
-docker compose up -d
- │
- ├── PostgreSQL
- ├── migration
- └── Cloud107 :3000
-```
-
-### 1. Configure
-
-**Command**
-
-```bash
-cp .env.example .env
-```
-
-**Note:** Create the local environment file and set the required database and application values.
-
-### 2. Start
-
-**Command**
-
-```bash
-docker compose up -d
-```
-
-**Note:** Start PostgreSQL, run the migration, and then start Cloud107.
-
-### 3. Check the deployment
-
-**Commands**
-
-```bash
-docker compose ps
-docker compose logs -f cloud107
-```
-
-**Note:** Confirm that the containers are running and inspect the Cloud107 service log.
-
-Check the services:
-
-```bash
-docker compose ps
-docker compose logs -f cloud107
-```
-
-Stop the deployment:
-
-```bash
-docker compose down
-```
-
-The PostgreSQL volume is retained by default when using `docker compose down`.
-
-## Deployment boundary
-
-The current Compose deployment establishes the application and database services. Node coordination, additional deployment targets, and platform-specific packaging should be documented here only when the corresponding implementation is present and verified.
-
-## Validation
-
-Before treating a deployment change as complete, run:
-
-```bash
-npm run test
-npm run lint
-npm run build
-```
-
-For container changes, build and start the Compose deployment and verify that PostgreSQL becomes healthy, migrations complete successfully, Cloud107 starts afterward, port `3000` is reachable, and the health endpoint reports the actual service state.
-
-Do not document a deployment target as supported solely because packaging files exist. Verify the target first.
-
+**Reference:** [Architecture](../architecture/)
 
 ## Phase 2 artifact targets
-
-Phase 2 targets distributable artifacts and runtime packages across the supported hardware families. The target matrix is:
-
-| Target | Artifact / delivery form | Architectures |
-|---|---|---|
-| Windows | `.msi`, `.exe` | x86_64, ARM64 |
-| Linux | `.deb` | x86_64, ARM64 |
-| IoT | device-specific image/package | ARM and x86 where the target supports them |
-| Apple | native application/package | Apple Silicon ARM64 and Intel x86_64 |
-| Web | GitHub Pages-hosted website | Browser architecture |
-| WSL | Microsoft Store distribution | x86_64, ARM64 where the WSL distribution/runtime supports it |
-
-These are **Phase 2 targets**, not claims that every artifact is already built or validated.
-
-### Packaging rule
-
-The same Cloud107 capability contract should be preserved across targets while the implementation may use the target's native packaging, runtime, installer, signing, and system integration mechanisms.
-
-The architecture is therefore:
 
 ```text
 Cloud107 capability contract
@@ -242,23 +248,53 @@ Windows Linux    IoT    Apple
  x86_64 ARM64  target   ARM64/x86_64
 ```
 
-Artifact availability, signing, installer behavior, hardware compatibility, and runtime validation must be verified separately for each target. A package existing in the repository does not by itself establish support.
+| Target | Artifact / delivery form | Architectures | State |
+|---|---|---|---|
+| Windows | `.msi`, `.exe` | x86_64, ARM64 | Phase 2 target |
+| Linux | `.deb` | x86_64, ARM64 | Phase 2 target |
+| IoT | Device-specific image/package | Target-dependent | Phase 2 target |
+| Apple | Native application/package | ARM64, x86_64 | Phase 2 target |
+| Web | GitHub Pages-hosted website | Browser | Phase 2 target |
+| WSL | Microsoft Store distribution | Target-dependent | Phase 2 target |
 
+**Note:** These are delivery targets, not verified support claims. Artifact availability, signing, installer behavior, hardware compatibility, and runtime behavior must be checked separately for each target.
+
+**Reference:** [Docker](https://docs.docker.com/) · [GitHub Pages](https://docs.github.com/en/pages)
 
 ## User interface targets
 
-Cloud107 does not require a graphical interface on every target.
+```text
+Cloud107 capability
+        │
+        ├── Web ────────► Browser workspace
+        ├── Windows ────► Desktop/workspace target
+        ├── Linux ──────► Desktop/workspace target
+        ├── Apple ──────► Native/platform target
+        ├── WSL ────────► Workspace + terminal target
+        └── IoT / MCU ──► Runtime/control interface
+```
 
-### IoT and microcontrollers
+**Note:** IoT and microcontroller targets do not require the graphical Cloud107 workspace. Resource-constrained devices can expose capabilities through the control/runtime interface.
 
-IoT targets may run only the Cloud107 device/runtime components. Microcontrollers can operate without the Cloud107 graphical workspace.
+**Reference:** [Design](../design/) · [Web APIs — MDN](https://developer.mozilla.org/en-US/docs/Web/API)
 
-A device may instead expose its capabilities through the Cloud107 control plane or another supported management interface, depending on the device and its connectivity.
+## Deployment boundary
 
-The absence of a local UI is intentional for resource-constrained devices.
+```text
+Cloud107 application
+        │
+        ▼
+Container / package
+        │
+        ▼
+Target OS / runtime
+        │
+        ▼
+Hardware architecture
+```
 
-### Other supported targets
+Node coordination, additional deployment targets, and platform-specific packaging should be documented here only when the corresponding implementation is present and verified.
 
-Windows, Linux, Apple, WSL, and the web experience use the same Cloud107 workspace model. The interface adapts to the platform while preserving the same core concepts and capabilities.
+**Note:** A package existing in the repository does not by itself establish platform support.
 
-The universal UI should not imply identical rendering or input behavior on every device. Desktop, mobile, browser, and platform-native experiences may use platform-appropriate layouts and controls while remaining consistent at the capability level.
+**Reference:** [Architecture](../architecture/) · [Environments](../environments/)
