@@ -44,22 +44,7 @@ This page documents the API boundary currently present in the repository.
 
 ### 2. API base path
 
-```text
-Cloud107 server
-      │
-      ▼
-/api
-  │
-  ▼
-/v1
-  │
-  ├── health
-  ├── users
-  ├── workspaces
-  ├── applications
-  ├── billing
-  └── updates
-```
+<table><tr><td align="center"><strong>Cloud107 server</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>/api</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>/v1</strong></td></tr><tr><td align="center">↓</td></tr><tr><td>health · users · workspaces · applications · billing · updates</td></tr></table>
 
 **Endpoint base**
 
@@ -75,15 +60,7 @@ Cloud107 server
 
 ### 3. Check API health
 
-```text
-Client
-  │
-  ▼
-GET /api/v1/health
-  │
-  ▼
-Cloud107 health response
-```
+<table><tr><td align="center"><strong>Client</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>GET /api/v1/health</strong><br><sub>HTTP</sub></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Cloud107 health response</strong></td></tr></table>
 
 **Command**
 
@@ -99,15 +76,7 @@ curl http://localhost:3000/api/v1/health
 
 ### 4. Check update status
 
-```text
-Client
-  │
-  ▼
-GET /api/v1/updates/status
-  │
-  ▼
-Update manager status
-```
+<table><tr><td align="center"><strong>Client</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>GET /api/v1/updates/status</strong><br><sub>HTTP</sub></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Update manager status</strong></td></tr></table>
 
 **Command**
 
@@ -123,27 +92,7 @@ curl http://localhost:3000/api/v1/updates/status
 
 ### 5. Request path
 
-```text
-HTTP request
-    │
-    ▼
-Express
-    │
-    ▼
-Request context / logging
-    │
-    ▼
-Security middleware
-    │
-    ▼
-JSON parsing
-    │
-    ▼
-Versioned API route
-    │
-    ▼
-Service / persistence boundary
-```
+<table><tr><td align="center"><strong>HTTP request</strong><br><sub>HTTP · RFC 9110</sub></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Express</strong><br><sub>Node.js · TypeScript</sub></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Request context / logging</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Security middleware</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>JSON parsing</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Versioned API route</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Service / persistence boundary</strong></td></tr></table>
 
 **Note:** Authentication, authorization, validation, persistence, and external-provider behavior should be documented at the point where the implementation actually enforces them.
 
@@ -158,19 +107,7 @@ Service / persistence boundary
 | API → database | Drizzle / PostgreSQL | SQL |
 | Update status | Express / TypeScript | HTTP / JSON |
 
-```text
-Browser / c107
-      │
-      └── HTTP / JSON
-             │
-             ▼
-       Express API
-             │
-             └── SQL
-                  │
-                  ▼
-             PostgreSQL
-```
+<table><tr><td align="center"><strong>Browser / c107</strong><br><sub>React / TypeScript · CLI</sub></td></tr><tr><td align="center">↓ HTTP / JSON</td></tr><tr><td align="center"><strong>Express API</strong><br><sub>Node.js · TypeScript</sub></td></tr><tr><td align="center">↓ SQL</td></tr><tr><td align="center"><strong>PostgreSQL</strong></td></tr></table>
 
 **Note:** Protocol and standards names should describe interfaces actually used by the implementation.
 
@@ -178,16 +115,7 @@ Browser / c107
 
 ### 7. API development check
 
-```text
-API change
-    │
-    ├── lint
-    ├── test
-    └── build
-    │
-    ▼
-Reviewed API change
-```
+<table><tr><td align="center"><strong>API change</strong></td></tr><tr><td align="center">↓</td></tr><tr><td align="center">lint · test · build</td></tr><tr><td align="center">↓</td></tr><tr><td align="center"><strong>Reviewed API change</strong></td></tr></table>
 
 **Commands**
 
