@@ -2,7 +2,11 @@
 
 API contracts, capability discovery, events, runtime control, and integrations.
 
-## API architecture
+This page documents the API boundary currently present in the repository.
+
+## Guide
+
+### 1. API architecture
 
 ```text
                     Cloud107 clients
@@ -33,52 +37,118 @@ API contracts, capability discovery, events, runtime control, and integrations.
                      SQL / Drizzle
 ```
 
-**Note:** The diagram shows the current API surface documented by the repository. Detailed behavior should be added from the corresponding implemented route and service.
+**Note:** The diagram shows the current API surface documented by the repository. Detailed behavior belongs to the corresponding implemented route and service.
 
-## Current API boundary
+**Reference:** [Architecture](../architecture/) · [Express](https://expressjs.com/)
 
-The application exposes versioned routes under:
+### 2. API base path
+
+```text
+Cloud107 server
+      │
+      ▼
+/api
+  │
+  ▼
+/v1
+  │
+  ├── health
+  ├── users
+  ├── workspaces
+  ├── applications
+  ├── billing
+  └── updates
+```
+
+**Endpoint base**
 
 ```text
 /api/v1
 ```
 
-Current route areas include:
+**Note:** Current application API routes are versioned under `/api/v1`.
 
-- health
-- users
-- workspaces
-- applications
-- billing
-- updates
+**Expected result:** Requests to a documented API endpoint use the `/api/v1` prefix.
 
-The update status endpoint is:
+**Reference:** [Express routing](https://expressjs.com/en/guide/routing.html)
+
+### 3. Check API health
 
 ```text
-GET /api/v1/updates/status
+Client
+  │
+  ▼
+GET /api/v1/health
+  │
+  ▼
+Cloud107 health response
 ```
 
-## Request path
+**Command**
+
+```bash
+curl http://localhost:3000/api/v1/health
+```
+
+**Note:** Use the health endpoint to check the running application boundary.
+
+**Expected result:** The running Cloud107 server returns an HTTP response from the health route.
+
+**Reference:** [HTTP overview — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview) · [Runtime](../runtime/)
+
+### 4. Check update status
+
+```text
+Client
+  │
+  ▼
+GET /api/v1/updates/status
+  │
+  ▼
+Update manager status
+```
+
+**Command**
+
+```bash
+curl http://localhost:3000/api/v1/updates/status
+```
+
+**Note:** The update status endpoint reports the current update-related runtime information exposed by the application.
+
+**Expected result:** The running Cloud107 instance returns the update status response.
+
+**Reference:** [Updates](../updates/) · [HTTP overview — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
+
+### 5. Request path
 
 ```text
 HTTP request
-    ↓
+    │
+    ▼
 Express
-    ↓
-request context / logging
-    ↓
-security middleware
-    ↓
+    │
+    ▼
+Request context / logging
+    │
+    ▼
+Security middleware
+    │
+    ▼
 JSON parsing
-    ↓
-versioned API route
-    ↓
-service / persistence boundary
+    │
+    ▼
+Versioned API route
+    │
+    ▼
+Service / persistence boundary
 ```
 
-**Note:** Authentication, authorization, validation, persistence, and external-provider behavior should be documented at the point where the implementation enforces them.
+**Note:** Authentication, authorization, validation, persistence, and external-provider behavior should be documented at the point where the implementation actually enforces them.
 
-## Interface references
+**Reference:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html) · [Security](../security/)
+
+### 6. Interface map
 
 | Boundary | Technology | Interface |
 |---|---|---|
@@ -87,11 +157,38 @@ service / persistence boundary
 | API → database | Drizzle / PostgreSQL | SQL |
 | Update status | Express / TypeScript | HTTP / JSON |
 
-**Note:** Protocols and standards should be named only when the implementation uses or depends on them. Vendor products are not standards.
+```text
+Browser / c107
+      │
+      └── HTTP / JSON
+             │
+             ▼
+       Express API
+             │
+             └── SQL
+                  │
+                  ▼
+             PostgreSQL
+```
 
-## API development check
+**Note:** Protocol and standards names should describe interfaces actually used by the implementation.
 
-After changing an API boundary:
+**Reference:** [HTTP — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP) · [PostgreSQL](https://www.postgresql.org/docs/)
+
+### 7. API development check
+
+```text
+API change
+    │
+    ├── lint
+    ├── test
+    └── build
+    │
+    ▼
+Reviewed API change
+```
+
+**Commands**
 
 ```bash
 npm run lint
@@ -99,8 +196,23 @@ npm test
 npm run build
 ```
 
-**Note:** Keep route changes, service changes, and contract changes aligned. Verify the resulting API behavior before documenting a new endpoint.
+**Note:** Keep route changes, service changes, and API contract changes aligned.
 
-## Scope
+**Expected result:** The configured checks complete successfully before the API change is treated as ready.
 
-This page documents the API boundary currently present in the repository. Planned integrations should be marked as planned until their implementation exists and has been verified.
+**Reference:** [Vitest](https://vitest.dev/) · [ESLint](https://eslint.org/docs/latest/) · [Vite](https://vite.dev/guide/)
+
+## Current route areas
+
+| Area | Current path |
+|---|---|
+| Health | `/api/v1/health` |
+| Users | `/api/v1/users` |
+| Workspaces | `/api/v1/workspaces` |
+| Applications | `/api/v1/applications` |
+| Billing | `/api/v1/billing` |
+| Updates | `/api/v1/updates/status` |
+
+**Note:** This table describes the current documented route areas. Planned integrations should be marked as planned until their implementation exists and has been verified.
+
+**Reference:** [Architecture](../architecture/) · [Updates](../updates/)
