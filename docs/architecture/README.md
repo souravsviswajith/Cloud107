@@ -20,6 +20,60 @@ API / CLI operations
 
 **Note:** The diagram shows the main control paths. Components below the application boundary are only represented where the repository currently implements or connects them.
 
+
+## Implementation and standards map
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ Cloud107                                                           │
+│                                                                     │
+│ Web Workspace                                                       │
+│ React + TypeScript + HTML/CSS + Vite                               │
+│ Browser APIs / Web standards                                       │
+│                                                                     │
+│        │                                                            │
+│        ▼                                                            │
+│ API / Control Layer                                                 │
+│ TypeScript + Node.js + Express                                      │
+│ HTTP / JSON / RFC-based protocols                                   │
+│                                                                     │
+│        ├──────────────────┬───────────────────┐                    │
+│        ▼                  ▼                   ▼                    │
+│ Cloud107 Core        PostgreSQL          Update System              │
+│ C# / .NET            SQL                 TypeScript / shell         │
+│ .NET APIs             PostgreSQL          Git / cryptography         │
+│                                                                     │
+│        │                  │                   │                    │
+│        └──────────────────┼───────────────────┘                    │
+│                           ▼                                        │
+│ Runtime / Platform Boundary                                        │
+│ C / C++ / Rust / platform-native / Assembly where required         │
+│ POSIX / OS APIs / platform SDKs                                    │
+│                                                                     │
+│                           ▼                                        │
+│ Hardware / Network                                                 │
+│ x86-64 / ARM64 / other supported architectures                     │
+│ Ethernet / Wi-Fi / IP / Bluetooth / NFC                            │
+│ IEEE / IETF / platform specifications                               │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Note:** Language, runtime, protocol, standard, and platform information is shown at the boundary where it applies. A language or platform listed here is not a claim that every component is implemented in that technology.
+
+### Standards and external technology
+
+```text
+Cloud107 component
+       │
+       ├── Language / runtime
+       ├── Protocol / interface
+       ├── Standard / specification
+       ├── Platform API
+       └── External implementation / vendor
+```
+
+Standards organizations and specifications are documented separately from vendor technologies and reference implementations. For example, IEEE and IETF publish standards/specifications; Cisco and Palo Alto Networks are technology vendors. A specific standard or vendor dependency should be listed only where the implementation or architecture actually uses it.
+
 ## Current application structure
 
 ```text
