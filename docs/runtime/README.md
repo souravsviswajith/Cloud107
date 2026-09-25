@@ -8,35 +8,35 @@ This page describes the runtime boundaries and execution paths currently present
 
 ### 1. Runtime architecture
 
-```text
-                              Cloud107
-                                  │
-        ┌─────────────────────────┼─────────────────────────┐
-        ▼                         ▼                         ▼
- Web Workspace               c107 CLI                 Core / Contracts
- React / TypeScript          TypeScript / Node.js      C# / .NET
- HTML / CSS / Vite           Git / shell tooling       .NET APIs
-        │                         │                         │
-        └─────────────────────────┼─────────────────────────┘
-                                  ▼
-                         Node.js Application
-                         TypeScript / Express
-                                  │
-                    HTTP / JSON / API boundary
-                                  │
-                 ┌────────────────┴───────────────┐
-                 ▼                                ▼
-          PostgreSQL                        Update System
-          SQL / Drizzle                    TypeScript / Node.js
-                 │                         Git / cryptography
-                 ▼                                │
-          Persistent state                       ▼
-                                      Verify → Stage → Activate
-                                      → Health → Rollback
-
-Platform boundary:
-OS / platform APIs → supported hardware / network interfaces
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 RUNTIME</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>WEB WORKSPACE</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
+<td align="center"><strong>c107 CLI</strong><br><sub>(TypeScript · Node.js · Git · POSIX)</sub></td>
+<td align="center"><strong>CLOUD107 CORE</strong><br><sub>(C# · .NET · application contracts)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>NODE.JS APPLICATION</strong><br><sub>(TypeScript · Express · HTTP/JSON · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>POSTGRESQL</strong><br><sub>(SQL · Drizzle)</sub></td>
+<td align="center"><strong>UPDATE SYSTEM</strong><br><sub>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</sub></td>
+<td align="center"><strong>RUNTIME BOUNDARY</strong><br><sub>(C/C++/Rust · platform-native · Assembly where required)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>CONTAINERS</strong><br><sub>(Docker · Compose · OCI where applicable)</sub></td>
+<td align="center"><strong>HOST / OS</strong><br><sub>(POSIX · OS APIs · platform SDKs)</sub></td>
+<td align="center"><strong>NETWORK / HARDWARE</strong><br><sub>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · x86-64 · ARM64)</sub></td>
+</tr>
+</table>
 
 **Note:** Platform-native or lower-level components are included only where the repository implements or explicitly depends on them.
 
