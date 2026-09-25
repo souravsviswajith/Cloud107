@@ -193,7 +193,57 @@ Existing authentication, authorization, node identity, and encrypted transport r
 
 **Compatibility rule:** Cloud107 should distinguish between its **internal system database** and **databases used by user applications/workloads**. PostgreSQL remains the current Cloud107 application-state baseline; Oracle Database and MongoDB are compatibility/integration targets for appropriate workloads.
  
-## 10. Infrastructure Administration & Provisioning
+## 10. Public Cloud & Virtual Machine Compatibility
+
+Cloud107 should be able to operate on common public-cloud virtual machines without making any one cloud provider the Cloud107 architecture.
+
+### Amazon Web Services
+
+- **Provider:** [AWS](https://aws.amazon.com/)
+- **Primary compute reference:** [Amazon EC2](https://docs.aws.amazon.com/ec2/)
+- **Relevance:** EC2 provides configurable virtual-machine instances with different CPU, memory, storage, networking, and accelerator characteristics. Instance families include general-purpose, compute-optimized, memory-optimized, storage-optimized, accelerated-computing, and HPC categories.
+- **Cloud107 lesson:** Study cloud-node registration, instance capability discovery, region/availability-zone differences, architecture selection, storage/network attachment, and lifecycle operations.
+- **Cloud107 boundary:** AWS is a provider integration. EC2 is one possible Cloud107 node type, not the Cloud107 execution model.
+
+### Google Cloud
+
+- **Provider:** [Google Cloud](https://cloud.google.com/)
+- **Primary compute reference:** [Compute Engine](https://cloud.google.com/compute)
+- **Relevance:** Compute Engine provides VM machine families and types across general-purpose, compute-optimized, memory-optimized, storage-optimized, network-optimized, and accelerator-oriented workloads.
+- **Cloud107 lesson:** Study machine-family discovery, CPU/architecture capabilities, VM lifecycle, zones, networking, storage, and custom machine configurations.
+- **Cloud107 boundary:** Google Compute Engine is a provider integration and node type; Cloud107 keeps a provider-neutral node/resource model.
+
+### Microsoft Azure
+
+- **Provider:** [Microsoft Azure](https://azure.microsoft.com/)
+- **Primary compute reference:** [Azure Virtual Machines](https://learn.microsoft.com/azure/virtual-machines/)
+- **Relevance:** Azure VM sizes define CPU, memory, storage, networking, and accelerator characteristics, with families for general-purpose, compute-optimized, memory-optimized, storage-optimized, GPU, and high-performance workloads. Azure VM naming also encodes family, vCPU count, features, accelerator type, memory capacity, and version.
+- **Cloud107 lesson:** Study VM-size capability discovery, versioned machine families, OS images, scaling, quotas, and provider-specific resource constraints.
+- **Cloud107 boundary:** Azure is a provider integration and node type; Cloud107 should not expose Azure-specific assumptions as universal resource properties.
+
+### EC2 instance compatibility
+
+Cloud107 should treat an EC2 instance as a node with discovered capabilities, not as a special Cloud107 runtime.
+
+<table>
+<tr><th>Cloud provider</th><th>Provider compute object</th><th>Cloud107 representation</th></tr>
+<tr><td>AWS</td><td>EC2 instance</td><td>Node</td></tr>
+<tr><td>Google Cloud</td><td>Compute Engine VM</td><td>Node</td></tr>
+<tr><td>Azure</td><td>Virtual Machine</td><td>Node</td></tr>
+<tr><td>Local infrastructure</td><td>PC / server / SBC / device</td><td>Node</td></tr>
+</table>
+
+**Compatibility rule:** Cloud107 should detect or receive the node's architecture, CPU/vCPU, memory, storage, network, accelerator, OS, runtime, and available capabilities before scheduling a workload. Provider-specific identifiers remain provider metadata.
+
+### Web-server / web-application workload
+
+Cloud107 should also support ordinary web workloads on these nodes:
+
+Web application → runtime → container/process → Cloud107 node → AWS/GCP/Azure/local infrastructure
+
+This keeps a conventional web server or web application workload compatible with the same node/workload model used for other applications.
+
+## 11. Infrastructure Administration & Provisioning
 
 Additional references for the Cloud107 product model: a simple user-facing administration surface backed by direct system interfaces and declarative infrastructure tooling.
 
@@ -218,7 +268,7 @@ Additional references for the Cloud107 product model: a simple user-facing admin
 - **Cloud107 lesson:** Study explicit plans, dependency graphs, state tracking, and controlled infrastructure changes.
 - **Cloud107 boundary:** OpenTofu is an infrastructure-management reference; Cloud107 does not require all infrastructure operations to be represented as OpenTofu configurations.
 
-## 11. Infrastructure Platforms & Product Distribution
+## 12. Infrastructure Platforms & Product Distribution
 
 How established open-source infrastructure projects separate source, packaged releases, administration interfaces, and execution resources.
 
@@ -264,7 +314,7 @@ How established open-source infrastructure projects separate source, packaged re
 - **Cloud107 lesson:** Study workload isolation, minimal VMM design, API-controlled VM lifecycle, resource configuration, and host security boundaries.
 - **Cloud107 boundary:** Firecracker is an optional execution technology reference; it is not required for every Cloud107 workload.
 
-## 12. Reference-to-Implementation Mapping
+## 13. Reference-to-Implementation Mapping
 
 The prior-art references should feed implementation decisions through explicit subsystem boundaries:
 
@@ -289,11 +339,15 @@ The prior-art references should feed implementation decisions through explicit s
 | Data processing | Apache Spark | How are distributed data-processing workloads scheduled, executed, and connected to Cloud107 resources? |
 | Relational database compatibility | Oracle Database | How are applications requiring Oracle supported without changing Cloud107's PostgreSQL baseline? |
 | Document database compatibility | MongoDB | How are document-oriented workloads connected while keeping Cloud107's internal relational state separate? |
+| Public cloud compatibility | AWS / EC2 | How are AWS virtual machines discovered, registered, operated, and matched to workload requirements? |
+| Public cloud compatibility | Google Cloud / Compute Engine | How are Google Cloud VMs represented as Cloud107 nodes with provider-neutral capabilities? |
+| Public cloud compatibility | Azure Virtual Machines | How are Azure VM sizes, versions, and capabilities represented without coupling Cloud107 to Azure-specific assumptions? |
+| Web workloads | Web servers / web applications | How are conventional web workloads deployed consistently across local and public-cloud nodes? |
 | Infrastructure management | OpenStack, OpenNebula, Proxmox | How are compute, storage, networking, virtualization, and cluster resources represented and operated through common interfaces? |
 | Container management | Portainer, Incus | How are containers, VMs, images, resources, and operator actions exposed through UI, API, and CLI boundaries? |
 | Workload isolation | Firecracker | What isolation, lifecycle, resource, and host-security controls are required for lightweight workloads? |
 
-## 13. Phase 2 Use
+## 14. Phase 2 Use
 
 These references belong to the **Implementation & Integration** portion of Phase 2.
 
@@ -342,7 +396,7 @@ The intended progression is:
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
-## 14. Authority Model for AI-Mediated Operations
+## 15. Authority Model for AI-Mediated Operations
 
 The reference projects support a common architectural distinction:
 
@@ -401,7 +455,7 @@ The important invariant is:
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
-## 15. Scope
+## 16. Scope
 
 This matrix is a research and implementation reference.
 
