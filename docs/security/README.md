@@ -2,6 +2,55 @@
 
 Cloud107 security behavior is implemented across authentication, request handling, API boundaries, update verification, and secret configuration.
 
+## Security model
+
+```text
+User / Client
+     │
+     ▼
+HTTP boundary
+     │
+     ├── Correlation / request IDs
+     ├── Helmet
+     ├── CORS
+     ├── JSON parsing
+     └── Error handling
+     │
+     ▼
+API boundary
+     │
+     ├── Authentication / authorization
+     ├── Application operations
+     └── External providers / nodes / workloads
+
+Update source
+     │
+     ▼
+Provenance → Ed25519 → SHA-256 → Compatibility
+     │
+     ▼
+Checkpoint → Validation → Health → Activation
+     │
+     └────────────── failure → rollback
+```
+
+**Note:** Security controls are applied at request, API, update, and configuration boundaries. The repository documents a control only where the corresponding implementation exists.
+
+### Implementation and standards
+
+```text
+Security boundary
+├── TypeScript / Node.js / Express
+├── Helmet / CORS
+├── HTTP headers and transport controls
+├── Environment-based secret configuration
+├── Ed25519 signatures
+├── SHA-256 hashes
+└── Platform / protocol specifications where applicable
+```
+
+**Note:** Standards and technologies are listed at the boundary where they are used. A library, configuration field, or interface does not by itself establish an enforced security control.
+
 ## Request context
 
 Every HTTP request receives:
