@@ -273,33 +273,6 @@ https://arxiv.org/abs/2604.19814
 
 This is relevant to Cloud107's heterogeneous resource abstraction, but it is a research framework rather than an established implementation standard.
 
-## Original documentation and tutorials
-
-Use the upstream documentation as the primary technical reference. Tutorials and videos are supplementary learning material.
-
-| Stack / technology | Original documentation | Tutorial / learning resource |
-|---|---|---|
-| React | [React Learn](https://react.dev/learn) | [React Quick Start](https://react.dev/learn) |
-| TypeScript | [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/) | [TypeScript Getting Started](https://www.typescriptlang.org/docs/handbook/intro.html) |
-| Node.js | [Node.js Learn](https://nodejs.org/learn) | [Node.js Learn](https://nodejs.org/learn) |
-| Express | [Express Documentation](https://expressjs.com/) | [Express Getting Started](https://expressjs.com/en/starter/installing.html) |
-| Vite | [Vite Guide](https://vite.dev/guide/) | [Vite Guide](https://vite.dev/guide/) |
-| PostgreSQL | [PostgreSQL Documentation](https://www.postgresql.org/docs/) | [PostgreSQL Tutorial](https://www.postgresql.org/docs/current/tutorial.html) |
-| Drizzle | [Drizzle Documentation](https://orm.drizzle.team/docs/overview) | [Drizzle Tutorials](https://orm.drizzle.team/docs/tutorials) |
-| Docker | [Docker Get Started](https://docs.docker.com/get-started/) | [Getting Started with Docker](https://www.youtube.com/watch?v=gAGEar5HQoU) |
-| Kubernetes | [Kubernetes Documentation](https://kubernetes.io/docs/home/) | [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) |
-| .NET / C# | [.NET Documentation](https://learn.microsoft.com/en-us/dotnet/welcome) | [.NET Tutorials](https://learn.microsoft.com/en-us/dotnet/standard/get-started) |
-| Flutter / Dart | [Flutter Documentation](https://docs.flutter.dev/) | [Flutter Learning Resources](https://docs.flutter.dev/learn) |
-
-> **Note:** Links in this table point to upstream documentation or tutorial resources. They are references, not Cloud107 dependencies.
-
-### Tutorial videos
-
-- [First steps with Flutter — Flutter](https://www.youtube.com/watch?v=sE1M2EayFes) — official Flutter tutorial video.
-- [Getting Started with Docker — Docker](https://www.youtube.com/watch?v=gAGEar5HQoU) — official Docker workshop covering containers, images, volumes, Compose, and deployment.
-- [How do I make my first Flutter app — Flutter](https://www.youtube.com/watch?v=xWV71C2kp38) — official Flutter beginner video.
-- [Kubernetes Course — freeCodeCamp.org](https://www.youtube.com/watch?v=d6WC5n9G_sM) — third-party long-form Kubernetes tutorial; use the official Kubernetes documentation as the authoritative reference.
-
 ## Local project reference
 
 Cloud107 can also refer to the user's existing Flutter project as a concrete application example:
