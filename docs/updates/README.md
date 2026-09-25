@@ -2,7 +2,11 @@
 
 Cloud107 includes a source-first update path with provenance checks, cryptographic verification, compatibility checks, checkpoints, activation, health checks, and rollback.
 
-## Update architecture
+This page describes the current update implementation. Development/test manifest behavior must not be presented as a production signed release.
+
+## Guide
+
+### 1. Update architecture
 
 ```text
                      Update source
@@ -40,46 +44,95 @@ Cloud107 includes a source-first update path with provenance checks, cryptograph
               Commit            Rollback
 ```
 
-**Note:** The update path verifies the source and artifact before activation, then uses a checkpoint so a failed activation can return to the previous state.
+**Note:** The update path verifies source and artifact information before activation, then uses a checkpoint so a failed update can return to the previous state.
 
-### Implementation map
+**Reference:** [The Update Framework](https://theupdateframework.io/) · [Architecture](../architecture/)
 
-| Part | Current implementation | Purpose |
-|---|---|---|
-| Update manager | TypeScript / Node.js | Pipeline execution |
-| Source metadata | Update manifest | Version and compatibility data |
-| Signature | Ed25519 | Manifest authenticity check |
-| Artifact integrity | SHA-256 | Artifact hash verification |
-| Repository source | Git / GitHub workflow | Source revision and provenance |
-| API | Express / TypeScript | Update status endpoint |
-| CLI | c107 / TypeScript / Node.js | Update operation |
+### 2. Run the update pipeline
 
-**Note:** Cryptographic algorithms and repository protocols are part of the verification boundary. A development/test manifest must not be presented as a production release signature.
+```text
+c107
+ │
+ ▼
+Update manager
+ │
+ ├── metadata
+ ├── provenance
+ ├── signature
+ ├── hash
+ ├── compatibility
+ ├── checkpoint
+ ├── stage
+ ├── build
+ ├── validate
+ ├── health
+ ├── activate
+ └── rollback
+```
 
-## Update manifest
+**Command**
 
-An update manifest contains:
+```bash
+npm run c107:update
+```
 
-- version
-- source revision
-- timestamp
-- update channel
-- minimum supported version
-- schema version
-- target platform
-- target architecture
-- canonical origin
-- artifact hashes and sizes
-- signing key ID
-- signature
+**Note:** Run the update operation from the source checkout.
 
-Supported channels are:
+**Expected result:** The configured update stages execute in sequence and stop when a required verification or compatibility check fails.
 
-- `stable`
-- `beta`
-- `nightly`
+**Reference:** [CLI](../CLI/) · [The Update Framework](https://theupdateframework.io/)
 
-## Verification
+### 3. Update manifest
+
+```text
+Update manifest
+     │
+     ├── version
+     ├── source revision
+     ├── timestamp
+     ├── channel
+     ├── minimum supported version
+     ├── schema version
+     ├── target platform
+     ├── target architecture
+     ├── canonical origin
+     ├── artifact hashes / sizes
+     ├── signing key ID
+     └── signature
+```
+
+Supported channels:
+
+| Channel | Meaning |
+|---|---|
+| `stable` | Stable release channel |
+| `beta` | Beta release channel |
+| `nightly` | Development/nightly channel |
+
+**Note:** The manifest carries the information needed to identify the update and evaluate compatibility and verification requirements.
+
+**Reference:** [The Update Framework](https://theupdateframework.io/) · [JSON Schema](https://json-schema.org/learn/getting-started-step-by-step)
+
+### 4. Verify an update
+
+```text
+Update
+  │
+  ├── canonical origin
+  ├── provenance
+  ├── Ed25519 signature
+  ├── SHA-256 hash
+  └── compatibility
+       │
+       ▼
+   Verification result
+```
+
+**Command**
+
+```bash
+npm run c107:update
+```
 
 The update path checks:
 
@@ -89,27 +142,36 @@ The update path checks:
 4. SHA-256 artifact hashes.
 5. Version, platform, architecture, and schema compatibility.
 
-The update manager fails closed when a required verification or compatibility step fails.
+**Note:** The update manager fails closed when a required verification or compatibility step fails.
 
-## Recovery
+**Expected result:** An update that fails a required verification or compatibility check does not continue as a successful activation.
+
+**Reference:** [Ed25519 — RFC 8032](https://www.rfc-editor.org/rfc/rfc8032) · [SHA-2 — FIPS 180-4](https://csrc.nist.gov/pubs/fips/180-4/upd1/final)
+
+### 5. Recovery checkpoint
+
+```text
+Verified update
+      │
+      ▼
+Checkpoint
+      │
+      ├── created
+      ├── staged
+      ├── activated
+      ├── committed
+      └── rolled_back
+```
 
 A checkpoint is created before activation.
 
-Checkpoint states include:
+**Note:** If the update fails after a checkpoint has been created, the pipeline attempts to restore the previous state from that checkpoint.
 
-```text
-created
-staged
-activated
-committed
-rolled_back
-```
+**Expected result:** The checkpoint state records the update recovery state.
 
-If the update fails after a checkpoint has been created, the pipeline attempts to restore the previous state from that checkpoint.
+**Reference:** [Updates](../updates/)
 
-## Update pipeline
-
-The current implementation follows this sequence:
+### 6. Update pipeline
 
 ```text
 identify origin
@@ -143,30 +205,63 @@ post-verify
 commit
 ```
 
-The implementation is in `src/cli/update/`.
+**Note:** The implementation is in `src/cli/update/`.
 
-## Status API
+**Expected result:** The pipeline either reaches the commit state or follows its failure/rollback path.
 
-Cloud107 exposes:
+**Reference:** [c107 CLI](../CLI/) · [Git documentation](https://git-scm.com/doc)
+
+### 7. Check update status
 
 ```text
+Client
+  │
+  ▼
 GET /api/v1/updates/status
+  │
+  ▼
+Update status
 ```
 
-The endpoint reports the current version and runtime environment, checkpoint count and latest checkpoint, and the configured update-manager verification and rollback model.
-
-## CLI
-
-The repository exposes the update command through `c107`.
-
-From the source checkout:
+**Command**
 
 ```bash
-npm run c107:update
+curl http://localhost:3000/api/v1/updates/status
 ```
+
+**Note:** The endpoint reports the current version and runtime environment, checkpoint count and latest checkpoint, and the configured update-manager verification and rollback model.
+
+**Expected result:** The running Cloud107 instance returns its current update status.
+
+**Reference:** [APIs](../APIs/) · [HTTP overview — MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
+
+### 8. Implementation map
+
+| Part | Current implementation | Purpose |
+|---|---|---|
+| Update manager | TypeScript / Node.js | Pipeline execution |
+| Source metadata | Update manifest | Version and compatibility data |
+| Signature | Ed25519 | Manifest authenticity check |
+| Artifact integrity | SHA-256 | Artifact hash verification |
+| Repository source | Git / GitHub workflow | Source revision and provenance |
+| API | Express / TypeScript | Update status endpoint |
+| CLI | c107 / TypeScript / Node.js | Update operation |
+
+**Note:** Cryptographic algorithms and repository protocols are part of the verification boundary. Development/test manifests must not be presented as production release signatures.
+
+**Reference:** [Node.js](https://nodejs.org/docs/latest/api/) · [Git](https://git-scm.com/doc) · [RFC Editor](https://www.rfc-editor.org/)
 
 ## Important implementation note
 
-The current update pipeline contains built-in/default manifest behavior for development and testing. A release should only be treated as externally verified when its actual manifest, signature, artifacts, and canonical source have been produced and verified through the intended release process.
+```text
+Development / test manifest
+          │
+          ▼
+Not automatically a production release
+```
 
-Do not describe placeholder release metadata as a real signed release.
+The current update pipeline contains built-in/default manifest behavior for development and testing.
+
+**Note:** A release should only be treated as externally verified when its actual manifest, signature, artifacts, and canonical source have been produced and verified through the intended release process. Placeholder release metadata must not be described as a real signed release.
+
+**Reference:** [The Update Framework](https://theupdateframework.io/)
