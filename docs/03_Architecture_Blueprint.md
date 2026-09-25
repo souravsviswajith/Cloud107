@@ -75,6 +75,7 @@ The architectural basis is language-neutral and permits multiple implementation 
 - **Assembly:** architecture-specific instructions and lowest-level operations where direct machine-level control is justified.
 - **C:** operating-system interfaces, native runtime components, hardware-near services, and portable systems primitives.
 - **C++:** performance-sensitive native systems, rendering, simulation, and complex runtime components where its execution model is appropriate.
+- **C# / .NET:** managed systems components, cross-platform services, tooling, and platform integrations where the .NET runtime and ecosystem are appropriate.
 - **SQL:** relational persistence, queries, constraints, transactions, and database-side computation.
 - **Python:** automation, data processing, machine learning, experimentation, and scripting where its ecosystem and iteration speed are appropriate.
 - **Java:** JVM-based components where portability, ecosystem compatibility, or platform requirements justify it.
