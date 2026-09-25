@@ -74,6 +74,35 @@ Cloud107 component
 
 Standards organizations and specifications are documented separately from vendor technologies and reference implementations. For example, IEEE and IETF publish standards/specifications; Cisco and Palo Alto Networks are technology vendors. A specific standard or vendor dependency should be listed only where the implementation or architecture actually uses it.
 
+## Component reference table
+
+| Component | Language | Runtime / stack | Interface | State / role |
+|---|---|---|---|---|
+| Web workspace | TypeScript / HTML / CSS | React / Vite | Browser / HTTP | User interface |
+| API | TypeScript | Node.js / Express | HTTP / JSON | Application control |
+| Core | C# | .NET | Application/core boundary | Core contracts |
+| Database | SQL | PostgreSQL / Drizzle | SQL | Persistent state |
+| CLI | TypeScript | Node.js | Terminal / HTTP | Command-line control |
+| Update system | TypeScript / shell | Node.js / Git / cryptography | Update pipeline | Release/update control |
+
+**Note:** This table describes the current documented architecture. Target-only components must be marked as planned or target rather than presented as implemented.
+
+## Reference links
+
+| Area | Primary reference |
+|---|---|
+| React | [React documentation](https://react.dev/learn) |
+| TypeScript | [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/) |
+| Node.js | [Node.js documentation](https://nodejs.org/docs/latest/api/) |
+| Express | [Express documentation](https://expressjs.com/) |
+| Vite | [Vite documentation](https://vite.dev/guide/) |
+| PostgreSQL | [PostgreSQL documentation](https://www.postgresql.org/docs/) |
+| .NET | [.NET documentation](https://learn.microsoft.com/en-us/dotnet/) |
+| Docker | [Docker documentation](https://docs.docker.com/) |
+| Kubernetes | [Kubernetes documentation](https://kubernetes.io/docs/) |
+
+**Note:** Upstream documentation is the primary technical reference for a stack. Cloud107 documentation describes how the project uses that stack.
+
 ## Current application structure
 
 ```text
