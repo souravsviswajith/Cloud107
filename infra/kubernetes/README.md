@@ -4,15 +4,7 @@ Phase 2 adds Kubernetes as a deployment and workload target for Cloud107.
 
 The first target is a small, explicit deployment that keeps the existing application topology:
 
-```text
-PostgreSQL
-    ↓
-migration Job
-    ↓
-Cloud107 Deployment
-    ↓
-Cloud107 Service
-```
+<table><tr><td align="center"><strong>PostgreSQL</strong></td><td>→</td><td align="center"><strong>Migration Job</strong></td><td>→</td><td align="center"><strong>Cloud107 Deployment</strong></td><td>→</td><td align="center"><strong>Cloud107 Service</strong></td></tr></table>
 
 ## Requirements
 
