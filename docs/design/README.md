@@ -69,7 +69,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 | Main workspace | macOS-style glass interface rather than a uniformly dark dashboard |
 | Settings | System-settings organization similar to macOS and GNU desktop environments |
 | Terminal | Universal terminal and remote-control surface for local and connected systems |
-| Code / text editor | Lightweight Notepad application with syntax support for multiple languages and common text/configuration formats |
+| Code / text editor | Open-source Notepad application, based on the feature model of editors such as Notepad++, with syntax support for multiple languages and common text/configuration formats |
 | Knowledge / documentation | Obsidian remains the external knowledge-management and project-notes tool |
 | Development IDE | Visual Studio Code is the development IDE reference; Antigravity is not part of the current Cloud107 interface definition |
 
@@ -78,6 +78,8 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 **UI reference:** Uploaded Google Stitch Cloud107 screens and the existing repository implementation.
 
 ### Notepad
+
+The Cloud107 Notepad is an **open-source, cross-platform text and source-code editor**. It is not the Windows Notepad application. Its feature model is comparable to Notepad++: fast text editing, tabs, syntax highlighting, search/replace, file/workspace access, and support for many programming and configuration languages. Notepad++ is used here as a functional reference, not as a Cloud107 dependency or implementation requirement. urlNotepad++ documentationhttps://notepad-plus-plus.org/
 
 | Function | Requirement |
 |---|---|
@@ -88,7 +90,7 @@ The design uses a macOS-style glass workspace: translucent surfaces, depth, spac
 | Integration | Open from projects, terminal output, diagnostics, and file references where applicable |
 | Scope | Lightweight editing; full development workflows remain available through Visual Studio Code and the terminal |
 
-**Note:** Notepad is intended to remove the need to open a full IDE for small edits, configuration changes, logs, scripts, and documentation. It is not a replacement for Visual Studio Code.
+**Note:** Notepad is intended for small edits, configuration changes, logs, scripts, documentation, and quick source inspection. It is not a replacement for Visual Studio Code.
 
 ### 4. UX principles
 
