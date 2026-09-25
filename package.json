@@ -41,7 +41,8 @@
     "remark-gfm": "^4.0.1",
     "uuid": "^14.0.1",
     "vite": "^6.2.3",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "drizzle-kit": "^0.31.10"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -55,7 +56,6 @@
     "@types/pg": "^8.20.0",
     "@types/uuid": "^11.0.0",
     "autoprefixer": "^10.4.21",
-    "drizzle-kit": "^0.31.10",
     "esbuild": "^0.25.0",
     "eslint": "^10.7.0",
     "globals": "^17.7.0",
