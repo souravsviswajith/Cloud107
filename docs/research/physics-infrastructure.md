@@ -6,29 +6,7 @@ This document connects the Cloud107 abstraction to the physical layers that carr
 
 A computing system can be modeled as
 
-$$
-Physics
-\rightarrow
-Material
-\rightarrow
-Device
-\rightarrow
-Chip
-\rightarrow
-Board
-\rightarrow
-Computer
-\rightarrow
-Data\ Center
-\rightarrow
-Network
-\rightarrow
-Optical\ Fiber / Radio
-\rightarrow
-Satellite
-\rightarrow
-Global\ Infrastructure.
-$$
+**Physics → Material → Device → Chip → Board → Computer → Data Center → Network → Optical Fiber / Radio → Satellite → Global Infrastructure**
 
 Cloud107 does not replace these physical layers. It provides a software/control abstraction over resources exposed by them.
 
@@ -38,19 +16,15 @@ A semiconductor device is governed by condensed-matter and quantum physics.
 
 At the device level, relevant quantities include
 
-$$
-E,\;q,\;V,\;I,\;T,\;n,\;p,\;\mu,\;\sigma
-$$
+**E, q, V, I, T, n, p, μ, σ**
 
 for energy, charge, voltage, current, temperature, carrier concentrations, mobility, and conductivity.
 
 A simplified electrical relationship is
 
-$$
-I=GV
-$$
+**I = GV**
 
-with conductance $G$ determined by the physical device and operating conditions.
+with conductance G determined by the physical device and operating conditions.
 
 Transistors provide controllable switching and amplification. At higher levels, billions of such devices are organized into logic, memory, interconnect, accelerators, and complete processors.
 
@@ -60,17 +34,13 @@ NIST identifies semiconductor, photonic, superconducting, and quantum technologi
 
 A board can be represented as
 
-$$
-B=(C,M,I/O,P,N,F)
-$$
+**B = (C, M, I/O, P, N, F)**
 
-where $C$ is compute devices, $M$ is memory, $I/O$ is peripheral interfaces, $P$ is power delivery, $N$ is local interconnect/network interfaces, and $F$ is firmware/boot infrastructure.
+where C is compute devices, M is memory, I/O is peripheral interfaces, P is power delivery, N is local interconnect/network interfaces, and F is firmware/boot infrastructure.
 
 The physical system therefore becomes
 
-$$
-Chip\rightarrow Board\rightarrow System.
-$$
+**Chip → Board → System**
 
 The software-visible architecture is an abstraction of these physical resources.
 
@@ -78,23 +48,17 @@ The software-visible architecture is an abstraction of these physical resources.
 
 A data center is a collection of interconnected computing and infrastructure resources:
 
-$$
-D=\{B_1,B_2,\ldots,B_n,S,N,P,C\}
-$$
+**D = {B₁, B₂, …, Bₙ, S, N, P, C}**
 
-where $B_i$ are compute nodes, $S$ is storage, $N$ is networking, $P$ is power/cooling infrastructure, and $C$ represents control and management systems.
+where Bᵢ are compute nodes, S is storage, N is networking, P is power/cooling infrastructure, and C represents control and management systems.
 
 A workload can be mapped to one node:
 
-$$
-W\rightarrow B_i
-$$
+**W → Bᵢ**
 
 or distributed:
 
-$$
-W=\{w_1,\ldots,w_n\}\rightarrow\{B_1,\ldots,B_n\}.
-$$
+**W = {w₁, …, wₙ} → {B₁, …, Bₙ}**
 
 ## 5. Electromagnetic information transfer
 
@@ -102,17 +66,13 @@ Information can be represented physically through electromagnetic states.
 
 For an electromagnetic wave:
 
-$$
-E(\mathbf r,t),\;B(\mathbf r,t)
-$$
+**E(r⃗, t), B(r⃗, t)**
 
 are governed by Maxwell's equations.
 
 For an idealized optical carrier:
 
-$$
-E(t)=A(t)\cos(2\pi f_ct+\phi(t)).
-$$
+**E(t) = A(t) cos(2πf_ct + φ(t))**
 
 Information can be encoded through amplitude, phase, frequency, polarization, or combinations of these properties.
 
@@ -124,27 +84,21 @@ Optical fiber confines electromagnetic radiation within a waveguide.
 
 For a simplified step-index fiber:
 
-$$
-n_{core}>n_{cladding}.
-$$
+**n_core > n_cladding**
 
 Total internal reflection occurs when the incidence angle satisfies the critical-angle condition. NASA technical documentation describes fiber guidance using a core with slightly higher refractive index than the cladding.
 
 A simplified propagation model is
 
-$$
-P(z)=P_0e^{-\alpha z}
-$$
+**P(z) = P₀e^(−αz)**
 
-where $\alpha$ represents attenuation.
+where α represents attenuation.
 
 A communication channel can be represented by
 
-$$
-y(t)=h(t)*x(t)+n(t)
-$$
+**y(t) = h(t) * x(t) + n(t)**
 
-where $x(t)$ is the transmitted signal, $h(t)$ is the channel response, and $n(t)$ is noise.
+where x(t) is the transmitted signal, h(t) is the channel response, and n(t) is noise.
 
 NIST defines an optical-fiber transfer function in terms of output and input optical power as a function of modulation frequency.
 
@@ -154,19 +108,7 @@ Modern infrastructure increasingly couples electronic computation with optical c
 
 A physical path is
 
-$$
-Electrical
-\rightarrow
-Electro\text{-}optic\ conversion
-\rightarrow
-Photonics
-\rightarrow
-Optical\ channel
-\rightarrow
-Opto\text{-}electronic\ conversion
-\rightarrow
-Electrical.
-$$
+**Electrical → Electro-optic conversion → Photonics → Optical channel → Opto-electronic conversion → Electrical**
 
 NIST reports research combining photonics and electronics for high-speed data communication, distributed computing, and data-center interconnects, including a demonstrated 1 Tb/s optical link using integrated photonics and electronics.
 
@@ -174,33 +116,23 @@ NIST reports research combining photonics and electronics for high-speed data co
 
 A quantum state is represented by
 
-$$
-|\psi\rangle=\sum_i\alpha_i|i\rangle
-$$
+**|ψ⟩ = ∑ᵢ αᵢ|i⟩**
 
 with
 
-$$
-\sum_i|\alpha_i|^2=1.
-$$
+**∑ᵢ |αᵢ|² = 1**
 
 Measurement probabilities are
 
-$$
-P(i)=|\alpha_i|^2.
-$$
+**P(i) = |αᵢ|²**
 
 A quantum operation is represented by
 
-$$
-|\psi'\rangle=U|\psi\rangle.
-$$
+**|ψ′⟩ = U|ψ⟩**
 
 Real quantum hardware introduces noise and decoherence:
 
-$$
-\rho'=\mathcal{E}(\rho).
-$$
+**ρ′ = 𝓔(ρ)**
 
 This is why a QPU cannot simply be modeled as another CPU.
 
@@ -214,15 +146,7 @@ NIST also researches frequency conversion between quantum systems operating at d
 
 A possible physical path is
 
-$$
-QPU
-\leftrightarrow
-Photonics
-\leftrightarrow
-Optical\ Fiber
-\leftrightarrow
-Network.
-$$
+**QPU ↔ Photonics ↔ Optical Fiber ↔ Network**
 
 This is a physical research direction, not a claim that Cloud107 currently operates quantum networks.
 
@@ -230,29 +154,11 @@ This is a physical research direction, not a claim that Cloud107 currently opera
 
 A satellite communication system can be represented as
 
-$$
-Ground
-\leftrightarrow
-Spacecraft
-\leftrightarrow
-Ground.
-$$
+**Ground ↔ Spacecraft ↔ Ground**
 
 For an optical link:
 
-$$
-Data
-\rightarrow
-Electrical/Photonic\ conversion
-\rightarrow
-Laser
-\rightarrow
-Free\text{-}space\ channel
-\rightarrow
-Optical\ receiver
-\rightarrow
-Data.
-$$
+**Data → Electrical/Photonic conversion → Laser → Free-space channel → Optical receiver → Data**
 
 The free-space channel is affected by geometry, atmosphere, pointing, and system losses.
 
@@ -264,11 +170,9 @@ NASA also describes quantum and optical technologies as relevant to space-to-gro
 
 For signal-based positioning:
 
-$$
-d_i\approx c(t_r-t_i)
-$$
+**dᵢ ≈ c(tᵣ − tᵢ)**
 
-where $c$ is propagation speed, $t_i$ is transmit time, and $t_r$ is receive time.
+where c is propagation speed, tᵢ is transmit time, and tᵣ is receive time.
 
 Atomic clocks provide the timing reference required by systems such as GNSS. NASA describes satellite atomic clocks as fundamental to GPS positioning.
 
@@ -276,43 +180,11 @@ Atomic clocks provide the timing reference required by systems such as GNSS. NAS
 
 The physical stack can therefore be represented as
 
-$$
-\boxed{
-Chip
-\rightarrow
-Board
-\rightarrow
-Node
-\rightarrow
-Data\ Center
-\rightarrow
-Optical\ Network
-\rightarrow
-Satellite/Network\ Edge
-\rightarrow
-Remote\ Node
-}
-$$
+**Chip → Board → Node → Data Center → Optical Network → Satellite/Network Edge → Remote Node**
 
 while the software path is
 
-$$
-\boxed{
-User
-\rightarrow
-AI
-\rightarrow
-Cloud107
-\rightarrow
-Capability
-\rightarrow
-Runtime
-\rightarrow
-Workload
-\rightarrow
-Hardware
-}
-$$
+**User → AI → Cloud107 → Capability → Runtime → Workload → Hardware**
 
 The two paths intersect at the hardware and communication layers.
 
@@ -320,37 +192,27 @@ The two paths intersect at the hardware and communication layers.
 
 Define the physical infrastructure graph:
 
-$$
-G_P=(V_P,E_P)
-$$
+**G_P = (V_P, E_P)**
 
 where vertices may represent chips, boards, nodes, data centers, optical switches, terrestrial links, satellites, and other infrastructure components.
 
 Define the software execution graph:
 
-$$
-G_S=(V_S,E_S)
-$$
+**G_S = (V_S, E_S)**
 
 where vertices represent workloads, runtimes, toolchains, virtual machines, containers, and services.
 
 Cloud107 maps software requirements onto available physical capabilities:
 
-$$
-\Phi:G_S\rightarrow G_P.
-$$
+**Φ: G_S → G_P**
 
 A valid mapping must satisfy
 
-$$
-Capability(W)\subseteq Capability(\Phi(W))
-$$
+**Capability(W) ⊆ Capability(Φ(W))**
 
 and
 
-$$
-Policy(W,\Phi(W))=1.
-$$
+**Policy(W, Φ(W)) = 1**
 
 ## 14. Energy and thermodynamics
 
@@ -358,33 +220,15 @@ Every physical computation has an energy cost.
 
 A simplified system energy balance is
 
-$$
-E_{total}
-=
-E_{compute}
-+
-E_{memory}
-+
-E_{network}
-+
-E_{storage}
-+
-E_{cooling}
-+
-E_{conversion}.
-$$
+**E_total = E_compute + E_memory + E_network + E_storage + E_cooling + E_conversion**
 
 At infrastructure scale, power and thermal constraints become resource constraints:
 
-$$
-P_{system}\leq P_{available}
-$$
+**P_system ≤ P_available**
 
 and
 
-$$
-T_{device}\leq T_{max}.
-$$
+**T_device ≤ T_max**
 
 Therefore compute capacity is bounded by physical power delivery, heat removal, interconnects, memory bandwidth, and environmental conditions.
 
@@ -392,37 +236,13 @@ Therefore compute capacity is bounded by physical power delivery, heat removal, 
 
 The resulting hierarchy is
 
-$$
-\boxed{
-Physics
-\rightarrow
-Device
-\rightarrow
-Hardware
-\rightarrow
-Node
-\rightarrow
-Infrastructure
-\rightarrow
-Network
-\rightarrow
-Cloud107
-\rightarrow
-Workload
-\rightarrow
-Result
-}
-$$
+**Physics → Device → Hardware → Node → Infrastructure → Network → Cloud107 → Workload → Result**
 
 Cloud107 sits above the physical infrastructure rather than replacing it.
 
 Its purpose is to make heterogeneous physical resources usable through a common capability model:
 
-$$
-Physical\ complexity
-\xrightarrow{Cloud107}
-Executable\ capability.
-$$
+**Physical complexity →[Cloud107] Executable capability**
 
 The model therefore spans semiconductor physics, electronics, computer architecture, distributed systems, photonics, wireless/space communications, and quantum information.
 
