@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:migrate": "drizzle-kit migrate --config=src/db/drizzle.config.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
