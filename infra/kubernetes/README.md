@@ -1,6 +1,6 @@
 # Kubernetes
 
-Phase 2 adds Kubernetes as a deployment and workload target for Cloud107.
+Kubernetes is a deployment and workload target for Cloud107.
 
 The first target is a small, explicit deployment that keeps the existing application topology:
 
@@ -72,7 +72,7 @@ The first implementation intentionally does not introduce custom operators, CRDs
 
 ## Next Kubernetes work
 
-Later Phase 2 work can add:
+Planned Kubernetes work can add:
 
 - node discovery and capability reporting
 - workload resources
