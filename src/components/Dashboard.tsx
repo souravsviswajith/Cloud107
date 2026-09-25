@@ -51,6 +51,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [terminalLines, setTerminalLines] = useState<string[]>(['Cloud107 terminal', 'Type a command to continue.']);
   const [health, setHealth] = useState<'Healthy' | 'Degraded' | 'Offline'>('Offline');
   const [billingConnected, setBillingConnected] = useState(false);
+  const [billingMessage, setBillingMessage] = useState('No billing provider is connected.');
 
   const refresh = async () => {
     try {
@@ -75,13 +76,27 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
       try {
         const response = await fetch('/api/v1/billing');
         if (!response.ok) {
-          if (active) setBillingConnected(false);
+          if (active) {
+            setBillingConnected(false);
+            setBillingMessage(response.status === 404 ? 'Billing API not configured.' : 'Billing service unavailable.');
+          }
           return;
         }
         const payload = await response.json();
-        if (active) setBillingConnected(Boolean(payload.success && payload.data?.providerId));
+        if (active) {
+          const connected = Boolean(payload.success && payload.data?.providerId);
+          setBillingConnected(connected);
+          setBillingMessage(
+            connected
+              ? `Live data from ${payload.data.providerId}.`
+              : 'No billing provider is connected.',
+          );
+        }
       } catch {
-        if (active) setBillingConnected(false);
+        if (active) {
+          setBillingConnected(false);
+          setBillingMessage('Billing service unavailable.');
+        }
       }
     };
     checkBilling();
@@ -255,7 +270,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                       <span className="text-[10px] uppercase tracking-wider text-neutral-600">Provider</span>
                     </div>
                     <div className="text-2xl font-medium text-neutral-300">{billingConnected ? 'Connected' : 'Unavailable'}</div>
-                    <p className="text-xs text-neutral-600 mt-2">{billingConnected ? 'Live provider data available.' : 'No billing provider is connected.'}</p>
+                    <p className="text-xs text-neutral-600 mt-2">{billingMessage}</p>
                   </section>
                   <section>
                     <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
