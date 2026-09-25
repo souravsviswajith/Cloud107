@@ -93,6 +93,23 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
     }
   };
 
+  const changeWorkspaceState = async (node: VmInstance, action: 'start' | 'stop') => {
+    const label = action === 'start' ? 'Start workspace' : 'Stop workspace';
+    const operationId = crypto.randomUUID();
+    setOperations((current) => [
+      { id: operationId, name: label, status: 'Running', node: node.name, time: 'Just now' },
+      ...current,
+    ].slice(0, 30));
+    try {
+      if (action === 'start') await workspaceApi.startWorkspace(node.id);
+      else await workspaceApi.stopWorkspace(node.id);
+      setOperations((current) => current.map((op) => op.id === operationId ? { ...op, status: 'Completed' } : op));
+      await refresh();
+    } catch {
+      setOperations((current) => current.map((op) => op.id === operationId ? { ...op, status: 'Failed' } : op));
+    }
+  };
+
   const openWorkspace = (node: VmInstance, mode: 'desktop' | 'app') => {
     record(mode === 'desktop' ? `Open ${node.name}` : `Open applications on ${node.name}`, node.name, 'Completed');
     if (mode === 'desktop') onLaunchDesktop(node);
@@ -257,6 +274,11 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
                             <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Actions</h3>
                             <div className="flex flex-wrap gap-2">
                               {node.status === 'ready' && <button onClick={() => openWorkspace(node, 'desktop')} className="px-3 py-2 bg-white/10 hover:bg-white/15 text-white text-xs rounded-md">Open Workspace</button>}
+                              {node.status === 'ready' ? (
+                                <button onClick={() => changeWorkspaceState(node, 'stop')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Stop</button>
+                              ) : (
+                                <button onClick={() => changeWorkspaceState(node, 'start')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Start</button>
+                              )}
                               <button onClick={() => openWorkspace(node, 'app')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Applications</button>
                             </div>
                           </div>
