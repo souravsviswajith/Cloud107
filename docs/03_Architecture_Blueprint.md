@@ -86,3 +86,19 @@ The architectural basis is language-neutral and permits multiple implementation 
 The choice is made **after the subsystem boundary and requirements are established**, not before them. Different subsystems may therefore use different basis languages while communicating through explicit architectural contracts.
 
 No language is selected merely because it is conventional for a particular industry category, and no subsystem is forced into a common language for stylistic uniformity.
+
+
+## 14. Experience Boundary: Cloud107 and Project Atlas
+
+Cloud107 and Project Atlas are separate project boundaries.
+
+**Cloud107** provides the underlying computational and infrastructure substrate: preconfigured environments, runtimes, dependencies, workloads, nodes, operations, terminal control, deployment, and universal update management. Its plug-and-play objective is achieved by resolving technical complexity before the workload reaches the end user.
+
+**Project Atlas** is the separate higher-level project for non-technical users. Cloud107 should not be reduced to an Atlas-style consumer abstraction merely to make its core infrastructure accessible.
+
+This preserves two complementary layers:
+
+**Cloud107:** prepare and operate the machinery.  
+**Project Atlas:** expose appropriate capabilities to non-technical users.
+
+The boundary is architectural, not merely visual. Atlas may consume Cloud107 capabilities where integration is appropriate, while Cloud107 remains independently usable as an infrastructure and execution platform.
