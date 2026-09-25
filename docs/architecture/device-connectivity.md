@@ -109,7 +109,7 @@ Hardware → operating system → platform API → Cloud107 capability adapter �
 
 A capability that is unavailable on a particular device is reported as unavailable; the system does not fabricate support.
 
-## Phase 2 scope
+## Scope
 
 Device connectivity is an integration surface rather than a new networking subsystem.
 
