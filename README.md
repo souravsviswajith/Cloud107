@@ -421,6 +421,7 @@ npm run build
 | [Operations](docs/operations/) | Health, logs, recovery and diagnostics |
 | [Decisions](docs/decisions/) | Accepted technical constraints |
 | [Research](docs/research/) | External technical references |
+| [Mathematical Model](docs/research/mathematical-model.md) | Mathematical model of state, capability, graph, resource, control, and heterogeneous execution |
 | [Phase 3](docs/phase-3/) | Cloud107 OS and device runtime |
 
 ## License
