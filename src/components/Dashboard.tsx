@@ -240,6 +240,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   }, [connectionPhase]);
 
   const handleConnect = (vm: VmInstance) => {
+    recordOperation('Open environment', vm.name, 'success');
     const config = getConfig(vm.id);
     setSelectedVm({
       ...vm,
