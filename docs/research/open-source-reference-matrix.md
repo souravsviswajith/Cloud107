@@ -142,25 +142,46 @@ These references belong to the **Implementation & Integration** portion of Phase
 
 The intended progression is:
 
-```text
-Open-source reference
-        ↓
-Isolated subsystem requirement
-        ↓
-Cloud107 interface / contract
-        ↓
-Implementation
-        ↓
-Integration
-        ↓
-Validation
-        ↓
-Packaging
-        ↓
-Artifact verification
-        ↓
-Release
-```
+<table>
+<tr>
+<th>1. Reference</th>
+<th>→</th>
+<th>2. Requirement</th>
+<th>→</th>
+<th>3. Interface / contract</th>
+<th>→</th>
+<th>4. Implementation</th>
+<th>→</th>
+<th>5. Integration</th>
+<th>→</th>
+<th>6. Validation</th>
+<th>→</th>
+<th>7. Packaging</th>
+<th>→</th>
+<th>8. Artifact verification</th>
+<th>→</th>
+<th>9. Release</th>
+</tr>
+<tr>
+<td>Open-source reference</td>
+<td>→</td>
+<td>Isolated subsystem requirement</td>
+<td>→</td>
+<td>Cloud107 interface / contract</td>
+<td>→</td>
+<td>Implementation</td>
+<td>→</td>
+<td>Integration</td>
+<td>→</td>
+<td>Validation</td>
+<td>→</td>
+<td>Packaging</td>
+<td>→</td>
+<td>Artifact verification</td>
+<td>→</td>
+<td>Release</td>
+</tr>
+</table>
 
 A reference project is not considered adopted merely because it appears in this document. Integration requires a separate implementation decision and validation result.
 
@@ -168,35 +189,58 @@ A reference project is not considered adopted merely because it appears in this 
 
 The reference projects support a common architectural distinction:
 
-```text
-User objective
-      ↓
-AI agent
-  ├─ understand
-  ├─ decompose
-  ├─ select capability
-  ├─ select tool
-  ├─ prepare
-  ├─ validate prerequisites
-  └─ request confirmation when required
-      ↓
-Cloud107 / c107
-  ├─ authorize
-  ├─ execute
-  ├─ validate
-  └─ report authoritative state
-      ↓
-AI agent
-      ↓
-User
-```
+<table>
+<tr>
+<th>User</th>
+<th>→</th>
+<th>AI agent</th>
+<th>→</th>
+<th>Cloud107 / <code>c107</code></th>
+<th>→</th>
+<th>AI agent</th>
+<th>→</th>
+<th>User</th>
+</tr>
+<tr>
+<td>Objective</td>
+<td>→</td>
+<td>
+understand<br>
+decompose<br>
+select capability<br>
+select tool<br>
+prepare<br>
+validate prerequisites<br>
+request confirmation when required
+</td>
+<td>→</td>
+<td>
+authorize<br>
+execute<br>
+validate<br>
+report authoritative state
+</td>
+<td>→</td>
+<td>Interpret result</td>
+<td>→</td>
+<td>Receive result</td>
+</tr>
+</table>
 
 The important invariant is:
 
-```text
-AI output ≠ infrastructure authority
-Generated command ≠ authorized operation
-```
+<table>
+<tr>
+<th>AI output</th>
+<th>≠</th>
+<th>infrastructure authority</th>
+</tr>
+<tr>
+<th>Generated command</th>
+<th>≠</th>
+<th>authorized operation</th>
+</tr>
+</table>
 
 Cloud107 remains responsible for execution, policy enforcement, validation, and authoritative infrastructure state.
 
