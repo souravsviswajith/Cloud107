@@ -8,58 +8,67 @@ This page describes the current architecture and the boundaries between its impl
 
 ### 1. Architecture blueprint
 
-```mermaid
-flowchart TB
-    U["User / AI Agent"]
-
-    subgraph C["Cloud107"]
-        UI["Web Workspace<br/><small>(React · TypeScript · Vite · HTML/CSS · Web Platform)</small>"]
-        CLI["c107 CLI<br/><small>(TypeScript · Node.js · Git · POSIX)</small>"]
-        API["API / Control Layer<br/><small>(TypeScript · Node.js · Express · HTTP · RFC 9110)</small>"]
-        CORE["Cloud107 Core<br/><small>(C# · .NET · Application contracts)</small>"]
-        APP["Applications<br/><small>(Application lifecycle · HTTP/JSON)</small>"]
-        ENV["Environments<br/><small>(Toolchains · dependencies · runtime · OCI where applicable)</small>"]
-        NODE["Nodes<br/><small>(x86-64 · ARM64 · OS APIs · POSIX where applicable)</small>"]
-        WORK["Workloads<br/><small>(Process · container · runtime)</small>"]
-        OPS["Operations<br/><small>(Health · logs · metrics)</small>"]
-        UP["Updates<br/><small>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</small>"]
-    end
-
-    DB["PostgreSQL<br/><small>(SQL · Drizzle)</small>"]
-    NET["Network<br/><small>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</small>"]
-
-    subgraph I["Runtime / Infrastructure"]
-        R["Runtime boundary<br/><small>(C/C++/Rust · platform-native · Assembly where required)</small>"]
-        D["Docker / Compose<br/><small>(Container ecosystem · OCI where applicable)</small>"]
-        K["Kubernetes<br/><small>(Orchestration · OCI ecosystem)</small>"]
-        H["Host / OS<br/><small>(POSIX · OS APIs · platform SDKs)</small>"]
-        HW["Hardware / ISA<br/><small>(x86-64 · ARM64 · supported architectures)</small>"]
-    end
-
-    U --> UI
-    U --> CLI
-    UI --> API
-    CLI --> API
-    API --> CORE
-    API --> APP
-    API --> ENV
-    API --> NODE
-    API --> WORK
-    API --> OPS
-    API --> UP
-    API --> DB
-    API --> NET
-    APP --> WORK
-    ENV --> WORK
-    NODE --> WORK
-    CORE --> R
-    WORK --> R
-    R --> D
-    R --> K
-    D --> H
-    K --> H
-    H --> HW
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>USER / AI AGENT</strong><br><sub>Human or agent control</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>WEB WORKSPACE</strong><br><sub>(React · TypeScript · Vite · HTML/CSS · Web Platform)</sub></td>
+<td align="center"><strong>c107 CLI</strong><br><sub>(TypeScript · Node.js · Git · POSIX)</sub></td>
+<td align="center"><strong>Connected Interfaces</strong><br><sub>(HTTP · JSON · platform APIs)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>API / CONTROL LAYER</strong><br><sub>(TypeScript · Node.js · Express · HTTP · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td align="center">↓</td>
+<td align="center">↓</td>
+<td align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>APPLICATIONS</strong><br><sub>(Lifecycle · HTTP/JSON)</sub></td>
+<td align="center"><strong>ENVIRONMENTS</strong><br><sub>(Toolchains · dependencies · runtime · OCI where applicable)</sub></td>
+<td align="center"><strong>NODES / WORKLOADS</strong><br><sub>(x86-64 · ARM64 · OS APIs · POSIX)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>CLOUD107 CORE</strong><br><sub>(C# · .NET · application contracts)</sub></td>
+<td align="center"><strong>OPERATIONS</strong><br><sub>(Health · logs · metrics)</sub></td>
+<td align="center"><strong>UPDATES</strong><br><sub>(Git · SHA-256 · Ed25519 · FIPS 180-4 · RFC 8032)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>RUNTIME</strong><br><sub>(C/C++/Rust · platform-native · Assembly where required)</sub></td>
+<td align="center"><strong>POSTGRESQL</strong><br><sub>(SQL · Drizzle)</sub></td>
+<td align="center"><strong>NETWORK</strong><br><sub>(Ethernet · Wi-Fi · IP · IEEE 802.3 · IEEE 802.11 · IETF RFCs)</sub></td>
+</tr>
+<tr>
+<td align="center">↓</td>
+<td align="center">↓</td>
+<td align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>DOCKER / COMPOSE</strong><br><sub>(Container ecosystem · OCI where applicable)</sub></td>
+<td align="center"><strong>KUBERNETES</strong><br><sub>(Orchestration · OCI ecosystem)</sub></td>
+<td align="center"><strong>HOST / OS</strong><br><sub>(POSIX · OS APIs · platform SDKs)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>HARDWARE / ISA</strong><br><sub>(x86-64 · ARM64 · supported architectures)</sub></td>
+</tr>
+</table>
 
 <details>
 <summary><strong>Architecture reference map</strong></summary>
@@ -85,7 +94,7 @@ flowchart TB
 
 </details>
 
-**Note:** A language, runtime, protocol, standard, or platform shown here applies only to the boundary where it is used. Target-only components remain marked as target or planned.
+**Note:** This uses rendered Markdown/HTML rather than a fenced code block, so the architecture remains a visual blueprint even when Mermaid is not rendered by the documentation viewer.
 
 ### 2. Control flow
 
