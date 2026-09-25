@@ -46,6 +46,7 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
   const [loading, setLoading] = useState(true);
   const [operations, setOperations] = useState<OperationEvent[]>([]);
   const [settingsSection, setSettingsSection] = useState('General');
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const refresh = async () => {
     try {
@@ -223,17 +224,62 @@ export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProp
 
             {activeView === 'nodes' && (
               <section>
-                <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
-                <div className="divide-y divide-white/5 border-y border-white/5">
-                  {nodes.map((node) => (
-                    <button key={node.id} onClick={() => openWorkspace(node, 'desktop')} className="w-full p-4 flex items-center gap-4 text-left hover:bg-white/[0.02]">
-                      <span className={`w-2 h-2 rounded-full ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
-                      <span className="text-sm text-neutral-200">{node.name}</span>
-                      <span className="text-xs text-neutral-500">{node.status}</span>
-                      <span className="text-xs text-neutral-600 ml-auto">Cloud107</span>
-                    </button>
-                  ))}
-                </div>
+                {selectedNodeId ? (
+                  (() => {
+                    const node = nodes.find((item) => item.id === selectedNodeId);
+                    if (!node) return null;
+                    return (
+                      <div>
+                        <button onClick={() => setSelectedNodeId(null)} className="text-xs text-neutral-500 hover:text-white mb-6">
+                          ← Back to Nodes
+                        </button>
+                        <div className="border-b border-white/5 pb-6 mb-8">
+                          <h2 className="text-xl font-medium mb-2">{node.name}</h2>
+                          <div className="flex items-center gap-5 text-sm text-neutral-500">
+                            <span className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
+                              {node.status}
+                            </span>
+                            <span>Cloud107 runtime</span>
+                            <span>{node.id}</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-10 mb-8">
+                          <div>
+                            <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Workspace</h3>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between"><span className="text-neutral-500">State</span><span className="text-neutral-200">{node.status}</span></div>
+                              <div className="flex justify-between"><span className="text-neutral-500">CPU</span><span className="text-neutral-200">{node.vCPU || 'N/A'}</span></div>
+                              <div className="flex justify-between"><span className="text-neutral-500">Memory</span><span className="text-neutral-200">{node.ram}</span></div>
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Actions</h3>
+                            <div className="flex flex-wrap gap-2">
+                              {node.status === 'ready' && <button onClick={() => openWorkspace(node, 'desktop')} className="px-3 py-2 bg-white/10 hover:bg-white/15 text-white text-xs rounded-md">Open Workspace</button>}
+                              <button onClick={() => openWorkspace(node, 'app')} className="px-3 py-2 bg-white/5 hover:bg-white/10 text-neutral-300 text-xs rounded-md">Applications</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <>
+                    <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
+                    <div className="divide-y divide-white/5 border-y border-white/5">
+                      {nodes.map((node) => (
+                        <button key={node.id} onClick={() => setSelectedNodeId(node.id)} className="w-full p-4 flex items-center gap-4 text-left hover:bg-white/[0.02]">
+                          <span className={`w-2 h-2 rounded-full ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
+                          <span className="text-sm text-neutral-200">{node.name}</span>
+                          <span className="text-xs text-neutral-500">{node.status}</span>
+                          <span className="text-xs text-neutral-600 ml-auto">Cloud107</span>
+                        </button>
+                      ))}
+                      {nodes.length === 0 && <p className="py-12 text-sm text-neutral-600">No nodes are currently registered.</p>}
+                    </div>
+                  </>
+                )}
               </section>
             )}
 
