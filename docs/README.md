@@ -2,25 +2,48 @@
 
 This directory contains the technical documentation for Cloud107.
 
-The repository README is for getting started and everyday use. This directory contains the details needed to understand, develop, deploy, operate, and extend the project.
+```text
+Cloud107
+   │
+   ├── Architecture
+   ├── Design
+   ├── Development
+   ├── Runtime
+   ├── Deployment
+   ├── Security
+   ├── Updates
+   ├── APIs
+   ├── CLI
+   ├── Environments
+   ├── Nodes
+   ├── Workloads
+   ├── AI
+   ├── Operations
+   ├── Decisions
+   └── Research
+```
 
-## Sections
+The repository README covers setup and everyday use. This directory contains the technical details for understanding, developing, deploying, operating, and extending the project.
 
-- Architecture
-- Design
-- Development
-- Runtime
-- Deployment
-- Security
-- Updates
-- APIs
-- CLI
-- Environments
-- Nodes
-- Workloads
-- AI
-- Operations
-- Decisions
-- Research
+## Guidance format
 
-Documentation should describe the system as it exists. Mark planned work as planned and keep experiments separate from implemented behavior.
+```text
+Diagram
+   ↓
+Command / configuration
+   ↓
+Note
+   ↓
+Expected result / next step
+```
+
+**Note:** Use diagrams to show system structure and execution flow. Use actual commands and configuration for operational steps. Keep explanations brief.
+
+## Documentation state
+
+Documentation should describe the system as it exists.
+
+- Mark planned work as planned.
+- Keep experiments separate from implemented behavior.
+- Keep architectural decisions in `docs/decisions/`.
+- Keep research and prior art in `docs/research/`.
