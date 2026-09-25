@@ -8,36 +8,37 @@ This page documents the API boundary currently present in the repository.
 
 ### 1. API architecture
 
-```text
-                    Cloud107 clients
-             ┌────────────┴────────────┐
-             ▼                         ▼
-       Web Workspace               c107 CLI
-       React / TypeScript          TypeScript / Node.js
-             │                         │
-             └────────────┬────────────┘
-                          ▼
-                   Express API
-                Node.js / TypeScript
-                          │
-                   HTTP / JSON
-                          │
-        ┌─────────────────┼──────────────────┐
-        ▼                 ▼                  ▼
-      Health          Workspaces        Applications
-   /api/v1/health   /api/v1/workspaces  /api/v1/applications
-        │                 │                  │
-        ├─────────────────┼──────────────────┤
-        ▼                 ▼                  ▼
-      Users            Billing             Updates
-   /api/v1/users     /api/v1/billing   /api/v1/updates/status
-                          │
-                          ▼
-                     PostgreSQL
-                     SQL / Drizzle
-```
+<table>
+<tr>
+<td colspan="3" align="center"><strong>CLOUD107 API</strong><br><sub>(Node.js 22 · TypeScript · Express 4 · HTTP/JSON · RFC 9110)</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>WEB WORKSPACE</strong><br><sub>(React · TypeScript · Vite)</sub></td>
+<td align="center"><strong>c107 CLI</strong><br><sub>(TypeScript · Node.js · POSIX)</sub></td>
+<td align="center"><strong>CONNECTED CLIENTS</strong><br><sub>(HTTP / JSON)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td align="center"><strong>HEALTH</strong><br><sub>/api/v1/health</sub></td>
+<td align="center"><strong>WORKSPACES</strong><br><sub>/api/v1/workspaces</sub></td>
+<td align="center"><strong>APPLICATIONS</strong><br><sub>/api/v1/applications</sub></td>
+</tr>
+<tr>
+<td align="center"><strong>USERS</strong><br><sub>/api/v1/users</sub></td>
+<td align="center"><strong>BILLING</strong><br><sub>/api/v1/billing</sub></td>
+<td align="center"><strong>UPDATES</strong><br><sub>/api/v1/updates/status</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center">↓</td>
+</tr>
+<tr>
+<td colspan="3" align="center"><strong>POSTGRESQL</strong><br><sub>(SQL · Drizzle · PostgreSQL protocol)</sub></td>
+</tr>
+</table>
 
-**Note:** The diagram shows the current API surface documented by the repository. Detailed behavior belongs to the corresponding implemented route and service.
+**Note:** The blueprint shows the current API surface documented by the repository. Detailed behavior belongs to the corresponding implemented route and service.
 
 **Reference:** [Architecture](../architecture/) · [Express](https://expressjs.com/)
 
