@@ -37,15 +37,7 @@ The CLI is the terminal control surface for Cloud107.
 
 ### 2. Start the CLI
 
-```text
-Terminal
-   │
-   ▼
-npm run c107
-   │
-   ▼
-c107 process
-```
+<table><tr><td align="center"><strong>Terminal</strong></td><td>→</td><td align="center"><strong>npm run c107</strong></td><td>→</td><td align="center"><strong>c107 process</strong></td></tr></table>
 
 **Command**
 
@@ -61,12 +53,7 @@ npm run c107
 
 ### 3. Inspect CLI commands
 
-```text
-c107
- │
- ├── --help
- └── --version
-```
+<table><tr><td align="center"><strong>c107</strong></td><td>→</td><td><strong>--help</strong><br><strong>--version</strong></td></tr></table>
 
 **Commands**
 
@@ -83,22 +70,7 @@ npm run c107 -- --version
 
 ### 4. Run the update operation
 
-```text
-c107
- │
- ▼
-Update pipeline
- │
- ├── provenance
- ├── signature
- ├── hash
- ├── compatibility
- ├── checkpoint
- ├── validation
- ├── health
- ├── activation
- └── rollback
-```
+<table><tr><td align="center"><strong>c107</strong></td><td>→</td><td align="center"><strong>Update pipeline</strong><br><sub>provenance · signature · hash · compatibility<br>checkpoint · validation · health · activation · rollback</sub></td></tr></table>
 
 **Command**
 
@@ -114,20 +86,7 @@ npm run c107:update
 
 ### 5. CLI boundary
 
-```text
-Terminal
-   │
-   ▼
-c107 process
-   │
-   ├── command parsing
-   ├── configuration
-   ├── operation
-   └── update pipeline
-   │
-   ▼
-Cloud107 API / runtime
-```
+<table><tr><td align="center"><strong>Terminal</strong></td><td>→</td><td align="center"><strong>c107 process</strong><br><sub>command parsing · configuration · operation · update pipeline</sub></td><td>→</td><td align="center"><strong>Cloud107 API / runtime</strong></td></tr></table>
 
 **Note:** The CLI should report operation state returned by Cloud107 rather than inventing runtime, node, resource, billing, or health information.
 
@@ -142,16 +101,7 @@ Cloud107 API / runtime
 | Update source | Git / repository tooling | Source revision / metadata |
 | Local scripts | Shell / npm | Process execution |
 
-```text
-Terminal
-   │
-   ▼
-TypeScript / Node.js
-   │
-   ├── process / terminal
-   ├── HTTP / JSON
-   └── Git / update metadata
-```
+<table><tr><td align="center"><strong>Terminal</strong></td><td>→</td><td align="center"><strong>TypeScript / Node.js</strong></td><td>→</td><td>process / terminal<br>HTTP / JSON<br>Git / update metadata</td></tr></table>
 
 **Note:** Protocols, standards, and platform APIs should be listed only when the implementation explicitly depends on them.
 
@@ -159,16 +109,7 @@ TypeScript / Node.js
 
 ### 7. Validate CLI changes
 
-```text
-CLI change
-    │
-    ├── lint
-    ├── test
-    └── build
-    │
-    ▼
-Validated CLI
-```
+<table><tr><td align="center"><strong>CLI change</strong></td><td>→</td><td>lint · test · build</td><td>→</td><td align="center"><strong>Validated CLI</strong></td></tr></table>
 
 **Commands**
 
