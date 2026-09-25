@@ -31,19 +31,19 @@ Common workspace areas:
 
 > **Note:** This README is the shortest path from an installed repository to a working Cloud107 instance. Detailed implementation information is in [docs/](docs/).
 
-## Use a released version
+## Choose how to use Cloud107
 
-A released version is for users who only need to run Cloud107 on a supported device. Source checkout and development dependencies are not required for normal use.
+Cloud107 supports two normal paths. Users who are comfortable working with operating systems, source code, dependencies, and command-line tools can work directly from the source repository. Users who only need a working system can use a pre-configured release artifact.
 
-| Distribution | Use |
-|---|---|
-| Released artifact | Install and run Cloud107 on the supported device |
-| Source repository | Development, testing, modification, and building |
-| Development build | Testing changes before release |
+| User path | Distribution | Use |
+|---|---|---|
+| System-literate | Source repository | Inspect, modify, test, build, and operate Cloud107 directly |
+| General user | Pre-configured release artifact | Install and use Cloud107 without setting up the development environment |
+| Developer / maintainer | Source repository + development build | Develop changes and validate them before release |
 
-**Note:** Use the released artifact that matches the target platform and architecture. Use the source repository when you need to modify, test, or build Cloud107.
+**Note:** A release artifact is the packaged, pre-configured path. It removes the need to install the source tree, development dependencies, or build toolchain just to use Cloud107.
 
-**Release process:** source → build → validation → package → verification → release artifact
+**Release process:** source → build → validation → package → pre-configuration → verification → release artifact
 
 ## Architecture
 
