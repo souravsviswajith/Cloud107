@@ -101,11 +101,21 @@ export function createCapabilitiesRouter(
     },
   );
 
+
+
+  return router;
+}
+
+export function createInvocationsRouter(
+  repository = new InvocationRepository(),
+): Router {
+  const router = Router();
+
   router.get(
     '/:invocationId',
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const invocation = await invocations.get(req.params.invocationId);
+        const invocation = await repository.get(req.params.invocationId);
 
         if (!invocation) {
           return res
@@ -124,3 +134,4 @@ export function createCapabilitiesRouter(
 }
 
 export const capabilitiesRouter = createCapabilitiesRouter();
+export const invocationsRouter = createInvocationsRouter();
