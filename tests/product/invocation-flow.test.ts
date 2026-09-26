@@ -117,13 +117,26 @@ class InMemoryWorkloadStateRepository extends WorkloadStateRepository {
 class MockCloud107Client implements Cloud107Client {
   scheduleAndPlanWasCalled = false;
   scheduledWorkloadId: string | undefined;
+  private readonly scheduleAndPlanCalled: Promise<void>;
+  private resolveScheduleAndPlanCalled: (() => void) | undefined;
   private s4: StoredProcessExecution | undefined;
+
+  constructor() {
+    this.scheduleAndPlanCalled = new Promise<void>((resolve) => {
+      this.resolveScheduleAndPlanCalled = resolve;
+    });
+  }
+
+  async waitForScheduleAndPlanCalled(): Promise<void> {
+    return this.scheduleAndPlanCalled;
+  }
 
   async scheduleAndPlan(
     workloadId: string,
   ): Promise<{ plan: ExecutionPlan }> {
     this.scheduleAndPlanWasCalled = true;
     this.scheduledWorkloadId = workloadId;
+    this.resolveScheduleAndPlanCalled?.();
 
     return {
       plan: {
@@ -305,6 +318,9 @@ describe('107 Product: Invocation Flow (Integrated)', () => {
       expect(accepted.data.status).toBe('accepted');
 
       const invocationId = accepted.data.invocationId;
+
+      await mockCloud107.waitForScheduleAndPlanCalled();
+
       const persistedS1 = workloadRepo.workloads.get(
         mockCloud107.scheduledWorkloadId ?? '',
       );
