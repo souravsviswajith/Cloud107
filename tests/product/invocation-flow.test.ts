@@ -172,7 +172,7 @@ const registry = new InMemoryCapabilityRegistry([
     version: '1.0.0',
     hash: `sha256:${'a'.repeat(64)}`,
     entrypoint: '/opt/game-dwy/bin/game',
-    constraints: [{ os: 'unix', architectures: ['x86_64'] }],
+    constraints: [{ os: 'linux', architectures: ['x86_64'] }],
     metadata: {
       internalProject: 'Game/DWY',
       description: 'Interactive game runtime',
