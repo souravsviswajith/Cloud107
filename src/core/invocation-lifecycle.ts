@@ -14,6 +14,7 @@ export interface InvocationStateRepository {
   setError(invocationId: string, error: string): Promise<void>;
   markStarted(invocationId: string): Promise<void>;
   markCompleted(invocationId: string): Promise<void>;
+  updatePlanId?(invocationId: string, planId: string): Promise<void>;
 }
 
 export interface InvocationResultAdapter<TExecution> {
