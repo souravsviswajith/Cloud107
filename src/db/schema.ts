@@ -3,6 +3,7 @@ import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from 'drizz
 import type { WorkloadRepresentation } from '../core/workload';
 import type { ExecutionPlan } from '../core/execution-plan';
 import { WorkspaceState } from '../types';
+import type { CapabilityInvocationStatus } from '../core/invocation';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -99,8 +100,21 @@ export const processExecutions = pgTable('process_executions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const invocations = pgTable('invocations', {
+  id: text('id').primaryKey(),
+  capability: text('capability').notNull(),
+  status: text('status').notNull().$type<CapabilityInvocationStatus>(),
+  s1Id: text('s1_id').references(() => workloads.id),
+  result: jsonb('result'),
+  error: text('error'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+});
+
 export const workloadsRelations = relations(workloads, ({ many }) => ({
   executionPlans: many(executionPlans),
+  invocations: many(invocations),
 }));
 
 export const executionPlansRelations = relations(executionPlans, ({ one, many }) => ({
@@ -115,6 +129,13 @@ export const processExecutionsRelations = relations(processExecutions, ({ one })
   plan: one(executionPlans, {
     fields: [processExecutions.planId],
     references: [executionPlans.id],
+  }),
+}));
+
+export const invocationsRelations = relations(invocations, ({ one }) => ({
+  workload: one(workloads, {
+    fields: [invocations.s1Id],
+    references: [workloads.id],
   }),
 }));
 
