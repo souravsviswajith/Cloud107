@@ -1,5 +1,5 @@
 import type { CapabilityInvocation } from './invocation';
-import type { InvocationLifecycle, InvocationResultAdapter } from './invocation-lifecycle';
+import type { InvocationLifecycle } from './invocation-lifecycle';
 import type { WorkloadRepresentation } from './workload';
 import type { ExecutionPlan } from './execution-plan';
 import type { InvocationStateRepository } from './invocation-lifecycle';
@@ -76,7 +76,6 @@ export class Cloud107InvocationDispatcher
     private readonly invocationRepository: InvocationStateRepository,
     private readonly invocationLifecycle: InvocationLifecycle<StoredProcessExecution>,
     private readonly cloud107Client: Cloud107Client,
-    private readonly resultAdapter: InvocationResultAdapter<StoredProcessExecution>,
     options: { pollIntervalMs?: number; pollTimeoutMs?: number } = {},
   ) {
     this.pollIntervalMs = options.pollIntervalMs ?? 1000;
@@ -139,6 +138,8 @@ export class Cloud107InvocationDispatcher
 
         if (executions.length > 0) {
           const execution = executions[executions.length - 1];
+
+          await this.invocationLifecycle.markRunning(invocationId);
 
           if (execution.exitCode === 0) {
             await this.completeInvocation(invocationId, execution);
