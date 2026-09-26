@@ -44,6 +44,13 @@ export class InvocationRepository {
     return this.toInvocation(record);
   }
 
+  async updatePlanId(invocationId: string, planId: string): Promise<void> {
+    await db
+      .update(invocations)
+      .set({ planId })
+      .where(eq(invocations.id, invocationId));
+  }
+
   async updateStatus(
     invocationId: string,
     status: CapabilityInvocationStatus,
