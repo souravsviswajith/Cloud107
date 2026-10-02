@@ -46,3 +46,18 @@ Select Workspace (Click on a VM)
 - **Single Source of Truth:** The VM runs continuously once booted.
 - **Mode Switching:** Switching modes sends a control message via WebRTC DataChannel to the Host Agent to switch capture modes (e.g., from DXGI full screen to Window-specific capture).
 - **Graceful Degradation:** If Application Mode fails to hook the application window, it falls back to Desktop Mode and notifies the user.
+
+
+## 6. Browser Compatibility Contract
+
+Cloud107's browser experience is designed to run directly in **Chrome/Chromium and Firefox**.
+
+The browser layer is based on standard web primitives:
+
+- **HTML** for semantic structure.
+- **CSS** for layout, presentation, responsive behavior, and the Liquid Glass visual system.
+- **JavaScript / TypeScript** for application behavior.
+
+Browser-specific APIs are not to become an unnecessary architectural dependency when an interoperable web standard can provide the required capability. Where a browser-specific capability is unavoidable, the implementation must provide an explicit compatibility path or graceful degradation.
+
+The browser target applies to the workspace UI and supported browser-facing Cloud107 experiences. Native clients and other deployment targets remain independently implemented according to their platform requirements.

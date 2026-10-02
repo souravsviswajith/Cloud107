@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS executions (
+  id SERIAL PRIMARY KEY,
+  job_id TEXT NOT NULL,
+  input_count INTEGER NOT NULL,
+  sum NUMERIC NOT NULL,
+  mean NUMERIC NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

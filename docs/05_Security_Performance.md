@@ -24,6 +24,6 @@
 
 ## 17. Scaling Strategy
 
-- **Phase 1 (Target: 5 concurrent users):** Static warm pool of 5 instances. Manual scaling.
-- **Phase 2 (Auto-scaling):** Sovereign node auto-scaling. Cloud107 workers monitor node health and dynamically provision instances.
+- **Initial scaling target (5 concurrent users):** Static warm pool of 5 instances. Manual scaling.
+- **Auto-scaling:** Sovereign node auto-scaling. Cloud107 workers monitor node health and dynamically provision instances.
 - **Stateless Control Plane:** Cloud107 control-plane instances can be scaled horizontally behind an ingress proxy.

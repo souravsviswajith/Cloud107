@@ -1,817 +1,509 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  Monitor,
-  Play,
-  Settings,
+  Activity,
+  CheckCircle2,
+  Cloud,
+  FolderKanban,
+  Layout,
   Server,
-  Plus,
-  Loader2,
-  AppWindow,
-  PlayCircle,
-  Cpu,
-  HardDrive,
-  MoreVertical,
-  LayoutGrid,
-  Clock,
-  ChevronRight,
+  Settings,
+  Shield,
+  Terminal,
+  AlertCircle,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { VmInstance, WorkspaceState, Workspace } from '../types';
+import { Workspace, WorkspaceState, VmInstance } from '../types';
 import { workspaceApi } from '../lib/apiClient';
-import { useShell } from '../contexts/ShellContext';
-
-import { ProvisioningScreen } from './launch/ProvisioningScreen';
-import { ConnectionScreen } from './launch/ConnectionScreen';
-import { WorkspaceSetup } from './WorkspaceSetup';
-import { ResourceMonitoringPanel } from './ResourceMonitoringPanel';
 
 interface DashboardProps {
   onLaunchDesktop: (vm: VmInstance) => void;
   onLaunchAppLibrary: (vm: VmInstance) => void;
 }
 
-type WorkspaceConfig = {
-  cpuClass: string;
-  cpuCores: number;
-  cpuThreads: number;
-  ram: string;
-  gpu: string;
-  storageCapacity: string;
-  storageType: string;
-  storage: string;
+type ViewMode = 'overview' | 'projects' | 'nodes' | 'operations' | 'terminal' | 'settings';
+
+type OperationEvent = {
+  id: string;
+  name: string;
+  status: 'Running' | 'Completed' | 'Failed';
+  node: string;
+  time: string;
 };
 
-const DEFAULT_CONFIG: WorkspaceConfig = {
-  cpuClass: 'AMD EPYC Class',
-  cpuCores: 8,
-  cpuThreads: 16,
-  ram: '16 GB',
-  gpu: 'AI Standard Class',
-  storageCapacity: '250 GB',
-  storageType: 'NVMe SSD',
-  get storage() {
-    return `${this.storageCapacity} ${this.storageType}`;
-  },
-};
+function mapWorkspace(ws: Workspace): VmInstance {
+  const status: VmInstance['status'] =
+    ws.state === WorkspaceState.Running || ws.state === WorkspaceState.Streaming
+      ? 'ready'
+      : ws.state === WorkspaceState.Starting || ws.state === WorkspaceState.Connecting || ws.state === WorkspaceState.Stopping
+        ? 'provisioning'
+        : 'offline';
 
-const STORAGE_CAPACITIES = ['50 GB', '100 GB', '250 GB', '500 GB', '1 TB', '2 TB', '5 TB'];
-const STORAGE_TYPES = ['Standard SSD', 'Premium SSD', 'NVMe SSD'];
-
-const CPU_CLASSES = ['Intel Xeon Class', 'AMD EPYC Class', 'ARM Neoverse Class'];
-const CPU_CORES = [
-  { cores: 2, threads: 4 },
-  { cores: 4, threads: 8 },
-  { cores: 8, threads: 16 },
-  { cores: 16, threads: 32 },
-  { cores: 32, threads: 64 },
-];
-const RAM_OPTIONS = ['4 GB', '8 GB', '16 GB', '32 GB', '64 GB'];
-const GPU_OPTIONS = [
-  { label: 'CPU Only', category: 'Basic' },
-  { label: 'RTX 3060 Class', category: 'Gaming & Creative' },
-  { label: 'RTX 4070 Class', category: 'Gaming & Creative' },
-  { label: 'RTX 4090 Class', category: 'Gaming & Creative' },
-  { label: 'Professional Graphics Class', category: 'Professional' },
-  { label: 'AI Standard Class', category: 'AI Development' },
-  { label: 'AI High Performance Class', category: 'AI Training' },
-];
+  return { id: ws.id, name: ws.name, status, gpu: 'N/A', ram: 'N/A', vCPU: 0 };
+}
 
 export function Dashboard({ onLaunchDesktop, onLaunchAppLibrary }: DashboardProps) {
-  const { addNotification } = useShell();
-  const [vms, setVms] = useState<VmInstance[]>([]);
-  const [selectedVm, setSelectedVm] = useState<VmInstance | null>(null);
-  const [connectionPhase, setConnectionPhase] = useState<
-    'idle' | 'provisioning' | 'connecting' | 'ready'
-  >('idle');
+  const [activeView, setActiveView] = useState<ViewMode>('overview');
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
-  const [deletingVm, setDeletingVm] = useState<VmInstance | null>(null);
-  const [configs, setConfigs] = useState<Record<string, WorkspaceConfig>>({});
-  const [monitoredVmId, setMonitoredVmId] = useState<string | null>(null);
+  const [operations, setOperations] = useState<OperationEvent[]>([]);
+  const [settingsSection, setSettingsSection] = useState('General');
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalLines, setTerminalLines] = useState<string[]>(['Cloud107 terminal', 'Type a command to continue.']);
+  const [health, setHealth] = useState<'Healthy' | 'Degraded' | 'Offline'>('Offline');
+  const [billingConnected, setBillingConnected] = useState(false);
+  const [billingMessage, setBillingMessage] = useState('No billing provider is connected.');
+  const [updateStatus, setUpdateStatus] = useState<{
+    currentVersion: string;
+    platform: string;
+    architecture: string;
+    nodeVersion: string;
+    checkpointCount: number;
+    latestCheckpoint: { id: string; targetVersion: string; status: string; timestamp: number } | null;
+    updateManager: { mode: string; verification: string; rollback: string };
+  } | null>(null);
 
-  const monitoredVm =
-    vms.find((v) => v.id === monitoredVmId) ||
-    vms.find((v) => v.status === 'ready') ||
-    vms[0] ||
-    null;
-
-  const getConfig = (vmId: string): WorkspaceConfig => {
-    const cfg = configs[vmId] || DEFAULT_CONFIG;
-    const capacity = cfg.storageCapacity || '250 GB';
-    const type = cfg.storageType || 'NVMe SSD';
-    return {
-      ...cfg,
-      storageCapacity: capacity,
-      storageType: type,
-      storage: `${capacity} ${type}`,
-    };
-  };
-  const updateConfig = (vmId: string, field: keyof WorkspaceConfig, value: string | number) => {
-    setConfigs((prev) => ({ ...prev, [vmId]: { ...getConfig(vmId), [field]: value } }));
-  };
-
-  useEffect(() => {
-    fetchWorkspaces();
-    const interval = setInterval(fetchWorkspaces, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const mapWorkspaceToVm = (ws: Workspace): VmInstance => {
-    let status: VmInstance['status'] = 'offline';
-    if (ws.state === WorkspaceState.Starting || ws.state === WorkspaceState.Connecting) {
-      status = 'provisioning';
-    } else if (ws.state === WorkspaceState.Running || ws.state === WorkspaceState.Streaming) {
-      status = 'ready';
-    } else if (ws.state === WorkspaceState.Stopping) {
-      status = 'provisioning'; // treating stopping as provisioning to show spinner
-    }
-
-    return {
-      id: ws.id,
-      name: ws.name,
-      status,
-      gpu: 'NVIDIA T4',
-      ram: '16GB',
-      vCPU: 4,
-    };
-  };
-
-  const fetchWorkspaces = async () => {
+  const refresh = async () => {
     try {
-      const data = await workspaceApi.listWorkspaces();
-      setVms(data.map(mapWorkspaceToVm));
-    } catch (e) {
-      console.error('Failed to fetch workspaces', e);
+      const current = await workspaceApi.listWorkspaces();
+      setWorkspaces(current);
+    } catch (error) {
+      console.error('Failed to fetch workspaces', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreate = async () => {
-    setCreating(true);
-    try {
-      await workspaceApi.createWorkspace(`Workspace ${vms.length + 1}`);
-      await fetchWorkspaces();
-    } catch (e) {
-      console.error('Failed to create workspace', e);
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleDelete = async (vm: VmInstance) => {
-    setMenuOpenFor(null);
-    const previousVms = [...vms];
-    setVms((prev) => prev.filter((v) => v.id !== vm.id));
-    try {
-      await workspaceApi.deleteWorkspace(vm.id);
-      fetchWorkspaces();
-    } catch (e) {
-      console.error('Failed to delete workspace', e);
-      addNotification({
-        title: 'Delete Failed',
-        message: 'Failed to delete workspace. Please try again.',
-        type: 'error',
-      });
-      setVms(previousVms);
-      fetchWorkspaces();
-    }
-  };
-
-  const handleStop = async (vm: VmInstance) => {
-    setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
-    try {
-      await workspaceApi.stopWorkspace(vm.id);
-      fetchWorkspaces();
-    } catch (e) {
-      console.error('Failed to stop workspace', e);
-      fetchWorkspaces();
-    }
-  };
+  useEffect(() => {
+    refresh();
+    const timer = setInterval(refresh, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
-    if (connectionPhase === 'provisioning') {
-      const timer = setTimeout(() => {
-        setConnectionPhase('connecting');
-      }, 6500);
-      return () => clearTimeout(timer);
-    } else if (connectionPhase === 'connecting') {
-      const timer = setTimeout(() => {
-        setConnectionPhase('ready');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [connectionPhase]);
+    let active = true;
+    const checkBilling = async () => {
+      try {
+        const response = await fetch('/api/v1/billing');
+        if (!response.ok) {
+          if (active) {
+            setBillingConnected(false);
+            setBillingMessage(response.status === 404 ? 'Billing API not configured.' : 'Billing service unavailable.');
+          }
+          return;
+        }
+        const payload = await response.json();
+        if (active) {
+          const connected = Boolean(payload.success && payload.data?.providerId);
+          setBillingConnected(connected);
+          setBillingMessage(
+            connected
+              ? `Live data from ${payload.data.providerId}.`
+              : 'No billing provider is connected.',
+          );
+        }
+      } catch {
+        if (active) {
+          setBillingConnected(false);
+          setBillingMessage('Billing service unavailable.');
+        }
+      }
+    };
+    checkBilling();
+    const timer = setInterval(checkBilling, 10000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
 
-  const handleConnect = (vm: VmInstance) => {
-    const config = getConfig(vm.id);
-    setSelectedVm({
-      ...vm,
-      gpu: config.gpu,
-      ram: config.ram,
-      vCPU: config.cpuCores,
-    });
-    setConnectionPhase('provisioning');
+  useEffect(() => {
+    let active = true;
+    const checkHealth = async () => {
+      try {
+        const response = await fetch('/api/v1/health');
+        if (!response.ok) {
+          if (active) setHealth('Degraded');
+          return;
+        }
+        const payload = await response.json();
+        if (!active) return;
+        setHealth(payload.success && payload.data?.status === 'ok' ? 'Healthy' : 'Degraded');
+      } catch {
+        if (active) setHealth('Offline');
+      }
+    };
+    checkHealth();
+    const timer = setInterval(checkHealth, 5000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (settingsSection !== 'Updates') return;
+    let active = true;
+    const loadUpdateStatus = async () => {
+      try {
+        const response = await fetch('/api/v1/updates/status');
+        if (!response.ok) {
+          if (active) setUpdateStatus(null);
+          return;
+        }
+        const payload = await response.json();
+        if (active) setUpdateStatus(payload.success ? payload.data : null);
+      } catch {
+        if (active) setUpdateStatus(null);
+      }
+    };
+    loadUpdateStatus();
+    const timer = setInterval(loadUpdateStatus, 10000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [settingsSection]);
+
+  const nodes = useMemo(() => workspaces.map(mapWorkspace), [workspaces]);
+  const online = nodes.filter((node) => node.status === 'ready').length;
+  const offline = nodes.length - online;
+
+  const record = (name: string, node: string, status: OperationEvent['status']) => {
+    setOperations((current) => [
+      {
+        id: crypto.randomUUID(),
+        name,
+        status,
+        node,
+        time: 'Just now',
+      },
+      ...current,
+    ].slice(0, 30));
   };
 
-  const handleBoot = async (vm: VmInstance) => {
-    setVms((prev) => prev.map((v) => (v.id === vm.id ? { ...v, status: 'provisioning' } : v)));
+  const createWorkspace = async () => {
     try {
-      await workspaceApi.startWorkspace(vm.id);
-      fetchWorkspaces();
-    } catch (e) {
-      console.error('Failed to start workspace', e);
-      fetchWorkspaces();
+      const name = `Workspace ${workspaces.length + 1}`;
+      await workspaceApi.createWorkspace(name);
+      record('Create workspace', name, 'Completed');
+      await refresh();
+    } catch {
+      record('Create workspace', 'System', 'Failed');
     }
   };
 
-  if (loading && vms.length === 0) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center text-white">
-        <Loader2 size={32} className="animate-spin text-neutral-500" />
-      </div>
-    );
+  const changeWorkspaceState = async (node: VmInstance, action: 'start' | 'stop') => {
+    const label = action === 'start' ? 'Start workspace' : 'Stop workspace';
+    const operationId = crypto.randomUUID();
+    setOperations((current) => [
+      { id: operationId, name: label, status: 'Running', node: node.name, time: 'Just now' },
+      ...current,
+    ].slice(0, 30));
+    try {
+      if (action === 'start') await workspaceApi.startWorkspace(node.id);
+      else await workspaceApi.stopWorkspace(node.id);
+      setOperations((current) => current.map((op) => op.id === operationId ? { ...op, status: 'Completed' } : op));
+      await refresh();
+    } catch {
+      setOperations((current) => current.map((op) => op.id === operationId ? { ...op, status: 'Failed' } : op));
+    }
+  };
+
+  const openWorkspace = (node: VmInstance, mode: 'desktop' | 'app') => {
+    record(mode === 'desktop' ? `Open ${node.name}` : `Open applications on ${node.name}`, node.name, 'Completed');
+    if (mode === 'desktop') onLaunchDesktop(node);
+    else onLaunchAppLibrary(node);
+  };
+
+  const navItems: { id: ViewMode; label: string; icon: typeof Layout }[] = [
+    { id: 'overview', label: 'Overview', icon: Layout },
+    { id: 'projects', label: 'Projects', icon: FolderKanban },
+    { id: 'nodes', label: 'Nodes', icon: Server },
+    { id: 'operations', label: 'Operations', icon: Activity },
+    { id: 'terminal', label: 'Terminal', icon: Terminal },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
+
+  const readyNode = nodes.find((node) => node.status === 'ready') ?? nodes[0];
+
+  if (loading && workspaces.length === 0) {
+    return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-neutral-500">Loading Cloud107…</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white p-6 md:p-8 lg:p-12 font-sans relative">
-      {/* Premium Background Effects */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-indigo-900/20 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg border border-white/10 bg-neutral-900">
-              <img
-                src="/assets/cloud107-logo.png"
-                alt="Cloud 107"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <h1 className="font-semibold text-2xl tracking-tight text-white">Cloud 107</h1>
-              <p className="text-sm text-neutral-400 font-medium">Infrastructure Control Plane</p>
-            </div>
+    <div className="min-h-screen bg-[#050505] text-white flex font-sans">
+      <aside className="w-56 shrink-0 border-r border-white/5 bg-[#0a0a0a] flex flex-col">
+        <div className="h-16 flex items-center px-6 border-b border-white/5">
+          <div className="flex items-center gap-2">
+            <Cloud size={16} className="text-neutral-400" />
+            <span className="font-medium tracking-tight">Cloud107</span>
           </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-medium rounded-xl transition-all border border-white/10 backdrop-blur-md">
-              <Settings size={16} className="text-neutral-400" />
-              Settings
-            </button>
-            <button
-              onClick={handleCreate}
-              disabled={creating}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-black text-sm font-semibold rounded-xl hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-            >
-              {creating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-              New Environment
-            </button>
+        <nav className="flex-1 py-6 px-3 space-y-1">
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            const active = activeView === item.id;
+            return (
+              <div key={item.id}>
+                {index === 4 && <div className="h-6" />}
+                <button
+                  onClick={() => setActiveView(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${active ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.02]'}`}
+                >
+                  <Icon size={16} className={active ? 'text-white' : 'text-neutral-500'} />
+                  {item.label}
+                </button>
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-white/5">
+          <div className="flex items-center gap-2 text-xs text-neutral-500">
+            <Shield size={12} />
+            Sovereign Identity
           </div>
+        </div>
+      </aside>
+
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <header className="h-16 shrink-0 flex items-center justify-between px-10 border-b border-white/5">
+          <h1 className="text-lg font-medium capitalize">{activeView}</h1>
+          <span className={`flex items-center gap-2 text-xs font-medium px-2.5 py-1 rounded-full border backdrop-blur-lg ${
+            health === 'Healthy'
+              ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
+              : health === 'Degraded'
+                ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
+                : 'text-neutral-400 bg-white/5 border-white/10'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              health === 'Healthy' ? 'bg-emerald-400' : health === 'Degraded' ? 'bg-amber-400' : 'bg-neutral-500'
+            }`} />
+            {health}
+          </span>
         </header>
 
-        <main>
-          <div className="flex items-center justify-between mb-8 mt-2">
-            <div className="flex items-center gap-6 border-b border-white/10 w-full pb-4">
-              <button className="text-sm font-medium text-white pb-4 mb-[-17px] border-b-2 border-white">
-                Environments
-              </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
-                Nodes
-              </button>
-              <button className="text-sm font-medium text-neutral-500 hover:text-neutral-300 pb-4 mb-[-17px] border-b-2 border-transparent transition-colors">
-                Operations
-              </button>
-            </div>
-          </div>
-
-          {vms.length === 0 && !loading && (
-            <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.01]">
-              <Server size={48} className="mx-auto text-neutral-600 mb-4" />
-              <h3 className="text-xl font-medium mb-2">No Environments</h3>
-              <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                Create an environment to begin.
-              </p>
-              <button
-                onClick={handleCreate}
-                disabled={creating}
-                className="bg-white/10 hover:bg-white/15 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all"
-              >
-                {creating ? 'Creating...' : 'New Environment'}
-              </button>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {vms.map((vm) => (
-              <motion.div
-                key={vm.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-neutral-900/40 backdrop-blur-xl rounded-3xl p-1 border border-white/10 shadow-2xl group flex flex-col h-full relative overflow-hidden"
-              >
-                {/* Hover gradient effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                <div className="bg-neutral-950/50 rounded-[22px] p-6 h-full flex flex-col relative z-10">
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
-                          vm.status === 'ready'
-                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                            : vm.status === 'provisioning'
-                              ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                              : 'bg-neutral-800 border-white/5 text-neutral-400'
-                        }`}
-                      >
-                        <Monitor size={22} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg text-white tracking-tight">
-                          {vm.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              vm.status === 'ready'
-                                ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
-                                : vm.status === 'provisioning'
-                                  ? 'bg-amber-500 animate-pulse'
-                                  : 'bg-neutral-600'
-                            }`}
-                          />
-                          <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
-                            {vm.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <button
-                        onClick={() => setMenuOpenFor(menuOpenFor === vm.id ? null : vm.id)}
-                        className="p-2 text-neutral-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-                      >
-                        <MoreVertical size={18} />
-                      </button>
-                      <AnimatePresence>
-                        {menuOpenFor === vm.id && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-1"
-                          >
-                            <button
-                              onClick={() => {
-                                setMenuOpenFor(null);
-                                // Rename logic placeholder
-                              }}
-                              className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/10 transition-colors"
-                            >
-                              Rename Environment
-                            </button>
-                            <button
-                              disabled
-                              className="w-full text-left px-4 py-2.5 text-sm text-neutral-500 bg-transparent cursor-not-allowed flex items-center justify-between"
-                            >
-                              Duplicate{' '}
-                              <span className="text-[10px] uppercase bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
-                                Soon
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setMenuOpenFor(null);
-                                handleStop(vm);
-                              }}
-                              disabled={vm.status !== 'ready'}
-                              className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              Stop Environment
-                            </button>
-                            <div className="h-px bg-white/10 my-1"></div>
-                            <button
-                              onClick={() => {
-                                setMenuOpenFor(null);
-                                setDeletingVm(vm);
-                              }}
-                              className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-                            >
-                              Delete Workspace
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+        <div className="flex-1 overflow-y-auto px-10 py-8">
+          <div className="max-w-4xl space-y-10">
+            {activeView === 'overview' && (
+              <>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Workspace</p>
+                    <h2 className="text-2xl font-medium">Overview</h2>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3 mb-8">
-                    {/* CPU */}
-                    <div className="col-span-2 bg-white/5 rounded-xl p-3 border border-white/5">
-                      <div className="flex items-center gap-2 text-neutral-500 mb-2">
-                        <Cpu size={14} />
-                        <span className="text-xs font-medium">CPU</span>
-                      </div>
-                      {vm.status === 'offline' ? (
-                        <div className="space-y-2">
-                          <select
-                            value={getConfig(vm.id).cpuClass}
-                            onChange={(e) => updateConfig(vm.id, 'cpuClass', e.target.value)}
-                            className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                          >
-                            {CPU_CLASSES.map((c) => (
-                              <option key={c} value={c}>
-                                {c}
-                              </option>
-                            ))}
-                          </select>
-                          <select
-                            value={getConfig(vm.id).cpuCores}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value);
-                              const option = CPU_CORES.find((c) => c.cores === val);
-                              if (option) {
-                                updateConfig(vm.id, 'cpuCores', option.cores);
-                                updateConfig(vm.id, 'cpuThreads', option.threads);
-                              }
-                            }}
-                            className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                          >
-                            {CPU_CORES.map((c) => (
-                              <option key={c.cores} value={c.cores}>
-                                {c.cores} Cores / {c.threads} Threads
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      ) : (
-                        <div className="text-sm font-medium text-neutral-200">
-                          <div>{getConfig(vm.id).cpuClass}</div>
-                          <div className="text-neutral-400 font-normal mt-0.5">
-                            {getConfig(vm.id).cpuCores} Cores / {getConfig(vm.id).cpuThreads}{' '}
-                            Threads
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* RAM */}
-                    <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                      <div className="flex items-center gap-2 text-neutral-500 mb-2">
-                        <HardDrive size={14} />
-                        <span className="text-xs font-medium">Memory</span>
-                      </div>
-                      {vm.status === 'offline' ? (
-                        <select
-                          value={getConfig(vm.id).ram}
-                          onChange={(e) => updateConfig(vm.id, 'ram', e.target.value)}
-                          className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                        >
-                          {RAM_OPTIONS.map((r) => (
-                            <option key={r} value={r}>
-                              {r}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <div className="text-sm font-medium text-neutral-200">
-                          {getConfig(vm.id).ram}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Storage */}
-                    <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                      <div className="flex items-center gap-2 text-neutral-500 mb-2">
-                        <Server size={14} />
-                        <span className="text-xs font-medium">Storage</span>
-                      </div>
-                      {vm.status === 'offline' ? (
-                        <div className="space-y-2">
-                          <select
-                            value={getConfig(vm.id).storageCapacity}
-                            onChange={(e) => updateConfig(vm.id, 'storageCapacity', e.target.value)}
-                            className="w-full bg-[#111111] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
-                          >
-                            {STORAGE_CAPACITIES.map((sc) => (
-                              <option key={sc} value={sc}>
-                                {sc}
-                              </option>
-                            ))}
-                          </select>
-                          <select
-                            value={getConfig(vm.id).storageType}
-                            onChange={(e) => updateConfig(vm.id, 'storageType', e.target.value)}
-                            className="w-full bg-[#111111] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
-                          >
-                            {STORAGE_TYPES.map((st) => (
-                              <option key={st} value={st}>
-                                {st}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      ) : (
-                        <div className="text-sm font-medium text-neutral-200">
-                          {getConfig(vm.id).storage}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* GPU */}
-                    <div className="col-span-2 bg-white/5 rounded-xl p-3 border border-white/5">
-                      <div className="flex items-center gap-2 text-neutral-500 mb-2">
-                        <LayoutGrid size={14} />
-                        <span className="text-xs font-medium">Graphics</span>
-                      </div>
-                      {vm.status === 'offline' ? (
-                        <select
-                          value={getConfig(vm.id).gpu}
-                          onChange={(e) => updateConfig(vm.id, 'gpu', e.target.value)}
-                          className="w-full bg-[#111111] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                        >
-                          {Array.from(new Set(GPU_OPTIONS.map((g) => g.category))).map(
-                            (category) => (
-                              <optgroup
-                                key={category}
-                                label={category}
-                                className="bg-neutral-800 text-neutral-400"
-                              >
-                                {GPU_OPTIONS.filter((g) => g.category === category).map((g) => (
-                                  <option key={g.label} value={g.label} className="text-white">
-                                    {g.label}
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ),
-                          )}
-                        </select>
-                      ) : (
-                        <div className="text-sm font-medium text-neutral-200">
-                          {getConfig(vm.id).gpu}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-auto">
-                    {vm.status === 'ready' ? (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleConnect(vm)}
-                          className="flex-1 py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-neutral-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
-                        >
-                          Open Environment
-                        </button>
-                        <button
-                          onClick={() => handleStop(vm)}
-                          className="py-3.5 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center border border-white/10 bg-neutral-800 text-white hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30"
-                          title="Stop Environment"
-                        >
-                          Stop
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleBoot(vm)}
-                        disabled={vm.status === 'provisioning'}
-                        className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 border ${
-                          vm.status === 'provisioning'
-                            ? 'bg-neutral-900 border-white/5 text-neutral-500 cursor-not-allowed'
-                            : 'bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 hover:border-white/20'
-                        }`}
-                      >
-                        {vm.status === 'provisioning' && (
-                          <Loader2 size={16} className="animate-spin" />
-                        )}
-                        {vm.status === 'offline' && <Play size={16} />}
-                        {vm.status === 'provisioning'
-                          ? 'Starting Environment...'
-                          : 'Start Environment'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {vms.length > 0 && (
-            <div className="mt-12">
-              <ResourceMonitoringPanel
-                vm={monitoredVm}
-                config={getConfig(monitoredVm?.id || '')}
-                allVms={vms}
-                onSelectVm={(v) => setMonitoredVmId(v.id)}
-              />
-            </div>
-          )}
-
-          <div className="mt-16">
-            <WorkspaceSetup />
-          </div>
-        </main>
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {deletingVm && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-xl"
-              onClick={() => setDeletingVm(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-neutral-900 border border-white/10 rounded-3xl p-6 shadow-2xl relative z-10 w-full max-w-sm overflow-hidden"
-            >
-              <h3 className="text-xl font-semibold text-white mb-2">Delete Environment?</h3>
-              <p className="text-sm text-neutral-400 mb-6">
-                Are you sure you want to remove this environment? This action cannot be undone in
-                the demo.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setDeletingVm(null)}
-                  className="px-4 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    handleDelete(deletingVm);
-                    setDeletingVm(null);
-                  }}
-                  className="px-4 py-2 text-sm font-medium bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 border border-red-500/20 rounded-xl transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Connection Mode Modal */}
-      <AnimatePresence>
-        {selectedVm && connectionPhase === 'ready' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-xl"
-              onClick={() => {
-                setSelectedVm(null);
-                setConnectionPhase('idle');
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[#111111] border border-white/10 rounded-3xl p-1 shadow-2xl relative z-10 w-full max-w-2xl overflow-hidden"
-            >
-              <div className="bg-neutral-950 rounded-[22px] p-8">
-                <div className="mb-8">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                      <Monitor size={16} className="text-white" />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-white tracking-tight">
-                      {selectedVm.name}
-                    </h3>
-                  </div>
-                  <p className="text-sm text-neutral-400">
-                    Select an execution surface for this environment.
-                  </p>
+                  <button onClick={createWorkspace} className="px-3 py-2 bg-white text-black text-sm font-medium rounded-md hover:bg-neutral-200">New Workspace</button>
                 </div>
 
-                <div className="space-y-4">
-                  <button
-                    onClick={() => {
-                      onLaunchDesktop(selectedVm);
-                      setSelectedVm(null);
-                      setConnectionPhase('idle');
-                    }}
-                    className="w-full flex items-center justify-between p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all text-left group"
-                  >
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                        <Monitor size={26} />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-lg text-white mb-1">Desktop Mode</div>
-                        <div className="text-sm text-neutral-400">
-                          Open the complete graphical environment with multi-window support.
-                        </div>
-                      </div>
+                <div className="grid grid-cols-3 gap-6">
+                  <section className={`${liquidGlass} rounded-xl p-5`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Live Bill</h2>
+                      <span className="text-[10px] uppercase tracking-wider text-neutral-600">Provider</span>
                     </div>
-                    <ChevronRight
-                      size={20}
-                      className="text-neutral-600 group-hover:text-white transition-colors"
-                    />
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      onLaunchAppLibrary(selectedVm);
-                      setSelectedVm(null);
-                      setConnectionPhase('idle');
-                    }}
-                    className="w-full flex items-center justify-between p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all text-left group"
-                  >
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
-                        <AppWindow size={26} />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-lg text-white mb-1">
-                          Application Mode
-                        </div>
-                        <div className="text-sm text-neutral-400">
-                          Open a single application through the application runtime.
-                        </div>
-                      </div>
+                    <div className="text-2xl font-medium text-neutral-300">{billingConnected ? 'Connected' : 'Unavailable'}</div>
+                    <p className="text-xs text-neutral-600 mt-2">{billingMessage}</p>
+                  </section>
+                  <section>
+                    <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
+                    <div className="space-y-2 text-sm text-neutral-300">
+                      <div className="flex justify-between border-b border-white/5 pb-2"><span>Online</span><span className="text-white font-medium">{online}</span></div>
+                      <div className="flex justify-between pb-2"><span>Offline</span><span className="text-neutral-500 font-medium">{offline}</span></div>
                     </div>
-                    <ChevronRight
-                      size={20}
-                      className="text-neutral-600 group-hover:text-white transition-colors"
-                    />
-                  </button>
+                  </section>
+                  <section>
+                    <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Operations</h2>
+                    <div className="space-y-2 text-sm text-neutral-300">
+                      <div className="flex justify-between border-b border-white/5 pb-2"><span>Running</span><span className="text-blue-400 font-medium">{operations.filter((op) => op.status === 'Running').length}</span></div>
+                      <div className="flex justify-between pb-2"><span>Needs Attention</span><span className="text-amber-400 font-medium">{operations.filter((op) => op.status === 'Failed').length}</span></div>
+                    </div>
+                  </section>
+                </div>
 
-                  <div className="pt-4 mt-2 border-t border-white/5">
-                    <button
-                      onClick={() => {
-                        onLaunchDesktop(selectedVm);
-                        setSelectedVm(null);
-                        setConnectionPhase('idle');
-                      }}
-                      className="w-full flex items-center justify-between p-4 rounded-xl border border-transparent hover:bg-white/[0.03] transition-all text-left group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-neutral-900 border border-white/5 text-neutral-400 flex items-center justify-center shrink-0">
-                          <Clock size={20} />
-                        </div>
-                        <div>
-                          <div className="font-medium text-neutral-200">
-                            Resume Previous Session
-                          </div>
-                          <div className="text-xs text-neutral-500">
-                            Reconnect to your last active mode.
-                          </div>
-                        </div>
+                <section>
+                  <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Recent Activity</h2>
+                  <div className="space-y-3">
+                    {operations.slice(0, 5).map((op) => (
+                      <div key={op.id} className="text-sm flex items-center gap-4">
+                        <span className="text-neutral-500 w-20 shrink-0">{op.time}</span>
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${op.status === 'Running' ? 'bg-blue-400' : op.status === 'Failed' ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+                        <span className="text-neutral-300">{op.name}</span>
+                        <span className="text-neutral-600 ml-auto">{op.node}</span>
                       </div>
-                      <PlayCircle
-                        size={18}
-                        className="text-neutral-600 group-hover:text-white transition-colors"
-                      />
+                    ))}
+                    {operations.length === 0 && <p className="text-sm text-neutral-600">No activity recorded in this session.</p>}
+                  </div>
+                </section>
+              </>
+            )}
+
+            {activeView === 'projects' && (
+              <section>
+                <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Projects</h2>
+                <div className="divide-y divide-white/5 border-y border-white/5">
+                  {nodes.map((node) => (
+                    <button key={node.id} onClick={() => openWorkspace(node, 'desktop')} className="w-full py-4 flex items-center text-left hover:bg-white/[0.02]">
+                      <span className={`w-1.5 h-1.5 rounded-full mr-4 ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
+                      <span className="text-sm text-neutral-200">{node.name}</span>
+                      <span className="ml-auto text-xs text-neutral-600">{node.status}</span>
                     </button>
+                  ))}
+                  {nodes.length === 0 && <p className="py-12 text-sm text-neutral-600">No projects are currently available.</p>}
+                </div>
+              </section>
+            )}
+
+            {activeView === 'nodes' && (
+              <section>
+                {selectedNodeId ? (
+                  (() => {
+                    const node = nodes.find((item) => item.id === selectedNodeId);
+                    if (!node) return null;
+                    return (
+                      <div>
+                        <button onClick={() => setSelectedNodeId(null)} className="text-xs text-neutral-500 hover:text-white mb-6">
+                          ← Back to Nodes
+                        </button>
+                        <div className="border-b border-white/5 pb-6 mb-8">
+                          <h2 className="text-xl font-medium mb-2">{node.name}</h2>
+                          <div className="flex items-center gap-5 text-sm text-neutral-500">
+                            <span className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
+                              {node.status}
+                            </span>
+                            <span>Cloud107 runtime</span>
+                            <span>{node.id}</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-10 mb-8">
+                          <div>
+                            <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Workspace</h3>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between"><span className="text-neutral-500">State</span><span className="text-neutral-200">{node.status}</span></div>
+                              <div className="flex justify-between"><span className="text-neutral-500">CPU</span><span className="text-neutral-200">{node.vCPU || 'N/A'}</span></div>
+                              <div className="flex justify-between"><span className="text-neutral-500">Memory</span><span className="text-neutral-200">{node.ram}</span></div>
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Actions</h3>
+                            <div className="flex flex-wrap gap-2">
+                              {node.status === 'ready' && <button onClick={() => openWorkspace(node, 'desktop')} className={`px-3 py-2 bg-white/[0.07] hover:bg-white/15 text-white text-xs rounded-md backdrop-blur-lg border border-white/10`}>Open Workspace</button>}
+                              {node.status === 'ready' ? (
+                                <button onClick={() => changeWorkspaceState(node, 'stop')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Stop</button>
+                              ) : (
+                                <button onClick={() => changeWorkspaceState(node, 'start')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Start</button>
+                              )}
+                              <button onClick={() => openWorkspace(node, 'app')} className={`px-3 py-2 bg-white/5 hover:bg-white/[0.07] text-neutral-300 text-xs rounded-md backdrop-blur-lg border border-white/10`}>Applications</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <>
+                    <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Nodes</h2>
+                    <div className="divide-y divide-white/5 border-y border-white/5">
+                      {nodes.map((node) => (
+                        <button key={node.id} onClick={() => setSelectedNodeId(node.id)} className="w-full p-4 flex items-center gap-4 text-left hover:bg-white/[0.02]">
+                          <span className={`w-2 h-2 rounded-full ${node.status === 'ready' ? 'bg-emerald-400' : 'bg-neutral-700'}`} />
+                          <span className="text-sm text-neutral-200">{node.name}</span>
+                          <span className="text-xs text-neutral-500">{node.status}</span>
+                          <span className="text-xs text-neutral-600 ml-auto">Cloud107</span>
+                        </button>
+                      ))}
+                      {nodes.length === 0 && <p className="py-12 text-sm text-neutral-600">No nodes are currently registered.</p>}
+                    </div>
+                  </>
+                )}
+              </section>
+            )}
+
+            {activeView === 'operations' && (
+              <>
+                <section>
+                  <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4 flex items-center gap-2"><AlertCircle size={12} className="text-amber-400" /> Needs Attention</h2>
+                  <div className="space-y-3 border-l-2 border-amber-500/30 pl-4">
+                    {operations.filter((op) => op.status === 'Failed').map((op) => <div key={op.id}><div className="text-sm text-white">{op.name}</div><div className="text-xs text-neutral-500">{op.node}</div></div>)}
+                    {operations.filter((op) => op.status === 'Failed').length === 0 && <div className="text-sm text-neutral-600">Nothing requires attention.</div>}
+                  </div>
+                </section>
+                <section>
+                  <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4 flex items-center gap-2"><CheckCircle2 size={12} className="text-neutral-600" /> Completed</h2>
+                  <div className="space-y-4 border-l-2 border-white/5 pl-4">
+                    {operations.filter((op) => op.status === 'Completed').map((op) => <div key={op.id}><div className="text-sm text-neutral-400">{op.name}</div><div className="text-xs text-neutral-600 mt-0.5">{op.node} · {op.time}</div></div>)}
+                  </div>
+                </section>
+              </>
+            )}
+
+            {activeView === 'terminal' && (
+              <section>
+                <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Terminal</h2>
+                {readyNode ? (
+                  <div className="border border-white/5 bg-black/40 rounded-md overflow-hidden">
+                    <div className="px-4 py-2 border-b border-white/5 text-xs text-neutral-500">{readyNode.name}</div>
+                    <div className="p-4 h-72 overflow-y-auto font-mono text-xs text-neutral-300 space-y-1">
+                      {terminalLines.map((line, index) => <div key={index}>{line}</div>)}
+                    </div>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const command = terminalInput.trim();
+                        if (!command) return;
+                        setTerminalLines((lines) => [...lines, `$ ${command}`, command === 'clear' ? '' : `Command queued: ${command}`].slice(-100));
+                        setTerminalInput('');
+                      }}
+                      className="border-t border-white/5 flex items-center px-4"
+                    >
+                      <span className="text-neutral-600 font-mono text-xs mr-2">$</span>
+                      <input value={terminalInput} onChange={(event) => setTerminalInput(event.target.value)} placeholder="command" className="flex-1 bg-transparent py-3 outline-none font-mono text-xs text-white placeholder:text-neutral-700" />
+                    </form>
+                  </div>
+                ) : (
+                  <p className="text-sm text-neutral-600">No online node is available.</p>
+                )}
+              </section>
+            )}
+
+            {activeView === 'settings' && (
+              <section className="grid grid-cols-[180px_1fr] gap-10">
+                <div className="space-y-1">
+                  {['General', 'Identity', 'Security', 'Nodes', 'Providers', 'Runtime', 'Updates', 'Storage', 'Network'].map((item) => (
+                    <button key={item} onClick={() => setSettingsSection(item)} className={`w-full text-left px-3 py-1.5 text-sm rounded ${settingsSection === item ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}>{item}</button>
+                  ))}
+                  <div className="pt-5 pb-2 text-[10px] uppercase tracking-wider text-neutral-600">Advanced</div>
+                  {['Capabilities', 'Policies', 'Schedulers', 'Reconciliation', 'Diagnostics', 'Events', 'Logs'].map((item) => (
+                    <button key={item} onClick={() => setSettingsSection(item)} className={`w-full text-left px-3 py-1.5 text-sm rounded ${settingsSection === item ? 'bg-white/10 text-white' : 'text-neutral-500 hover:text-white'}`}>{item}</button>
+                  ))}
+                </div>
+                <div>
+                  <h2 className="text-lg font-medium mb-6">{settingsSection} Configuration</h2>
+                  <div className="space-y-5 text-sm">
+                    <div><div className="text-neutral-500 mb-1">Environment Name</div><div className="text-neutral-200">Cloud107</div></div>
+                    <div><div className="text-neutral-500 mb-1">Execution</div><div className="text-neutral-200">Local Execution</div></div>
+                    {settingsSection === 'Updates' ? (
+                      updateStatus ? (
+                        <>
+                          <div><div className="text-neutral-500 mb-1">Current Version</div><div className="text-neutral-200">v{updateStatus.currentVersion}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Target</div><div className="text-neutral-200">{updateStatus.platform} · {updateStatus.architecture}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Verification</div><div className="text-neutral-200">{updateStatus.updateManager.verification}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Rollback</div><div className="text-neutral-200">{updateStatus.updateManager.rollback}</div></div>
+                          <div><div className="text-neutral-500 mb-1">Checkpoints</div><div className="text-neutral-200">{updateStatus.checkpointCount}</div></div>
+                          {updateStatus.latestCheckpoint && <div><div className="text-neutral-500 mb-1">Latest Checkpoint</div><div className="text-neutral-200">{updateStatus.latestCheckpoint.id} · {updateStatus.latestCheckpoint.status}</div></div>}
+                        </>
+                      ) : (
+                        <div className="text-neutral-500">Update status unavailable.</div>
+                      )
+                    ) : settingsSection !== 'General' && <div><div className="text-neutral-500 mb-1">Status</div><div className="text-neutral-200">Configured surface</div></div>}
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </section>
+            )}
           </div>
-        )}
-      </AnimatePresence>
-
-      {/* Connection Progress Overlays */}
-      <AnimatePresence>
-        {connectionPhase === 'provisioning' && (
-          <motion.div
-            key="provisioning"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-[#0A0A0A]"
-          >
-            <ProvisioningScreen />
-          </motion.div>
-        )}
-        {connectionPhase === 'connecting' && (
-          <motion.div
-            key="connecting"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-[#0A0A0A]"
-          >
-            <ConnectionScreen />
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </main>
     </div>
   );
 }

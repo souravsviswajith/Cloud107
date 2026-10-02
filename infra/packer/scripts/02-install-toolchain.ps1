@@ -26,4 +26,4 @@ pip install uv
 Write-Host "Setting up WSL default to Ubuntu..."
 wsl --install -d Ubuntu
 
-Write-Host "Phase 2 Complete."
+Write-Host "Development toolchain setup complete."

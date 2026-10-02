@@ -15,4 +15,4 @@ Write-Host "Enabling WSL and Virtual Machine Platform..."
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
 Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
 
-Write-Host "Phase 1 Complete."
+Write-Host "Package manager and WSL setup complete."

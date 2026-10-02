@@ -20,5 +20,3 @@ pip install tensorflow jupyterlab
 Write-Host "Installing Ollama for Local LLMs..."
 Invoke-WebRequest -Uri "https://ollama.com/download/OllamaSetup.exe" -OutFile "C:\Windows\Temp\OllamaSetup.exe"
 Start-Process -FilePath "C:\Windows\Temp\OllamaSetup.exe" -ArgumentList "/S" -Wait
-
-Write-Host "Phase 3 Complete."

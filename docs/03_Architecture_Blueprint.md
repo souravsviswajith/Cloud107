@@ -63,3 +63,111 @@ A lightweight service runs on boot to optimize the OS:
 1. **GPU Validation:** Verifies NVENC capabilities, CUDA health, and DirectX.
 2. **Power Plan:** Sets system to High Performance.
 3. **Network Tuning:** Tunes MTU and low-latency buffer profiles.
+
+
+## 13. Basis Language and System Foundation
+
+Cloud107 does not adopt an industry-template technology stack. Language, operating-system interfaces, runtime, and tooling are selected from the requirements of each subsystem.
+
+The architectural basis is language-neutral and permits multiple implementation bases where the computational problem requires them:
+
+- **Unix / POSIX:** process model, shell orchestration, filesystem and IPC primitives, service lifecycle, deployment and runtime operations.
+- **Assembly:** architecture-specific instructions and lowest-level operations where direct machine-level control is justified.
+- **C:** operating-system interfaces, native runtime components, hardware-near services, and portable systems primitives.
+- **C++:** performance-sensitive native systems, rendering, simulation, and complex runtime components where its execution model is appropriate.
+- **C# / .NET:** managed systems components, cross-platform services, tooling, and platform integrations where the .NET runtime and ecosystem are appropriate.
+- **SQL:** relational persistence, queries, constraints, transactions, and database-side computation.
+- **Python:** automation, data processing, machine learning, experimentation, and scripting where its ecosystem and iteration speed are appropriate.
+- **Java:** JVM-based components where portability, ecosystem compatibility, or platform requirements justify it.
+- **HTML:** semantic document structure and browser-facing interface foundation.
+- **CSS:** presentation, layout, responsive behavior, visual composition, and the Cloud107 visual system.
+- **JavaScript / TypeScript:** browser-facing behavior and application logic where the JavaScript runtime is the appropriate execution environment.
+- **Rust, Go, or other languages:** permitted when their concrete safety, concurrency, portability, or systems characteristics fit the subsystem.
+- **Platform-native toolchains:** used where Android, Windows, Linux, Apple, or another target platform exposes capabilities that require or materially benefit from native integration.
+
+The choice is made **after the subsystem boundary and requirements are established**, not before them. Different subsystems may therefore use different basis languages while communicating through explicit architectural contracts.
+
+No language is selected merely because it is conventional for a particular industry category, and no subsystem is forced into a common language for stylistic uniformity.
+
+
+## 14. Experience Boundary: Cloud107 and Project Atlas
+
+Cloud107 and Project Atlas are separate project boundaries.
+
+**Cloud107** provides the underlying computational and infrastructure substrate: preconfigured environments, runtimes, dependencies, workloads, nodes, operations, terminal control, deployment, and universal update management. Its plug-and-play objective is achieved by resolving technical complexity before the workload reaches the end user.
+
+**Project Atlas** is the separate higher-level project for non-technical users. Cloud107 should not be reduced to an Atlas-style consumer abstraction merely to make its core infrastructure accessible.
+
+This preserves two complementary layers:
+
+**Cloud107:** prepare and operate the machinery.  
+**Project Atlas:** expose appropriate capabilities to non-technical users.
+
+The boundary is architectural, not merely visual. Atlas may consume Cloud107 capabilities where integration is appropriate, while Cloud107 remains independently usable as an infrastructure and execution platform.
+
+
+## 15. Preconfigured Environment and Plug-and-Play Execution
+
+Cloud107 treats the preconfigured execution environment as an architectural capability rather than a convenience feature.
+
+A supported deployment target is prepared with the runtime components, libraries, system dependencies, platform integration, configuration, and operational tooling required by the workloads it exposes. These components are versioned and validated as part of the deployment environment.
+
+The intended user flow is:
+
+**Provision / install → initialize → validate environment → expose capability → use.**
+
+The user should not be required to manually resolve ordinary dependency installation, runtime selection, library compatibility, or environment configuration before using a supported capability.
+
+### Environment layers
+
+1. **System layer** — operating system, kernel/platform interfaces, drivers, devices, filesystem, networking, and security primitives.
+2. **Runtime layer** — language runtimes, execution engines, native runtimes, and platform frameworks required by supported workloads.
+3. **Dependency layer** — libraries, packages, SDKs, codecs, tools, and other workload dependencies.
+4. **Cloud107 layer** — control services, agents, workspace/runtime components, identity, operations, terminal, and update management.
+5. **Workload layer** — projects and applications consuming the prepared environment.
+6. **Experience layer** — Cloud107's operator/developer interface or an integrated higher-level project such as Project Atlas.
+
+### Reproducibility
+
+The prepared environment must be describable, versionable, verifiable, and reproducible across supported deployment targets. Environment changes therefore belong under Universal Update Management rather than being treated as ad-hoc manual maintenance.
+
+This does not mean every target receives identical binaries or identical system components. The environment contract is preserved while implementation remains target-appropriate for x86_64, ARM64, Windows, Linux, WSL, Android, Apple, ISO, container, or other supported targets.
+
+### Boundary
+
+Plug-and-play applies to the **user-facing execution experience**. It does not remove developer or operator control. Developers and operators retain access to the underlying environment through the appropriate Cloud107 interfaces, including Terminal, Operations, Settings, deployment tooling, and Universal Update Management.
+
+
+## 16. AI-Mediated Complexity Handling
+
+Cloud107 separates **infrastructure execution complexity** from **user cognitive complexity**.
+
+The infrastructure remains explicit and deterministic: hardware, architecture, operating system, runtime, toolchain, libraries, environments, nodes, workloads, policies, and execution mechanisms are represented by Cloud107's underlying contracts.
+
+AI is responsible for reducing the cognitive burden of operating those capabilities. The AI layer interprets user intent, determines which available Cloud107 capabilities are relevant, prepares an execution plan, and presents the result through the appropriate Cloud107 interface.
+
+The intended relationship is:
+
+**User intent → AI interpretation → Cloud107 capability selection → policy / validation → infrastructure execution → observable result.**
+
+AI does not replace the infrastructure substrate, invent infrastructure state, or become the authoritative source of operational truth. Execution remains subject to Cloud107's existing authorization, validation, lifecycle, observability, update, and recovery mechanisms.
+
+### Hardware-to-infrastructure interpretation
+
+Cloud107 may interpret the available hardware progressively:
+
+**Chip / hardware → ISA / architecture → platform → compiler / toolchain → runtime → dependencies → prepared environment → workload.**
+
+For example, x86_64 and ARM64 are not merely packaging labels. They influence the compatible toolchain, native libraries, runtime components, system image, and workload environment selected for a deployment.
+
+AI may assist in resolving this complexity from user intent, but the resulting environment and execution decision remain constrained by the actual capabilities and contracts exposed by Cloud107.
+
+### LLM107 boundary
+
+LLM107 is the Cloud107 intelligence module. It provides the model abstraction and AI capability layer used where language-model reasoning or interpretation is appropriate.
+
+LLM107 remains subordinate to Cloud107's infrastructure contracts. It does not redefine the underlying hardware, runtime, security, deployment, or workload model.
+
+This preserves the core principle:
+
+**AI handles the complexity of operating the system; Cloud107 remains the system being operated.**

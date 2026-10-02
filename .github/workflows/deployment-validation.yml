@@ -1,0 +1,82 @@
+name: Deployment Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "src/**"
+      - "drizzle/**"
+      - ".github/workflows/deployment-validation.yml"
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "src/**"
+      - "drizzle/**"
+      - ".github/workflows/deployment-validation.yml"
+
+jobs:
+  image:
+    name: Build ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ matrix.platform }}
+          push: false
+          tags: cloud107:validation
+
+  compose:
+    name: Compose integration
+    runs-on: ubuntu-latest
+    needs: image
+    env:
+      SQL_ADMIN_USER: postgres
+      SQL_ADMIN_PASSWORD: cloud107-ci-admin
+      SQL_USER: postgres
+      SQL_PASSWORD: cloud107-ci-admin
+      SQL_DB_NAME: cloud107
+      C107_AUTH_SECRET: cloud107-ci-auth-secret
+      APP_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Start Cloud107 stack
+        run: docker compose up -d --build
+      - name: Wait for application health
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://localhost:3000/api/v1/health > /tmp/health.json; then
+              cat /tmp/health.json
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose ps
+          docker compose logs --no-color cloud107-migrate cloud107
+          exit 1
+      - name: Show deployment state
+        if: always()
+        run: docker compose ps
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

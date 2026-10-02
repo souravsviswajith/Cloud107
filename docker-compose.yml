@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SQL_ADMIN_USER:-postgres}
+      POSTGRES_PASSWORD: ${SQL_ADMIN_PASSWORD:?SQL_ADMIN_PASSWORD is required}
+      POSTGRES_DB: ${SQL_DB_NAME:-cloud107}
+    volumes:
+      - cloud107-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SQL_ADMIN_USER:-postgres} -d ${SQL_DB_NAME:-cloud107}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cloud107-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["npm", "run", "db:migrate"]
+    environment:
+      NODE_ENV: production
+      SQL_HOST: postgres
+      SQL_USER: ${SQL_ADMIN_USER:-postgres}
+      SQL_PASSWORD: ${SQL_ADMIN_PASSWORD:?SQL_ADMIN_PASSWORD is required}
+      SQL_DB_NAME: ${SQL_DB_NAME:-cloud107}
+      SQL_ADMIN_USER: ${SQL_ADMIN_USER:-postgres}
+      SQL_ADMIN_PASSWORD: ${SQL_ADMIN_PASSWORD:?SQL_ADMIN_PASSWORD is required}
+
+  cloud107:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      cloud107-migrate:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      SQL_HOST: postgres
+      SQL_USER: ${SQL_USER:-postgres}
+      SQL_PASSWORD: ${SQL_PASSWORD:?SQL_PASSWORD is required}
+      SQL_DB_NAME: ${SQL_DB_NAME:-cloud107}
+      C107_AUTH_SECRET: ${C107_AUTH_SECRET:?C107_AUTH_SECRET is required}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+    ports:
+      - "3000:3000"
+
+volumes:
+  cloud107-postgres:

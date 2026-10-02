@@ -1,0 +1,9 @@
+{
+  "name": "cloud107-reference-workload",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "./build.sh" },
+  "dependencies": { "express": "4.21.2", "pg": "8.22.0" },
+  "devDependencies": { "esbuild": "0.25.0", "postject": "1.0.0-beta.6" }
+}

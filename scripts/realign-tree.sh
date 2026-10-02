@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ==============================================================================
 # Cloud107 Sovereign Operating Environment - Repository Realignment Script
-# Phase 1: Architectural Classification, Directory Scaffolding & Relocation
+# Architectural Classification, Directory Scaffolding & Relocation
 # ==============================================================================
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
