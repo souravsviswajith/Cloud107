@@ -1,6 +1,7 @@
 # Cloud107
 
 Cloud107 runs and manages applications, environments, nodes, and workloads from infrastructure under the operator's control.
+with minimal operational cost
 
 ## Interfaces
 
@@ -198,3 +199,9 @@ npm run build
 Cloud107 is licensed under the GNU Affero General Public License v3.0 or later.
 
 See [LICENSE](LICENSE).
+
+
+## Development and Contribution Note
+
+every Open source project I've forked 
+that gave years worth of experience 
