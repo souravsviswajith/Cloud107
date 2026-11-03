@@ -92,7 +92,7 @@ public sealed class ExecutionPlanner
         {
             var capability = $"filesystem:ro:{path}";
             required.Add(capability);
-            if (HasFileSystemAccess(node.Capabilities.FileSystemRoots, path, readWrite: false))
+            if (HasFileSystemAccess(node.Capabilities.FileSystemRoots, path, readWrite: false, node.Os))
                 available.Add(capability);
         }
 
@@ -100,7 +100,7 @@ public sealed class ExecutionPlanner
         {
             var capability = $"filesystem:rw:{path}";
             required.Add(capability);
-            if (HasFileSystemAccess(node.Capabilities.FileSystemRoots, path, readWrite: true))
+            if (HasFileSystemAccess(node.Capabilities.FileSystemRoots, path, readWrite: true, node.Os))
                 available.Add(capability);
         }
 
@@ -113,11 +113,31 @@ public sealed class ExecutionPlanner
     private static bool HasFileSystemAccess(
         Dictionary<string, string> roots,
         string path,
-        bool readWrite)
+        bool readWrite,
+        string os)
     {
+        var normalizedPath = NormalizeAbsolutePath(path);
+        if (normalizedPath is null)
+            return false;
+
+        var comparison = string.Equals(os, "windows", StringComparison.OrdinalIgnoreCase)
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+
         foreach (var root in roots)
         {
-            if (!path.StartsWith(root.Key, StringComparison.Ordinal))
+            var normalizedRoot = NormalizeAbsolutePath(root.Key);
+            if (normalizedRoot is null)
+                continue;
+
+            var isWithinRoot = normalizedRoot == "/"
+                ? normalizedPath.StartsWith("/", comparison)
+                : normalizedPath.Equals(normalizedRoot, comparison) ||
+                  normalizedPath.StartsWith(
+                      normalizedRoot.TrimEnd('/') + "/",
+                      comparison);
+
+            if (!isWithinRoot)
                 continue;
 
             if (!readWrite || root.Value.Equals("rw", StringComparison.OrdinalIgnoreCase))
@@ -125,6 +145,62 @@ public sealed class ExecutionPlanner
         }
 
         return false;
+    }
+
+    // Normalize target paths lexically rather than using the planner host's
+    // Path.GetFullPath, which could apply the wrong OS semantics to a remote node.
+    private static string? NormalizeAbsolutePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return null;
+
+        var value = path.Replace('\\', '/');
+        string prefix;
+
+        if (value.StartsWith("//", StringComparison.Ordinal))
+        {
+            prefix = "//";
+            value = value.TrimStart('/');
+        }
+        else if (value.Length >= 3 &&
+                 char.IsLetter(value[0]) &&
+                 value[1] == ':' &&
+                 value[2] == '/')
+        {
+            prefix = $"{char.ToUpperInvariant(value[0])}:/";
+            value = value[3..];
+        }
+        else if (value.StartsWith("/", StringComparison.Ordinal))
+        {
+            prefix = "/";
+            value = value[1..];
+        }
+        else
+        {
+            // Relative and drive-relative paths cannot establish a safe root.
+            return null;
+        }
+
+        var segments = new List<string>();
+        foreach (var segment in value.Split('/', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (segment == ".")
+                continue;
+
+            if (segment == "..")
+            {
+                if (segments.Count > 0)
+                    segments.RemoveAt(segments.Count - 1);
+                else if (prefix == "//")
+                    return null;
+
+                continue;
+            }
+
+            segments.Add(segment);
+        }
+
+        return prefix + string.Join("/", segments);
     }
 
     private static ResourceResolution ResolveResources(
