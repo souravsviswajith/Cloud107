@@ -105,6 +105,8 @@ export const invocations = pgTable('invocations', {
   capability: text('capability').notNull(),
   status: text('status').notNull().$type<CapabilityInvocationStatus>(),
   s1Id: text('s1_id').references(() => workloads.id),
+  userId: integer('user_id').references(() => users.id),
+  planId: text('plan_id').references(() => executionPlans.id),
   result: jsonb('result'),
   error: text('error'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -136,6 +138,14 @@ export const invocationsRelations = relations(invocations, ({ one }) => ({
   workload: one(workloads, {
     fields: [invocations.s1Id],
     references: [workloads.id],
+  }),
+  user: one(users, {
+    fields: [invocations.userId],
+    references: [users.id],
+  }),
+  plan: one(executionPlans, {
+    fields: [invocations.planId],
+    references: [executionPlans.id],
   }),
 }));
 

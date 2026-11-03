@@ -15,6 +15,27 @@
       "when": 1790380800000,
       "tag": "0001_workload_execution_state",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790380801000,
+      "tag": "0002_capability_invocations",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790380802000,
+      "tag": "0003_invocation_plan_reference",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793404800000,
+      "tag": "0004_invocation_ownership",
+      "breakpoints": true
     }
   ]
 }

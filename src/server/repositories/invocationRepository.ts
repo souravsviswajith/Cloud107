@@ -1,6 +1,6 @@
+import { and, eq } from 'drizzle-orm';
 import { db } from '../../db';
 import { invocations } from '../../db/schema';
-import { eq } from 'drizzle-orm';
 import {
   createInvocationId,
   type CapabilityInvocation,
@@ -11,6 +11,7 @@ export class InvocationRepository {
   async create(
     capability: string,
     s1Id: string,
+    userId?: number,
   ): Promise<CapabilityInvocation> {
     const invocationId = createInvocationId();
     const createdAt = new Date();
@@ -20,6 +21,7 @@ export class InvocationRepository {
       capability,
       status: 'accepted',
       s1Id,
+      ...(userId !== undefined ? { userId } : {}),
       createdAt,
     });
 
@@ -42,6 +44,17 @@ export class InvocationRepository {
     if (!record) return null;
 
     return this.toInvocation(record);
+  }
+
+  async getForUser(invocationId: string, userId: number): Promise<CapabilityInvocation | null> {
+    const records = await db
+      .select()
+      .from(invocations)
+      .where(and(eq(invocations.id, invocationId), eq(invocations.userId, userId)))
+      .limit(1);
+
+    const record = records[0];
+    return record ? this.toInvocation(record) : null;
   }
 
   async updatePlanId(invocationId: string, planId: string): Promise<void> {

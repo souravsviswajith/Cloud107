@@ -1,2 +1,2 @@
 ALTER TABLE invocations
-ADD COLUMN plan_id TEXT REFERENCES execution_plans(id);
+ADD COLUMN IF NOT EXISTS plan_id TEXT REFERENCES execution_plans(id);
