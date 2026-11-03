@@ -41,7 +41,7 @@
     "remark-gfm": "^4.0.1",
     "uuid": "^14.0.1",
     "vite": "^6.2.3",
-    "zod": "^4.4.3",
+    "zod": "^4.6.6",
     "drizzle-kit": "^0.31.10"
   },
   "devDependencies": {
