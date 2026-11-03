@@ -21,6 +21,7 @@ export class LocalUnixProvider implements NodeProvider {
   }
 
   async discoverCapabilities(node: CloudNode): Promise<Capability[]> {
+    void node;
     return [
       {
         id: 'resource.cpu',
@@ -73,7 +74,7 @@ export class LocalUnixProvider implements NodeProvider {
         return { success: true, stdout: stdout.trim(), stderr: stderr.trim() };
       } catch (err: unknown) {
         const execError = err as { code?: number; message: string };
-        throw new Error(`Native execution failed (Code: ${execError.code || 'UNKNOWN'}): ${execError.message}`);
+        throw new Error(`Native execution failed (Code: ${execError.code || 'UNKNOWN'}): ${execError.message}`, { cause: err });
       }
     }
     throw new Error(`Capability ${capability.id} is not supported by ${this.id}`);
