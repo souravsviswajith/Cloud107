@@ -1,4 +1,4 @@
-CREATE TABLE invocations (
+CREATE TABLE IF NOT EXISTS invocations (
   id TEXT PRIMARY KEY,
   capability TEXT NOT NULL,
   status TEXT NOT NULL CHECK (

@@ -8,6 +8,7 @@ import { workloadsRouter } from './workloads';
 import { schedulingRouter } from './scheduling';
 import { capabilitiesRouter, invocationsRouter } from './capabilities';
 import { aiRouter } from './ai';
+import { ecosystemRouter } from './ecosystem';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use('/workloads', workloadsRouter);
 router.use('/execution', schedulingRouter);
 router.use('/107/capabilities', capabilitiesRouter);
 router.use('/107/invocations', invocationsRouter);
+router.use('/107/ecosystem', ecosystemRouter);
 router.use('/ai', aiRouter);
 
 export default router;

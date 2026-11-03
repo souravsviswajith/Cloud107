@@ -4,7 +4,7 @@ import type {
 } from './invocation';
 
 export interface InvocationStateRepository {
-  create(capability: string, s1Id: string): Promise<CapabilityInvocation>;
+  create(capability: string, s1Id: string, userId?: number): Promise<CapabilityInvocation>;
   get(invocationId: string): Promise<CapabilityInvocation | null>;
   updateStatus(
     invocationId: string,
@@ -30,8 +30,9 @@ export class InvocationLifecycle<TExecution> {
   async accept(
     capability: string,
     s1Id: string,
+    userId?: number,
   ): Promise<CapabilityInvocation> {
-    return this.repository.create(capability, s1Id);
+    return this.repository.create(capability, s1Id, userId);
   }
 
   async markPending(invocationId: string): Promise<void> {

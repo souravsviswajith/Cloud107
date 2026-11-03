@@ -7,6 +7,7 @@ import { InvocationLifecycle, type InvocationResultAdapter } from '../../../core
 import type { StoredProcessExecution } from '../../repositories/executionStateRepository';
 import { InvocationRepository } from '../../repositories/invocationRepository';
 import { WorkloadStateRepository } from '../../repositories/workloadStateRepository';
+import { requireAuth, getDbUser } from '../../middleware/auth';
 import { successResponse, errorResponse } from '../../utils/response';
 
 const invocationRequestSchema = z.object({
@@ -55,11 +56,14 @@ export function createCapabilitiesRouter(
   const invoker = new CapabilityInvoker(registry);
   const router = Router();
 
+  router.use(requireAuth);
+
   router.post(
     '/:capability/invoke',
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const parsed = invocationRequestSchema.parse(req.body ?? {});
+        const user = await getDbUser(req);
         const capabilityRequest: CapabilityRequest = {
           capability: req.params.capability,
           arguments: parsed.arguments,
@@ -73,6 +77,7 @@ export function createCapabilitiesRouter(
         const invocation = await lifecycle.accept(
           capabilityRequest.capability,
           s1.identity.id,
+          user.id,
         );
 
         void dispatcher.submit(invocation, s1).catch((error: unknown) => {
@@ -101,8 +106,6 @@ export function createCapabilitiesRouter(
     },
   );
 
-
-
   return router;
 }
 
@@ -111,11 +114,14 @@ export function createInvocationsRouter(
 ): Router {
   const router = Router();
 
+  router.use(requireAuth);
+
   router.get(
     '/:invocationId',
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const invocation = await repository.get(req.params.invocationId);
+        const user = await getDbUser(req);
+        const invocation = await repository.getForUser(req.params.invocationId, user.id);
 
         if (!invocation) {
           return res
