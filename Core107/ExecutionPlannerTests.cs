@@ -111,6 +111,83 @@ public sealed class ExecutionPlannerTests
         Assert.True(plan.Executable);
     }
 
+    [Fact]
+    public void FileSystemSiblingPrefix_IsNotGranted()
+    {
+        var workload = HelloLinux() with
+        {
+            Capabilities = new CapabilityRequirement(
+                null,
+                new FileSystemRequirement([], ["/workspace-escape/secret.txt"]),
+                null,
+                null)
+        };
+        var node = Node("linux", "x86_64", 1_000_000_000, 2) with
+        {
+            Capabilities = new NodeCapabilitySet(
+                false,
+                new Dictionary<string, string> { ["/workspace"] = "rw" },
+                [],
+                [])
+        };
+
+        var plan = _planner.PlanWorkload(workload, node);
+
+        Assert.False(plan.Executable);
+        Assert.Contains("capabilities", plan.ReasonNotExecutable!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void FileSystemTraversal_IsNotGranted()
+    {
+        var workload = HelloLinux() with
+        {
+            Capabilities = new CapabilityRequirement(
+                null,
+                new FileSystemRequirement([], ["/workspace/../etc/passwd"]),
+                null,
+                null)
+        };
+        var node = Node("linux", "x86_64", 1_000_000_000, 2) with
+        {
+            Capabilities = new NodeCapabilitySet(
+                false,
+                new Dictionary<string, string> { ["/workspace"] = "rw" },
+                [],
+                [])
+        };
+
+        var plan = _planner.PlanWorkload(workload, node);
+
+        Assert.False(plan.Executable);
+        Assert.Contains("capabilities", plan.ReasonNotExecutable!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void FileSystemNormalizedChild_RemainsGranted()
+    {
+        var workload = HelloLinux() with
+        {
+            Capabilities = new CapabilityRequirement(
+                null,
+                new FileSystemRequirement([], ["/workspace/sub/../file.txt"]),
+                null,
+                null)
+        };
+        var node = Node("linux", "x86_64", 1_000_000_000, 2) with
+        {
+            Capabilities = new NodeCapabilitySet(
+                false,
+                new Dictionary<string, string> { ["/workspace"] = "rw" },
+                [],
+                [])
+        };
+
+        var plan = _planner.PlanWorkload(workload, node);
+
+        Assert.True(plan.Executable);
+    }
+
     private static WorkloadRepresentation HelloLinux() =>
         new(
             new WorkloadIdentity(

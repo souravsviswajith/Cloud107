@@ -168,8 +168,9 @@ class MockCloud107Client implements Cloud107Client {
   }
 
   async getExecutions(
-    _workloadId: string,
+    workloadId: string,
   ): Promise<StoredProcessExecution[]> {
+    void workloadId;
     return this.s4 ? [this.s4] : [];
   }
 
