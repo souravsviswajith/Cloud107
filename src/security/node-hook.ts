@@ -25,7 +25,9 @@ export class SecurityNodeHook implements NodeHook {
     private readonly reporter?: SaaSProviderReporter,
   ) {}
 
-  async before(_context: NodeHookContext): Promise<void> {}
+  async before(context: NodeHookContext): Promise<void> {
+    void context;
+  }
 
   async after(context: NodeHookContext, error?: unknown): Promise<void> {
     if (!error) return;

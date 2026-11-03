@@ -64,8 +64,8 @@ async function main() {
         printHelp();
         process.exit(1);
     }
-  } catch (error: any) {
-    console.error(`\n\x1b[31m[ERROR]\x1b[0m ${error.message}`);
+  } catch (error: unknown) {
+    console.error(`\n\x1b[31m[ERROR]\x1b[0m ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 }
@@ -112,8 +112,8 @@ async function nodeLs(format: string) {
     data.data.forEach((n: any) => {
       console.log(`${n.id}\t${n.platform}\t\t${n.architecture}\t\t${n.status}\t\t${n.name}`);
     });
-  } catch (e: any) {
-    throw new Error(`Failed to list nodes: ${e.message}`);
+  } catch (error: unknown) {
+    throw new Error(`Failed to list nodes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
   }
 }
 
@@ -144,8 +144,8 @@ async function nodeInspect(id: string, format: string) {
         console.log(`      ${c.description}`);
       });
     }
-  } catch (e: any) {
-    throw new Error(`Failed to inspect node: ${e.message}`);
+  } catch (error: unknown) {
+    throw new Error(`Failed to inspect node: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
   }
 }
 
@@ -168,7 +168,7 @@ async function handleArtifactNamespace(args: string[]) {
   const targetPath = positionals[1];
 
   switch (subcommand) {
-    case 'verify':
+    case 'verify': {
       if (!targetPath) throw new Error('Missing required argument: <filepath>');
       if (!values.urn) throw new Error('Missing required flag: --urn <pkg:cloud107/...>');
       const { isVerified, resultData } = await performVerification(targetPath, values.urn as string);
@@ -183,6 +183,8 @@ async function handleArtifactNamespace(args: string[]) {
       const resultColor = isVerified ? '\x1b[32m' : '\x1b[31m';
       console.log(`Result:\t\t${resultColor}${resultData.result}\x1b[0m`);
       process.exit(isVerified ? 0 : 1);
+      break;
+    }
     default:
       console.error(`Error: Unknown artifact command '${subcommand}'`);
       process.exit(1);
@@ -206,17 +208,18 @@ function parseArtifactUrn(urn: string) {
 }
 
 async function computeFileHash(filePath: string): Promise<string> {
-  return new Promise(async (resolveHash, reject) => {
-    try {
-      await access(filePath);
-    } catch {
-      return reject(new Error(`File not found: ${filePath}`));
-    }
+  try {
+    await access(filePath);
+  } catch (error) {
+    throw new Error(`File not found: ${filePath}`, { cause: error });
+  }
+
+  return new Promise((resolveHash, reject) => {
     const hash = createHash('sha256');
     const stream = createReadStream(filePath);
     stream.on('data', (chunk) => hash.update(chunk));
     stream.on('end', () => resolveHash(`sha256:${hash.digest('hex')}`));
-    stream.on('error', (err) => reject(err));
+    stream.on('error', reject);
   });
 }
 
@@ -324,8 +327,8 @@ async function workloadInspect(workloadId: string, nodeId: string, format: strin
     console.log(`  Status:  ${sColor}${c.toUpperCase()}\x1b[0m`);
     if (data.data.pid) console.log(`  PID:     ${data.data.pid}`);
     console.log(`  Updated: ${data.data.updatedAt}`);
-  } catch (e: any) {
-    throw new Error(`Failed to inspect workload: ${e.message}`);
+  } catch (error: unknown) {
+    throw new Error(`Failed to inspect workload: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
   }
 }
 
@@ -336,8 +339,8 @@ async function workloadLogs(workloadId: string, nodeId: string) {
     if (!response.ok) throw new Error(data.message || response.statusText);
     console.log(`--- Logs for Workload ${workloadId} ---`);
     data.data.logs.forEach((line: string) => console.log(line));
-  } catch (e: any) {
-    throw new Error(`Failed to fetch logs: ${e.message}`);
+  } catch (error: unknown) {
+    throw new Error(`Failed to fetch logs: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
   }
 }
 
