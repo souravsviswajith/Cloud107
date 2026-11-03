@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "apiVersion": "hypercloud.107/v1alpha1",
+  "kind": "Workload",
+  "metadata": {
+    "name": "cloud107-control-plane",
+    "displayName": "Cloud107",
+    "labels": {
+      "ecosystem": "107",
+      "role": "control-plane",
+      "deployment-slice": "first"
+    }
+  },
+  "spec": {
+    "lifecycleOwner": "hypercloud",
+    "runtime": {
+      "adapter": "docker-compose",
+      "composeFile": "docker-compose.yml",
+      "services": ["postgres", "cloud107-migrate", "cloud107"]
+    },
+    "entrypoint": {
+      "protocol": "http",
+      "localUrl": "http://127.0.0.1:3000/",
+      "containerPort": 3000
+    },
+    "dependencies": [
+      {
+        "name": "postgres",
+        "service": "postgres",
+        "readiness": "compose-healthcheck"
+      },
+      {
+        "name": "database-migrations",
+        "service": "cloud107-migrate",
+        "readiness": "successful-completion"
+      }
+    ],
+    "persistence": [
+      {
+        "name": "cloud107-postgres",
+        "type": "named-volume",
+        "backupRequired": true
+      }
+    ],
+    "secrets": [
+      "SQL_ADMIN_PASSWORD",
+      "SQL_PASSWORD",
+      "C107_AUTH_SECRET"
+    ],
+    "placement": {
+      "default": "local",
+      "remoteNodes": "future-adapter",
+      "cloudProviders": "optional-adapter"
+    },
+    "security": {
+      "publicDatabasePort": false,
+      "requiresOperatorSuppliedSecrets": true,
+      "doNotExposeWithoutTlsAndAccessControl": true
+    },
+    "status": "reference-workload"
+  }
+}
