@@ -1,4 +1,4 @@
-# This workflow will build a .NET project
+# This workflow builds and tests the .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: .NET
@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +20,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Core107/Core107.Tests.csproj
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build Core107/Core107.Tests.csproj --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test Core107/Core107.Tests.csproj --no-build --verbosity normal
