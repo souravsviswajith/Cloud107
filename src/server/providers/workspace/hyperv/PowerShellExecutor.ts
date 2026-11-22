@@ -1,9 +1,9 @@
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { logger } from '../../../utils/logger';
 import { HyperVError, HyperVTimeoutError } from './HyperVErrors';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export interface PowerShellOptions {
   timeoutMs?: number;
@@ -25,8 +25,11 @@ export class PowerShellExecutor {
 
     logger.debug(`[PowerShell] Executing command: ${command}`);
     try {
-      const fullCommand = `powershell.exe -NoProfile -NonInteractive -Command "${command.replace(/"/g, '\\"')}"`;
-      const { stdout, stderr } = await execAsync(fullCommand, { timeout: timeoutMs });
+      const { stdout, stderr } = await execFileAsync(
+        'powershell.exe',
+        ['-NoProfile', '-NonInteractive', '-Command', command],
+        { timeout: timeoutMs },
+      );
 
       if (stderr) {
         logger.warn(`[PowerShell] Stderr for command: ${stderr}`);

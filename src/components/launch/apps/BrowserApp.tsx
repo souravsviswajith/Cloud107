@@ -1,142 +1,139 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, RotateCw, Home, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCw, Home, ShieldCheck, ExternalLink } from 'lucide-react';
+import { normalizeBrowserUrl } from './browser107/normalizeBrowserUrl';
+
+const HOME_URL = 'https://example.com';
 
 export function BrowserApp() {
-  const [url, setUrl] = useState('https://example.com');
-  const [inputUrl, setInputUrl] = useState('https://example.com');
+  const [history, setHistory] = useState<string[]>([HOME_URL]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [inputUrl, setInputUrl] = useState(HOME_URL);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const url = history[historyIndex] ?? HOME_URL;
 
-  const handleNavigate = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    let finalUrl = inputUrl.trim();
-    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
-      finalUrl = 'https://' + finalUrl;
-    }
-
-    // Check if it's likely to be blocked
-    if (finalUrl.includes('google.com') || finalUrl.includes('openai.com')) {
-      setHasError(true);
-      setUrl(finalUrl);
-      setInputUrl(finalUrl);
-      setIsLoading(false);
+  const navigateTo = (rawUrl: string) => {
+    let nextUrl: string;
+    try {
+      nextUrl = normalizeBrowserUrl(rawUrl);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Invalid web address.');
       return;
     }
 
-    setHasError(false);
-    setUrl(finalUrl);
-    setInputUrl(finalUrl);
+    setError('');
+    setHistory((current) => [...current.slice(0, historyIndex + 1), nextUrl]);
+    setHistoryIndex((current) => current + 1);
+    setInputUrl(nextUrl);
     setIsLoading(true);
   };
 
-  const handleLoad = () => {
-    setIsLoading(false);
+  const handleNavigate = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    navigateTo(inputUrl);
   };
 
-  const handleHome = () => {
-    setInputUrl('https://example.com');
-    setUrl('https://example.com');
-    setHasError(false);
+  const goToHistoryIndex = (nextIndex: number) => {
+    if (nextIndex < 0 || nextIndex >= history.length) return;
+    setHistoryIndex(nextIndex);
+    setInputUrl(history[nextIndex]);
+    setError('');
+    setIsLoading(true);
   };
 
-  const handleRefresh = () => {
-    if (iframeRef.current) {
-      // Basic refresh simulation
-      setIsLoading(true);
-      const currentUrl = url;
-      setUrl('');
-      setTimeout(() => setUrl(currentUrl), 50);
-    }
+  const goHome = () => navigateTo(HOME_URL);
+
+  const refresh = () => {
+    setIsLoading(true);
+    setReloadKey((current) => current + 1);
   };
 
   return (
-    <div className="flex flex-col h-full bg-white text-black overflow-hidden font-sans">
-      {/* Navigation Bar */}
-      <div className="flex items-center gap-2 p-2 bg-neutral-200 border-b border-neutral-300">
-        <button className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600">
+    <div className="flex h-full flex-col overflow-hidden bg-white font-sans text-neutral-900">
+      <div className="flex items-center gap-1 border-b border-neutral-200 bg-neutral-100 p-2">
+        <button
+          type="button"
+          aria-label="Back"
+          title="Back"
+          disabled={historyIndex === 0}
+          onClick={() => goToHistoryIndex(historyIndex - 1)}
+          className="rounded p-2 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-30"
+        >
           <ArrowLeft size={16} />
         </button>
-        <button className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600">
+        <button
+          type="button"
+          aria-label="Forward"
+          title="Forward"
+          disabled={historyIndex >= history.length - 1}
+          onClick={() => goToHistoryIndex(historyIndex + 1)}
+          className="rounded p-2 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-30"
+        >
           <ArrowRight size={16} />
         </button>
-        <button
-          className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600"
-          onClick={handleRefresh}
-        >
+        <button type="button" aria-label="Reload" title="Reload" onClick={refresh} className="rounded p-2 hover:bg-neutral-200">
           <RotateCw size={16} className={isLoading ? 'animate-spin' : ''} />
         </button>
-        <button
-          className="p-1.5 rounded hover:bg-neutral-300 text-neutral-600"
-          onClick={handleHome}
-        >
+        <button type="button" aria-label="Home" title="Home" onClick={goHome} className="rounded p-2 hover:bg-neutral-200">
           <Home size={16} />
         </button>
-
-        <form
-          onSubmit={handleNavigate}
-          className="flex-1 flex items-center bg-white rounded-full border border-neutral-300 px-3 py-1 text-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent"
-        >
-          <Lock size={12} className="text-emerald-600 mr-2" />
+        <form onSubmit={handleNavigate} className="flex min-w-0 flex-1 items-center rounded-full border border-neutral-300 bg-white px-3 py-1.5 focus-within:ring-2 focus-within:ring-blue-500">
+          <ShieldCheck size={14} className="mr-2 shrink-0 text-emerald-600" aria-label="Restricted web navigation" />
           <input
-            type="text"
+            aria-label="Web address"
+            autoComplete="url"
+            spellCheck={false}
             value={inputUrl}
-            onChange={(e) => setInputUrl(e.target.value)}
-            className="flex-1 outline-none bg-transparent"
+            onChange={(event) => setInputUrl(event.target.value)}
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+            placeholder="Enter a web address"
           />
         </form>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open website in a new browser tab"
+          title="Open website externally"
+          className="rounded p-2 hover:bg-neutral-200"
+        >
+          <ExternalLink size={16} />
+        </a>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 relative bg-white">
-        <AnimatePresence mode="wait">
-          {hasError ? (
-            <motion.div
-              key="error"
+      <div className="relative min-h-0 flex-1 bg-neutral-50">
+        {error ? (
+          <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <ShieldCheck size={28} className="mb-3 text-amber-600" />
+            <h3 className="mb-2 text-lg font-semibold">Cannot navigate</h3>
+            <p className="max-w-sm text-sm text-neutral-600">{error}</p>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.iframe
+              key={url + ':' + reloadKey}
+              ref={iframeRef}
+              title={`Browser107 preview of ${url}`}
+              src={url}
+              sandbox="allow-forms allow-scripts"
+              referrerPolicy="no-referrer"
+              onLoad={() => setIsLoading(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-neutral-50"
-            >
-              <div className="w-16 h-16 bg-neutral-200 rounded-full flex items-center justify-center mb-4">
-                <Lock size={24} className="text-neutral-500" />
-              </div>
-              <h3 className="text-lg font-medium text-neutral-800 mb-2">Refused to Connect</h3>
-              <p className="text-neutral-500 text-sm mb-6 max-w-sm">
-                The destination website prevents embedding due to its security policy
-                (X-Frame-Options).
-              </p>
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                Open in New Tab
-              </a>
-            </motion.div>
-          ) : (
-            url && (
-              <motion.iframe
-                key="iframe"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isLoading ? 0.3 : 1 }}
-                transition={{ duration: 0.3 }}
-                ref={iframeRef}
-                src={url}
-                className="absolute inset-0 w-full h-full border-none bg-white"
-                onLoad={handleLoad}
-                title="Browser Content"
-              />
-            )
-          )}
-        </AnimatePresence>
+              transition={{ duration: 0.15 }}
+              className="absolute inset-0 h-full w-full border-0 bg-white"
+            />
+          </AnimatePresence>
+        )}
       </div>
 
-      {/* Status Bar */}
-      <div className="h-6 bg-[#f3f4f6] border-t border-neutral-200 px-3 flex items-center text-[11px] text-neutral-500">
-        {isLoading ? 'Waiting for response...' : 'Done'}
+      <div className="flex min-h-6 items-center justify-between gap-2 border-t border-neutral-200 bg-neutral-100 px-3 py-1 text-[11px] text-neutral-500">
+        <span>{isLoading ? 'Loading embedded preview…' : 'Embedded preview'}</span>
+        <span className="truncate">Some sites block embedding. This is not yet a standalone browser engine.</span>
       </div>
     </div>
   );
